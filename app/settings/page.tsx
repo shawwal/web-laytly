@@ -39,7 +39,7 @@ const settingsGroups = [
 export default function SettingsPage() {
   return (
     <div className="flex flex-col min-h-full bg-gray-50 dark:bg-gray-900">
-      <div className="px-4 py-6 md:px-6 md:py-8">
+      <div className="px-4 py-6 md:px-6 md:py-8 mb-16 sm:mb-0">
         <h1 className="text-2xl font-bold text-center mb-8">Settings</h1>
         
         <div className="max-w-2xl mx-auto">
