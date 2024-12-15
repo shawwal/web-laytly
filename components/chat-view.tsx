@@ -40,11 +40,16 @@ export function ChatView() {
   }, [activeContactId])
 
   const handleSend = async (content: string) => {
+    // Ensure activeContactId is not null
+    if (!activeContactId) {
+      return; // Prevent sending message if there's no valid activeContactId
+    }
+
     const optimisticMessage = {
       id: Date.now().toString(),
       content,
       senderId: 'me',
-      receiverId: activeContactId,
+      receiverId: activeContactId, // Now guaranteed to be a string
       timestamp: Date.now(),
       status: 'sending' as const,
     }
@@ -124,4 +129,3 @@ export function ChatView() {
     </div>
   )
 }
-

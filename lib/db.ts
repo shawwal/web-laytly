@@ -105,15 +105,14 @@ async function populateWithMockData() {
     },
   ]
 
-  const messages = [
-    // Conversation with Alice about hiking
+  const messages: ChatDB['messages']['value'][] = [
     {
       id: '1',
       content: 'Hey, are you still up for the weekend trip to the mountains?',
       senderId: '1',
       receiverId: 'me',
       timestamp: Date.now() - 1000 * 60 * 30,
-      status: 'seen',
+      status: 'seen', // No need for type assertion
     },
     {
       id: '2',
@@ -147,7 +146,6 @@ async function populateWithMockData() {
       timestamp: Date.now() - 1000 * 60 * 10,
       status: 'seen',
     },
-    // Conversation with Bob about work
     {
       id: '6',
       content: 'Hi, do you have a minute to discuss the project?',
