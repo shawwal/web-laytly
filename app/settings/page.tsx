@@ -22,7 +22,7 @@ const settingsGroups = [
     title: 'Preferences',
     items: [
       { icon: Globe, label: 'Language', href: '/settings/language', value: 'English(USA)' },
-      { icon: Moon, label: 'Dark Mode', href: '/settings/theme', component: ThemeToggle },
+      { icon: Moon, label: 'Dark Mode', component: ThemeToggle },
       { icon: Mail, label: 'Contact List', href: '/settings/contacts' },
       { icon: Users, label: 'Friend List', href: '/settings/friends' },
     ],

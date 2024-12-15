@@ -1,17 +1,10 @@
 'use client'
-
-import { Metadata } from 'next'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Bell, Search, Bookmark, MoreHorizontal, Phone, Briefcase, Mail, ChevronLeft, PenSquare } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
-
-export const metadata: Metadata = {
-  title: 'User Profile | Chat App',
-  description: 'View user profile and media',
-}
 
 interface ContactInfo {
   icon: typeof Phone
@@ -85,7 +78,7 @@ export default function UserProfilePage() {
 
       {/* User Info */}
       <div className="pt-20 px-4 text-center">
-        <h1 className="text-2xl font-bold">Kevin Lius Bong</h1>
+        <h1 className="text-2xl font-bold">Luka Doncic</h1>
         <p className="text-sm text-gray-500 dark:text-gray-400">online</p>
       </div>
 
