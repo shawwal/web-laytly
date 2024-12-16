@@ -43,7 +43,7 @@ const generateDummyData = (): MonthGroup[] => {
       liked: false,
       caption: `Photo ${i + 1} from ${month}`,
       user: {
-        name: 'Kevin Lius Bong',
+        name: 'Luka Doncic',
         avatar: `https://i.pravatar.cc/150?u=kevin-${monthIndex}-${i}`,
         username: 'kevinlius'
       },

@@ -63,12 +63,12 @@ export default function UserProfilePage() {
       {/* Profile Info */}
       <div className="relative px-4 pb-4 -mt-20 max-w-4xl mx-auto">
         <Avatar className="w-32 h-32 border-4 border-white dark:border-gray-900 mx-auto">
-          <AvatarImage src="https://i.pravatar.cc/128?u=kevin" />
+          <AvatarImage src="https://i.pravatar.cc/200" />
           <AvatarFallback>KB</AvatarFallback>
         </Avatar>
 
         <div className="mt-4 text-center">
-          <h1 className="text-2xl font-bold">Kevin Lius Bong</h1>
+          <h1 className="text-2xl font-bold">Luka Doncic</h1>
           <p className="text-sm text-gray-500 dark:text-gray-400">online</p>
         </div>
 

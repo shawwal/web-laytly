@@ -20,7 +20,7 @@ const tabs: Tab[] = [
 
 interface ChatTabsProps {
   messages: any[]
-  onSend: (content: string, images?: File[]) => void
+  onSend: (content: string, audioBlob?: Blob, images?: File[]) => void
 }
 
 export function ChatTabs({ messages, onSend }: ChatTabsProps) {
@@ -33,7 +33,7 @@ export function ChatTabs({ messages, onSend }: ChatTabsProps) {
           <div className="flex flex-col h-full">
             <MessageList messages={messages} />
             <div className="p-4 pb-20 md:pb-4 space-y-4">
-              <div className="flex flex-wrap gap-2">
+              {/* <div className="flex flex-wrap gap-2">
                 {["Sure thing!", "Sounds good!", "Take care!", "Absolutely!"].map((reply) => (
                   <button
                     key={reply}
@@ -43,7 +43,7 @@ export function ChatTabs({ messages, onSend }: ChatTabsProps) {
                     {reply}
                   </button>
                 ))}
-              </div>
+              </div> */}
               <MessageInput onSend={onSend} />
             </div>
           </div>
@@ -79,4 +79,3 @@ export function ChatTabs({ messages, onSend }: ChatTabsProps) {
     </div>
   )
 }
-

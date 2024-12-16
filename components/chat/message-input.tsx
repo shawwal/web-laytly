@@ -5,20 +5,9 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { ImageIcon, Mic, Smile, Square, Loader2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
-// import dynamic from 'next/dynamic'
-
-// Dynamically import emoji picker with ssr disabled
-// const EmojiPicker = dynamic(
-//   () => import('@emoji-mart/react').then((mod) => ({ default: mod.default })),
-//   { ssr: false }
-// )
-// const emojiData = dynamic(
-//   () => import('@emoji-mart/data').then((mod) => mod.default),
-//   { ssr: false }
-// )
 
 interface MessageInputProps {
-  onSend: (content: string, audioBlob?: Blob) => void
+  onSend: (content: string, audioBlob?: Blob, images?: File[]) => void
 }
 
 export function MessageInput({ onSend }: MessageInputProps) {
@@ -30,7 +19,7 @@ export function MessageInput({ onSend }: MessageInputProps) {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
   const audioChunksRef = useRef<Blob[]>([])
-  const recordingTimerRef = useRef<NodeJS.Timeout>()
+  const recordingTimerRef = useRef<NodeJS.Timeout | undefined>(undefined)
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -95,6 +84,13 @@ export function MessageInput({ onSend }: MessageInputProps) {
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
+  const handleSendImages = () => {
+    if (selectedImages.length > 0) {
+      onSend('📸 Image(s) selected', undefined, selectedImages)
+      setSelectedImages([]) // Clear images after sending
+    }
+  }
+
   return (
     <form onSubmit={handleSubmit} className="flex items-center gap-2 bg-gray-100 dark:bg-gray-800 rounded-full p-2 sticky bottom-0 md:bottom-4 mx-4 mb-4 md:mb-0">
       <input
@@ -126,21 +122,9 @@ export function MessageInput({ onSend }: MessageInputProps) {
           size="icon"
           variant="ghost"
           className="rounded-full"
-          onClick={() => setShowEmojiPicker(!showEmojiPicker)}
         >
           <Smile className="w-6 h-6" />
         </Button>
-        {/* {showEmojiPicker && (
-          <div className="absolute bottom-full right-0 mb-2">
-            <EmojiPicker
-              // data={emojiData}
-              onEmojiSelect={(emoji: any) => {
-                setMessage(prev => prev + emoji.native)
-                setShowEmojiPicker(false)
-              }}
-            />
-          </div>
-        )} */}
       </div>
       <Button
         type="button"
@@ -163,7 +147,14 @@ export function MessageInput({ onSend }: MessageInputProps) {
           </div>
         </div>
       )}
+      {/* <Button
+        type="button"
+        size="icon"
+        variant="ghost"
+        onClick={handleSendImages}
+      >
+        Send Images
+      </Button> */}
     </form>
   )
 }
-

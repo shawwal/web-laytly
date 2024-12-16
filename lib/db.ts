@@ -113,7 +113,7 @@ async function populateWithMockData() {
       senderId: '1',
       receiverId: 'me',
       timestamp: Date.now() - 1000 * 60 * 30,
-      status: 'seen',
+      status: 'seen' as const, // Explicitly typing as const
     },
     {
       id: '2',
@@ -121,7 +121,7 @@ async function populateWithMockData() {
       senderId: 'me',
       receiverId: '1',
       timestamp: Date.now() - 1000 * 60 * 29,
-      status: 'seen',
+      status: 'seen' as const, // Explicitly typing as const
     },
     {
       id: '3',
@@ -129,7 +129,7 @@ async function populateWithMockData() {
       senderId: '1',
       receiverId: 'me',
       timestamp: Date.now() - 1000 * 60 * 28,
-      status: 'seen',
+      status: 'seen' as const, // Explicitly typing as const
     },
     {
       id: '4',
@@ -137,7 +137,7 @@ async function populateWithMockData() {
       senderId: 'me',
       receiverId: '1',
       timestamp: Date.now() - 1000 * 60 * 27,
-      status: 'seen',
+      status: 'seen' as const, // Explicitly typing as const
     },
     {
       id: '5',
@@ -145,7 +145,7 @@ async function populateWithMockData() {
       senderId: '1',
       receiverId: 'me',
       timestamp: Date.now() - 1000 * 60 * 10,
-      status: 'seen',
+      status: 'seen' as const, // Explicitly typing as const
     },
     {
       id: '6',
@@ -153,7 +153,7 @@ async function populateWithMockData() {
       senderId: 'me',
       receiverId: '1',
       timestamp: Date.now() - 1000 * 60 * 5,
-      status: 'sent',
+      status: 'sent' as const, // Explicitly typing as 'sent'
       images: [
         'https://picsum.photos/seed/trip1/400/400',
         'https://picsum.photos/seed/trip2/400/400',
@@ -168,7 +168,7 @@ async function populateWithMockData() {
       senderId: '1',
       receiverId: 'me',
       timestamp: Date.now() - 1000 * 60 * 2,
-      status: 'seen',
+      status: 'seen' as const, // Explicitly typing as const
     },
   ]
 
