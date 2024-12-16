@@ -1,7 +1,7 @@
 import { Metadata } from 'next'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
-import Link from 'next/link'
+// import Link from 'next/link'
 
 export const metadata: Metadata = {
   title: 'Profile | Chat App',

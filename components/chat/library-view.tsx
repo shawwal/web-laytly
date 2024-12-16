@@ -43,7 +43,7 @@ const generateDummyData = (): MonthGroup[] => {
       liked: false,
       caption: `Photo ${i + 1} from ${month}`,
       user: {
-        name: 'Luka Doncic',
+        name: 'Kevin Lius Bong',
         avatar: `https://i.pravatar.cc/150?u=kevin-${monthIndex}-${i}`,
         username: 'kevinlius'
       },
@@ -112,7 +112,7 @@ export function LibraryView() {
 
   return (
     <>
-      <div className="flex flex-col gap-6 p-4 overflow-y-auto">
+      <div className="flex flex-col gap-6 p-4 overflow-y-auto pb-20 md:pb-4 mb-16 md:mb-0">
         {mediaGroups.map((group, groupIndex) => (
           <div key={group.month}>
             <h2 className="text-lg font-semibold mb-4">{group.month}</h2>

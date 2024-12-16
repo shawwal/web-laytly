@@ -48,7 +48,7 @@ const albums: Album[] = [
 
 export function AlbumsView() {
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 p-4 overflow-y-auto">
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 p-4 overflow-y-auto pb-20 md:pb-4 mb-16 md:mb-0">
       {albums.map((album) => (
         <div
           key={album.id}

@@ -14,11 +14,6 @@ const navItems = [
     href: '/',
   },
   {
-    title: 'Contacts',
-    icon: Users,
-    href: '/contacts',
-  },
-  {
     title: 'Connect',
     icon: LinkIcon,
     href: '/connect',
@@ -84,8 +79,9 @@ export function NavMenu() {
       </div>
 
       {/* Mobile Navigation */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 border-t dark:border-gray-800 bg-gray-50/90 dark:bg-gray-900/90 backdrop-blur-xl">
-        <nav className="flex items-center justify-around p-2">
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50">
+        <div className="absolute inset-0 bg-gray-50/80 dark:bg-gray-900/80 backdrop-blur-xl" />
+        <nav className="relative flex items-center justify-around p-2">
           {navItems.map((item) => {
             const Icon = item.icon
             const isActive = pathname === item.href

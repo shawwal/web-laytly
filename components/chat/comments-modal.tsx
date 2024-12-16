@@ -24,7 +24,7 @@ const dummyComments: Comment[] = [
   {
     id: '1',
     user: {
-      name: 'Luka Doncic',
+      name: 'Kevin Lius Bong',
       avatar: '/placeholder.svg',
     },
     content: 'Lorem ipsum is simply dummy text of the printing and typesetting industry. Lorem ipsum has been',
@@ -51,7 +51,7 @@ export function CommentsModal({ isOpen, onClose, mediaId }: CommentsModalProps) 
     const comment: Comment = {
       id: Date.now().toString(),
       user: {
-        name: 'Luka Doncic',
+        name: 'Kevin Lius Bong',
         avatar: '/placeholder.svg',
       },
       content: newComment,

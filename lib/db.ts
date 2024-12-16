@@ -12,6 +12,7 @@ interface ChatDB extends DBSchema {
       receiverId: string
       timestamp: number
       status: 'sending' | 'sent' | 'seen'
+      images?: string[]
     }
     indexes: { 'by-receiver': string }
   }
@@ -38,14 +39,14 @@ export async function initDB() {
       db.createObjectStore('contacts', { keyPath: 'id' })
     },
   })
-  
+
   const db = await dbPromise
   const contactsCount = await db.count('contacts')
-  
+
   if (contactsCount === 0) {
     await populateWithMockData()
   }
-  
+
   return dbPromise
 }
 
@@ -74,7 +75,7 @@ async function populateWithMockData() {
     {
       id: '1',
       name: 'Alice Johnson',
-      avatar: '/placeholder.svg?height=40&width=40',
+      avatar: 'https://i.pravatar.cc/150?u=alice',
       lastMessage: 'The weather should be perfect for hiking!',
       lastMessageTime: Date.now() - 1000 * 60 * 5,
       unreadCount: 2,
@@ -82,7 +83,7 @@ async function populateWithMockData() {
     {
       id: '2',
       name: 'Bob Smith',
-      avatar: '/placeholder.svg?height=40&width=40',
+      avatar: 'https://i.pravatar.cc/150?u=bob',
       lastMessage: 'Can you send me the project files?',
       lastMessageTime: Date.now() - 1000 * 60 * 30,
       unreadCount: 0,
@@ -90,29 +91,29 @@ async function populateWithMockData() {
     {
       id: '3',
       name: 'Carol White',
-      avatar: '/placeholder.svg?height=40&width=40',
+      avatar: 'https://i.pravatar.cc/150?u=carol',
       lastMessage: 'The project is looking great!',
-      lastMessageTime: Date.now() - 1000 * 60 * 60 * 2, // 2 hours ago
+      lastMessageTime: Date.now() - 1000 * 60 * 60 * 2,
       unreadCount: 0,
     },
     {
       id: '4',
       name: 'David Brown',
-      avatar: '/placeholder.svg?height=40&width=40',
+      avatar: 'https://i.pravatar.cc/150?u=david',
       lastMessage: 'Can you send me the report?',
-      lastMessageTime: Date.now() - 1000 * 60 * 60 * 24, // 1 day ago
+      lastMessageTime: Date.now() - 1000 * 60 * 60 * 24,
       unreadCount: 1,
     },
   ]
 
-  const messages: ChatDB['messages']['value'][] = [
+  const messages = [
     {
       id: '1',
       content: 'Hey, are you still up for the weekend trip to the mountains?',
       senderId: '1',
       receiverId: 'me',
       timestamp: Date.now() - 1000 * 60 * 30,
-      status: 'seen', // No need for type assertion
+      status: 'seen',
     },
     {
       id: '2',
@@ -148,26 +149,25 @@ async function populateWithMockData() {
     },
     {
       id: '6',
-      content: 'Hi, do you have a minute to discuss the project?',
-      senderId: '2',
-      receiverId: 'me',
-      timestamp: Date.now() - 1000 * 60 * 120,
-      status: 'seen',
+      content: 'Sounds perfect! Here are some photos from our last trip.',
+      senderId: 'me',
+      receiverId: '1',
+      timestamp: Date.now() - 1000 * 60 * 5,
+      status: 'sent',
+      images: [
+        'https://picsum.photos/seed/trip1/400/400',
+        'https://picsum.photos/seed/trip2/400/400',
+        'https://picsum.photos/seed/trip3/400/400',
+        'https://picsum.photos/seed/trip4/400/400',
+        'https://picsum.photos/seed/trip5/400/400',
+      ],
     },
     {
       id: '7',
-      content: 'Sure, what\'s on your mind?',
-      senderId: 'me',
-      receiverId: '2',
-      timestamp: Date.now() - 1000 * 60 * 119,
-      status: 'seen',
-    },
-    {
-      id: '8',
-      content: 'Could you share the latest design files? I need to review them.',
-      senderId: '2',
+      content: 'Wow, these look amazing! Can\'t wait for our next adventure.',
+      senderId: '1',
       receiverId: 'me',
-      timestamp: Date.now() - 1000 * 60 * 118,
+      timestamp: Date.now() - 1000 * 60 * 2,
       status: 'seen',
     },
   ]

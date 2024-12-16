@@ -5,6 +5,7 @@ import { useState } from "react"
 import { LibraryView } from "./library-view"
 import { AlbumsView } from "./albums-view"
 import { MessageList } from "./message-list"
+import { MessageInput } from "./message-input"
 
 interface Tab {
   id: string
@@ -19,15 +20,34 @@ const tabs: Tab[] = [
 
 interface ChatTabsProps {
   messages: any[]
+  onSend: (content: string, images?: File[]) => void
 }
 
-export function ChatTabs({ messages }: ChatTabsProps) {
+export function ChatTabs({ messages, onSend }: ChatTabsProps) {
   const [activeTab, setActiveTab] = useState('chat')
 
   const renderContent = () => {
     switch (activeTab) {
       case 'chat':
-        return <MessageList messages={messages} />
+        return (
+          <div className="flex flex-col h-full">
+            <MessageList messages={messages} />
+            <div className="p-4 pb-20 md:pb-4 space-y-4">
+              <div className="flex flex-wrap gap-2">
+                {["Sure thing!", "Sounds good!", "Take care!", "Absolutely!"].map((reply) => (
+                  <button
+                    key={reply}
+                    onClick={() => onSend(reply)}
+                    className="px-4 py-2 text-sm rounded-full bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700"
+                  >
+                    {reply}
+                  </button>
+                ))}
+              </div>
+              <MessageInput onSend={onSend} />
+            </div>
+          </div>
+        )
       case 'library':
         return <LibraryView />
       case 'albums':

@@ -9,13 +9,7 @@ import { Button } from '@/components/ui/button'
 import { ChevronLeft } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { ChatTabs } from './chat-tabs'
-
-const quickReplies = [
-  "Sure thing!",
-  "Sounds good!",
-  "Take care!",
-  "Absolutely!"
-]
+import Link from 'next/link'
 
 export function ChatView() {
   const [messages, setMessages] = useState<any[]>([])
@@ -39,19 +33,15 @@ export function ChatView() {
     }
   }, [activeContactId])
 
-  const handleSend = async (content: string) => {
-    // Ensure activeContactId is not null
-    if (!activeContactId) {
-      return; // Prevent sending message if there's no valid activeContactId
-    }
-
+  const handleSend = async (content: string, audioBlob?: Blob) => {
     const optimisticMessage = {
       id: Date.now().toString(),
       content,
       senderId: 'me',
-      receiverId: activeContactId, // Now guaranteed to be a string
+      receiverId: activeContactId,
       timestamp: Date.now(),
       status: 'sending' as const,
+      audioUrl: audioBlob ? URL.createObjectURL(audioBlob) : undefined
     }
 
     setMessages((prev) => [...prev, optimisticMessage])
@@ -84,7 +74,7 @@ export function ChatView() {
 
   return (
     <div className={cn(
-      "flex flex-col flex-1",
+      "flex flex-col flex-1 relative z-10",
       !isMobileMessageView && 'hidden md:flex'
     )}>
       <div className="border-b dark:border-gray-800 p-4 flex items-center backdrop-blur-xl bg-white/50 dark:bg-gray-900/50">
@@ -97,35 +87,25 @@ export function ChatView() {
           <ChevronLeft className="h-5 w-5" />
         </Button>
         {activeContact && (
-          <>
+          <Link 
+            href={`/user/${activeContact.id}`}
+            className="flex items-center gap-4 flex-1 hover:opacity-80 transition-opacity"
+          >
             <Avatar className="h-10 w-10">
-              <AvatarImage src={activeContact.avatar} alt={activeContact.name} />
+              <AvatarImage src={`https://i.pravatar.cc/40?u=${activeContact.id}`} alt={activeContact.name} />
               <AvatarFallback>{activeContact.name[0]}</AvatarFallback>
             </Avatar>
-            <div className="ml-4">
+            <div>
               <h2 className="text-lg font-semibold">{activeContact.name}</h2>
               <p className="text-sm text-gray-500 dark:text-gray-400">Online</p>
             </div>
-          </>
+          </Link>
         )}
       </div>
       <div className="flex-1 overflow-hidden flex flex-col">
-        <ChatTabs messages={messages} />
-      </div>
-      <div className="p-4 space-y-4">
-        <div className="flex flex-wrap gap-2">
-          {quickReplies.map((reply) => (
-            <button
-              key={reply}
-              onClick={() => handleSend(reply)}
-              className="px-4 py-2 text-sm rounded-full bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700"
-            >
-              {reply}
-            </button>
-          ))}
-        </div>
-        <MessageInput onSend={handleSend} />
+        <ChatTabs messages={messages} onSend={handleSend} />
       </div>
     </div>
   )
 }
+
