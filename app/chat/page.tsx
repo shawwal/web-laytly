@@ -4,8 +4,8 @@ import { ChatView } from '@/components/chat/chat-view'
 import { ChatProvider } from '@/contexts/chat-context'
 
 export const metadata: Metadata = {
-  title: 'Chat App',
-  description: 'A modern chat application',
+  title: 'Laytly App',
+  description: 'Sharing Life Lately',
 }
 
 export default function Page() {

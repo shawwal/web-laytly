@@ -14,7 +14,7 @@ interface FormProps {
   buttonText: string;
   onSubmit: (email: string, password: string) => void;
   loading: boolean;
-  googleLogin: () => void;
+  googleLogin?: () => void;
   showGoogleButton: boolean;
   showLinks?: boolean;
   showLoginLink?: boolean; // Optional prop for sign-up to show login link
