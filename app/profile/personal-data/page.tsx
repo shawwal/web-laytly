@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import useSession from '@/hooks/useSessions' // Assuming this hook fetches session data
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -25,9 +26,11 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
+import LoadingOverlay from '@/components/loading-overlay'
 
 // Country codes data
 const countryCodes = [
+  { code: '+60', country: 'Malaysia', flag: '🇲🇾' },
   { code: '+62', country: 'Indonesia', flag: '🇮🇩' },
   { code: '+1', country: 'United States', flag: '🇺🇸' },
   { code: '+44', country: 'United Kingdom', flag: '🇬🇧' },
@@ -36,10 +39,34 @@ const countryCodes = [
 ]
 
 export default function PersonalDataPage() {
+  const session = useSession() // Fetch session data and loading state
+  const [loading, setLoading] = useState(true);
   const [profileImage, setProfileImage] = useState('/placeholder.svg')
   const [bannerImage, setBannerImage] = useState('/placeholder.svg?height=200&width=600')
-  const [countryCode, setCountryCode] = useState('+62')
+  const [countryCode, setCountryCode] = useState('+60')
+  
+  // Use default values or empty strings until session data is available
+  const [fullName, setFullName] = useState('')
+  const [username, setUsername] = useState('')
+  const [email, setEmail] = useState('')
+  const [phone, setPhone] = useState('+60')
 
+  // Handle session data update when available
+  useEffect(() => {
+    setLoading(true)
+    if (session?.user?.user_metadata) {
+      setFullName(session.user.user_metadata.full_name || '')
+      // setUsername(session.user.username || '') // Assuming 'username' exists
+      setEmail(session.user.email || '')
+      setPhone(session.user.phone || '')
+      setProfileImage(session.user?.user_metadata?.avatar_url || '/placeholder.svg')
+      // setBannerImage(session.user.banner_image || '/placeholder.svg?height=200&width=600')
+      // setCountryCode(session.user.country_code || '+60')
+      setLoading(false)
+    }
+  }, [session]) // Re-run when session data changes
+
+  // Handle image changes
   const handleProfileImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
@@ -60,6 +87,11 @@ export default function PersonalDataPage() {
       }
       reader.readAsDataURL(file)
     }
+  }
+
+  // Prevent rendering the form until session data is fully loaded
+  if (loading) {
+    return <LoadingOverlay /> // Optionally, show a loading spinner or message
   }
 
   return (
@@ -128,14 +160,15 @@ export default function PersonalDataPage() {
       {/* Form */}
       <div className="max-w-2xl mx-auto px-4 pt-24 pb-8">
         <h1 className="text-2xl font-bold mb-8">Personal Data</h1>
-        
+
         <form className="space-y-6">
           <div className="space-y-2">
             <Label htmlFor="fullName">Full Name</Label>
             <Input
               id="fullName"
               placeholder="Enter your full name"
-              defaultValue="Lidia Terecia"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
             />
           </div>
 
@@ -144,34 +177,37 @@ export default function PersonalDataPage() {
             <Input
               id="username"
               placeholder="Enter your username"
-              defaultValue="lidiaterecia"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
             />
           </div>
 
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <Label htmlFor="email">Email</Label>
-              <Button variant="link" className="text-blue-500 h-auto p-0">
+              {/* <Button variant="link" className="text-blue-500 h-auto p-0">
                 Change
-              </Button>
+              </Button> */}
             </div>
             <Input
               id="email"
               type="email"
               placeholder="Enter your email"
-              defaultValue="lidiaterecia@gmail.com"
+              value={email}
+              disabled
+              onChange={(e) => setEmail(e.target.value)}
             />
-            <p className="text-sm text-gray-500 dark:text-gray-400">
+            {/* <p className="text-sm text-gray-500 dark:text-gray-400">
               If you change it, you must re-verify
-            </p>
+            </p> */}
           </div>
 
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <Label htmlFor="phone">Phone Number</Label>
-              <Button variant="link" className="text-blue-500 h-auto p-0">
+              {/* <Button variant="link" className="text-blue-500 h-auto p-0">
                 Change
-              </Button>
+              </Button> */}
             </div>
             <div className="flex gap-2">
               <Select value={countryCode} onValueChange={setCountryCode}>
@@ -191,16 +227,17 @@ export default function PersonalDataPage() {
                 id="phone"
                 type="tel"
                 placeholder="Enter your phone number"
-                defaultValue="81234567890"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
               />
             </div>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
+            {/* <p className="text-sm text-gray-500 dark:text-gray-400">
               If you change it, you must re-verify
-            </p>
+            </p> */}
           </div>
 
-          <Button 
-            type="submit" 
+          <Button
+            type="submit"
             className="w-full bg-[#5BA4A4] hover:bg-[#4A8F8F] text-white"
           >
             Save Changes
@@ -236,4 +273,3 @@ export default function PersonalDataPage() {
     </div>
   )
 }
-
