@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
-import createUserEntry from '@/utils/createUserEntry';  // Import your utility to create user entry
+import LoadingOverlay from '@/components/loading-overlay';
 
 const AuthCallbackPage = () => {
   const router = useRouter();
@@ -57,11 +57,6 @@ const AuthCallbackPage = () => {
 
           // If session is set successfully, log and proceed to create user entry
           console.log('Session successfully set!');
-
-          // Create the user entry after the session is set
-          const userEntry = await createUserEntry();
-          console.log('User entry created:', userEntry);
-
           // Redirect to the dashboard or home page after creating the user entry
           router.push('/dashboard'); // Change '/dashboard' to your actual dashboard route
         } catch (error) {
@@ -77,7 +72,7 @@ const AuthCallbackPage = () => {
     handleAuth();
   }, [router]);
 
-  return <div>Loading...</div>;
+  return <LoadingOverlay />;
 };
 
 export default AuthCallbackPage;

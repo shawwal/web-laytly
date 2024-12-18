@@ -3,6 +3,7 @@ import { ThemeProvider } from '@/components/theme-provider';
 import { Toaster } from '@/components/toaster';
 import { getSupabaseToken } from '@/utils/tokenUtils'; // Import reusable token check utility
 import './globals.css';
+import RecoilContextProvider from '@/app/RecoilContextProvider';
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   // Await the token from the cookies
@@ -15,12 +16,14 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html lang="en" suppressHydrationWarning className="dark">
       <body>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <div className="flex h-screen bg-white dark:bg-gray-900">
-            {/* Conditionally render NavMenu based on token existence */}
-            {!hideNavbar && <NavMenu />}
-            <main className="flex-1 overflow-auto">{children}</main>
-          </div>
-          <Toaster />
+          <RecoilContextProvider>
+            <div className="flex h-screen bg-white dark:bg-gray-900">
+              {/* Conditionally render NavMenu based on token existence */}
+              {!hideNavbar && <NavMenu />}
+              <main className="flex-1 overflow-auto">{children}</main>
+            </div>
+            <Toaster />
+          </RecoilContextProvider>
         </ThemeProvider>
       </body>
     </html>

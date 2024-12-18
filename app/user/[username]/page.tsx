@@ -49,7 +49,7 @@ export default function UserProfilePage() {
         <div className="absolute inset-0 bg-gradient-to-b from-black/30 to-transparent" />
         
         <div className="absolute top-4 left-4 right-4 flex justify-between z-10">
-          <Link href="/chat">
+          <Link href="/">
             <Button variant="ghost" size="icon" className="rounded-full bg-white/20 backdrop-blur-lg text-white hover:bg-white/30">
               <ChevronLeft className="h-5 w-5" />
             </Button>
