@@ -1,32 +1,45 @@
 'use client'
 
-import { useState } from 'react'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
-import { Search, Copy, Share2, Download, QrCode, ScanLine } from 'lucide-react'
-import { QRCodeSVG } from 'qrcode.react'
-import { useToast } from '@/components/ui/use-toast'
+import { useState, useEffect } from 'react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Search, Copy, Share2, Download, QrCode, ScanLine } from 'lucide-react';
+import { QRCodeSVG } from 'qrcode.react';
+import { useToast } from '@/components/ui/use-toast';
+import useSession from '@/hooks/useSessions'; // Assuming this is the correct import for your useSession hook
+import { Skeleton } from '@/components/ui/skeleton'; // Import Skeleton component
 
 export function QRCodeView() {
-  const [copied, setCopied] = useState(false)
-  const { toast } = useToast()
-  const qrValue = 'https://chat.app/user/lidia-terecia' // This would be dynamic in a real app
+  // const [copied, setCopied] = useState(false);
+  const { toast } = useToast();
+  const session = useSession(); // Get session data using your custom hook
+  const qrValue = session?.user.email as string; // This would be dynamic in a real app
+  const [loading, setLoading] = useState(true);
 
+  useEffect(() => {
+    if (session) {
+      setLoading(false); // Stop loading once session data is available
+    }
+  }, [session]); // Re-run effect when session changes
+
+  // Handle clipboard copy
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(qrValue)
+      await navigator.clipboard.writeText(qrValue);
       toast({
         description: "QR code link copied to clipboard",
-      })
-    } catch (err) {
+      });
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (error) {
       toast({
         variant: "destructive",
         description: "Failed to copy link",
-      })
+      });
     }
-  }
+  };
 
+  // Handle sharing the QR code
   const handleShare = async () => {
     if (navigator.share) {
       try {
@@ -34,25 +47,27 @@ export function QRCodeView() {
           title: 'Add me on Chat App',
           text: 'Scan my QR code to add me',
           url: qrValue,
-        })
-      } catch (err) {
+        });
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      } catch (error) {
         toast({
           variant: "destructive",
           description: "Failed to share",
-        })
+        });
       }
     }
-  }
+  };
 
+  // Handle saving the QR code image
   const handleSave = () => {
-    const canvas = document.querySelector('canvas')
+    const canvas = document.querySelector('canvas');
     if (canvas) {
-      const link = document.createElement('a')
-      link.download = 'my-qr-code.png'
-      link.href = canvas.toDataURL()
-      link.click()
+      const link = document.createElement('a');
+      link.download = 'my-qr-code.png';
+      link.href = canvas.toDataURL();
+      link.click();
     }
-  }
+  };
 
   return (
     <div className="flex flex-col min-h-full bg-gray-50 dark:bg-gray-900">
@@ -72,14 +87,26 @@ export function QRCodeView() {
               {/* Profile Section */}
               <div className="flex items-center gap-3">
                 <Avatar className="h-12 w-12">
-                  <AvatarImage src="/placeholder.svg" />
-                  <AvatarFallback>LT</AvatarFallback>
+                  {loading ? (
+                    <Skeleton className="w-full h-full rounded-full" />
+                  ) : (
+                    <AvatarImage
+                      src={session?.user?.user_metadata?.avatar_url || '/placeholder.svg'}
+                      alt="User Avatar"
+                    />
+                  )}
+                  <AvatarFallback />
                 </Avatar>
+
                 <div>
-                  <h2 className="font-semibold">Lidia Terecia</h2>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
-                    Active 2 minutes ago
-                  </p>
+                  {/* User Name */}
+                  <h2 className="font-semibold">
+                    {loading ? <Skeleton className="w-32 h-6" /> : session?.user?.user_metadata?.name || 'Username'}
+                  </h2>
+                  {/* User Status */}
+                  <span className="text-sm text-gray-500 dark:text-gray-400">
+                    {loading ? <Skeleton className="w-32 h-4" /> : session?.user?.email}
+                  </span>
                 </div>
               </div>
 
@@ -89,14 +116,13 @@ export function QRCodeView() {
                   value={qrValue}
                   size={200}
                   level="H"
-                  includeMargin
                   className="dark:bg-white p-2 rounded-lg"
                 />
               </div>
 
-              <p className="text-center text-sm text-gray-500 dark:text-gray-400">
+              <span className="text-center text-sm text-gray-500 dark:text-gray-400">
                 Share this QR code with your friends so they can add you
-              </p>
+              </span>
 
               {/* Action Buttons */}
               <div className="grid grid-cols-3 gap-4">
@@ -143,13 +169,12 @@ export function QRCodeView() {
               size="lg"
               className="w-full"
             >
-              <ScanLine className="mr-2 h-5 w-5" />
+            <ScanLine className="mr-2 h-5 w-5" />
               Scan QR Code
             </Button>
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }
-

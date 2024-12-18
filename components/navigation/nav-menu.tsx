@@ -1,6 +1,6 @@
 'use client'
 
-import { MessageCircle, Users, LinkIcon, Settings, Menu, User } from 'lucide-react'
+import { MessageCircle, LinkIcon, Settings, Menu, User } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'

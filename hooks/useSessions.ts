@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase'; // Assuming this is your Supabase client
 import { Session } from '@supabase/supabase-js';
 
-const useSession = () => {
+const useSession = (): Session | null => {
   const [session, setSession] = useState<Session | null>(null);
 
   useEffect(() => {

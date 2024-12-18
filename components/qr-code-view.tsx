@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+// import { useState } from 'react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -9,7 +9,7 @@ import { QRCodeSVG } from 'qrcode.react'
 import { useToast } from '@/components/ui/use-toast'
 
 export function QRCodeView() {
-  const [copied, setCopied] = useState(false)
+  // const [copied, setCopied] = useState(false)
   const { toast } = useToast()
   const qrValue = 'https://chat.app/user/lidia-terecia' // This would be dynamic in a real app
 
@@ -19,7 +19,8 @@ export function QRCodeView() {
       toast({
         description: "QR code link copied to clipboard",
       })
-    } catch (err) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (error) {
       toast({
         variant: "destructive",
         description: "Failed to copy link",
@@ -35,7 +36,8 @@ export function QRCodeView() {
           text: 'Scan my QR code to add me',
           url: qrValue,
         })
-      } catch (err) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      } catch (error) {
         toast({
           variant: "destructive",
           description: "Failed to share",

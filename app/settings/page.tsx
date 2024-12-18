@@ -1,19 +1,17 @@
-import { Metadata } from 'next'
+'use client'
+
+import useSession from '@/hooks/useSessions' // Assuming this hook fetches session data
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { ChevronRight, User, Shield, Bell, Bookmark, Globe, Moon, Mail, Users, InfoIcon as PrivacyIcon, FileText } from 'lucide-react'
 import LogoutButton from '@/components/logout'
-
-export const metadata: Metadata = {
-  title: 'Settings | Chat App',
-  description: 'Manage your app settings',
-}
+import LoadingOverlay from '@/components/loading-overlay'
 
 const settingsGroups = [
   {
     title: 'Account',
     items: [
-      { icon: User, label: 'Personal Data', href: '/settings/personal' },
+      { icon: User, label: 'Personal Data', href: '/profile/personal-data' },
       { icon: Shield, label: 'Password & Security', href: '/settings/security' },
       { icon: Bell, label: 'Notifications Preferences', href: '/settings/notifications' },
       { icon: Bookmark, label: 'Favorites', href: '/settings/favorites' },
@@ -38,21 +36,30 @@ const settingsGroups = [
 ]
 
 export default function SettingsPage() {
+  const session = useSession() // Get session data, which includes user info
+
+  if (!session || !session.user) {
+    // Optionally, you could add a loading state here or redirect if no session is available
+    return <LoadingOverlay />
+  }
+
   return (
     <div className="flex flex-col min-h-full bg-gray-50 dark:bg-gray-900">
       <div className="px-4 py-6 md:px-6 md:py-8 mb-16 sm:mb-0">
         <h1 className="text-2xl font-bold text-center mb-8">Settings</h1>
-        
+
         <div className="max-w-2xl mx-auto">
           {/* Profile Section */}
           <div className="flex items-center gap-4 mb-8">
             <Avatar className="w-16 h-16">
-              <AvatarImage src="/placeholder.svg" />
-              <AvatarFallback>LT</AvatarFallback>
+              {/* Dynamically set avatar */}
+              <AvatarImage src={session.user?.user_metadata?.avatar_url  || '/placeholder.svg'} />
+              <AvatarFallback />
             </Avatar>
             <div>
-              <h2 className="text-xl font-semibold">Lidia Terecia</h2>
-              <p className="text-gray-500 dark:text-gray-400">lidiaterecia@gmail.com</p>
+              {/* Dynamically set user's name and email */}
+              <h2 className="text-xl font-semibold">{session?.user?.user_metadata?.name}</h2>
+              <p className="text-gray-500 dark:text-gray-400">{session.user.email}</p>
             </div>
           </div>
 
@@ -100,4 +107,3 @@ export default function SettingsPage() {
     </div>
   )
 }
-

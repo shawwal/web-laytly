@@ -1,10 +1,12 @@
-import React from 'react';
+
 import { Metadata } from 'next'
+import React from 'react';
 
 export const metadata: Metadata = {
-  title: 'Laytly App | Login',
-  description: 'Sharing your life lately',
+  title: 'Profile | Laytly App',
+  description: 'View and edit your profile',
 }
+
 export default async function Layout({ children }: { children: React.ReactNode }) {
 
   return (

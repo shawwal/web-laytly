@@ -2,7 +2,7 @@ import { Metadata } from 'next'
 import { ContactList } from '@/components/chat/contact-list'
 
 export const metadata: Metadata = {
-  title: 'Contacts | Chat App',
+  title: 'Contacts | Laytly App',
   description: 'View and manage your contacts',
 }
 
