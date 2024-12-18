@@ -29,7 +29,7 @@ export default function SignUpPage() {
       onSubmit={handleSignUp}
       loading={loading}
       googleLogin={handleGoogleSignUp}
-      showGoogleButton={true}
+      showGoogleButton={false}
       showLoginLink={true} // Show login link for sign-up
     />
   );

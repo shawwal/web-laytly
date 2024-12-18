@@ -71,6 +71,7 @@ const AuthForm: React.FC<FormProps> = ({
                   id="password"
                   type={showPassword ? 'text' : 'password'} // Toggle password visibility
                   value={password}
+                  placeholder="type your password"
                   onChange={(e) => setPassword(e.target.value)}
                   required
                 />
