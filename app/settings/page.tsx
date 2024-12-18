@@ -2,6 +2,7 @@ import { Metadata } from 'next'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { ChevronRight, User, Shield, Bell, Bookmark, Globe, Moon, Mail, Users, InfoIcon as PrivacyIcon, FileText } from 'lucide-react'
+import LogoutButton from '@/components/logout'
 
 export const metadata: Metadata = {
   title: 'Settings | Chat App',
@@ -93,6 +94,7 @@ export default function SettingsPage() {
               </div>
             ))}
           </div>
+          <LogoutButton />
         </div>
       </div>
     </div>

@@ -6,18 +6,28 @@ import { useAuth } from '@/hooks/useAuth';
 import AuthForm from '@/components/AuthForm';
 
 export default function LoginPage() {
-  const { loading, loginWithEmail, loginWithGoogle } = useAuth();
+  const { loading, loginWithGoogle } = useAuth();
   const router = useRouter();
 
   const handleLogin = async (email: string, password: string) => {
     try {
-      // Attempt login
-      await loginWithEmail(email, password);
-      // Redirect user to the dashboard
-      router.push('/dashboard');
+      // Call the login API that includes revalidation
+      const res = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+  
+      if (res.ok) {
+        // Redirect user to the dashboard (or trigger revalidation in some other way)
+        window.location.href = '/';
+      } else {
+        const data = await res.json();
+        console.error(data.error);
+        // Optionally handle error
+      }
     } catch (error) {
       console.error("Login failed", error);
-      // Optional: show user-friendly error messages
     }
   };
 

@@ -39,8 +39,8 @@ export const useAuth = () => {
       await AuthService.loginWithEmail(email, password);
       console.log('Login successful');
       // Log the result of createUserEntry
-      const createUserResult = await createUserEntry();
-      console.log('User entry created:', createUserResult);
+      // const createUserResult = await createUserEntry();
+      // console.log('User entry created:', createUserResult);
     } catch (error: any) {
       console.error('Error during login:', error); // Log error details
       toast({
