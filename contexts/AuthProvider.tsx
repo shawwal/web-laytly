@@ -46,7 +46,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     if (!isAuthenticated) {
       // Redirect to login if not authenticated
       router.push('/auth/login');
-    } else if (isAuthenticated && role !== 'admin' && window.location.pathname.startsWith('/dashboard')) {
+    } else if (isAuthenticated && role !== 'admin' && window.location.pathname.startsWith('/')) {
       // Redirect to access denied if user is not an admin and is trying to access the dashboard
       router.push('/access-denied');
     }
@@ -73,7 +73,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         .single();
       setRole(profileData?.role || null);
       setIsAuthenticated(true);
-      router.push('/dashboard');
+      router.push('/');
     }
   };
 

@@ -57,8 +57,7 @@ const AuthCallbackPage = () => {
 
           // If session is set successfully, log and proceed to create user entry
           console.log('Session successfully set!');
-          // Redirect to the dashboard or home page after creating the user entry
-          router.push('/dashboard'); // Change '/dashboard' to your actual dashboard route
+          router.push('/');
         } catch (error) {
           console.error('Error during callback:', error);
           alert('An error occurred during authentication.');

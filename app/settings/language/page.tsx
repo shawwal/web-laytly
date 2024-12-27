@@ -10,13 +10,10 @@ import { cn } from '@/lib/utils'
 const languages = [
   { code: 'en-US', name: 'English (USA)', flag: '🇺🇸' },
   { code: 'id', name: 'Indonesia', flag: '🇮🇩' },
-  { code: 'zh', name: 'Chinese', flag: '🇨🇳' },
   { code: 'es', name: 'Spanish', flag: '🇪🇸' },
-  { code: 'hi', name: 'Hindi', flag: '🇮🇳' },
   { code: 'ar', name: 'Arabic', flag: '🇸🇦' },
   { code: 'ru', name: 'Russian', flag: '🇷🇺' },
   { code: 'ja', name: 'Japanese', flag: '🇯🇵' },
-  { code: 'ko', name: 'Korean', flag: '🇰🇷' },
 ]
 
 export default function LanguagePage() {

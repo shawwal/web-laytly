@@ -1,6 +1,6 @@
 import { Search } from 'lucide-react'
 import { Input } from '@/components/ui/input'
-import { ContactCard } from '@/components/settings/contact-card';
+import { ContactCard } from '@/components/settings/contact-card'
 import { alphabet } from '@/utils/alphabet'
 
 interface Contact {
@@ -9,7 +9,6 @@ interface Contact {
   phone: string
   avatar: string
 }
-
 interface ContactListProps {
   contacts: Contact[]
   search: string
@@ -49,13 +48,13 @@ export const ContactList = ({ contacts, search, setSearch }: ContactListProps) =
         </div>
 
         {/* Grouped Contacts */}
-        <div className="relative">
-          {/* Alphabet Sidebar */}
-          <div className="absolute right-0 top-0 bottom-0 w-6 flex flex-col justify-center text-xs font-medium text-gray-500">
+        <div className="relative flex">
+          {/* Alphabet Sidebar (Fixed position) */}
+          <div className="fixed top-32 right-4 flex flex-col gap-1 text-xs font-medium text-gray-500">
             {alphabet.map(letter => (
               <button
                 key={letter}
-                className="py-0.5 hover:text-blue-500"
+                className="py-0.5 px-1 hover:text-blue-500"
                 onClick={() => {
                   document.getElementById(letter)?.scrollIntoView({ behavior: 'smooth' })
                 }}
@@ -65,7 +64,8 @@ export const ContactList = ({ contacts, search, setSearch }: ContactListProps) =
             ))}
           </div>
 
-          <div className="pr-6 space-y-4">
+          {/* Contact List (Scrollable) */}
+          <div className="flex-grow pr-6 space-y-4 pl-1 sm:pb-24 pb-8">
             {Object.entries(groupedContacts).map(([letter, contacts]) => (
               <div key={letter} id={letter}>
                 <h2 className="text-sm font-medium text-gray-500 mb-2">{letter}</h2>

@@ -12,7 +12,7 @@ export default function LoginPage() {
   const handleLogin = async (email: string, password: string) => {
     try {
       setIsSubmitting(true); // Set submitting to true when login starts
-      const { error, data } = await supabase.auth.signInWithPassword({
+      const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
