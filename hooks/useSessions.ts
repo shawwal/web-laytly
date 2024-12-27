@@ -1,9 +1,13 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase'; // Assuming this is your Supabase client
-import { Session } from '@supabase/supabase-js';
+import { Session, User } from '@supabase/supabase-js';
+
+interface SessionWithUser extends Session {
+  user: User; // Make sure user is always included
+}
 
 const useSession = (): { session: Session | null; loading: boolean } => {
-  const [session, setSession] = useState<Session | null>(null);
+  const [session, setSession] = useState<SessionWithUser | null>(null);
   const [loading, setLoading] = useState<boolean>(true); // Loading state to track session loading
 
   useEffect(() => {

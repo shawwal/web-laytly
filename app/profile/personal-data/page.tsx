@@ -5,6 +5,7 @@ import useSession from '@/hooks/useSessions' // Assuming this hook fetches sessi
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Skeleton } from '@/components/ui/skeleton' // Import Skeleton component for loading state
 import {
   Select,
   SelectContent,
@@ -28,9 +29,10 @@ import {
 } from '@/components/ui/alert-dialog'
 import LoadingOverlay from '@/components/loading-overlay'
 import { countryCodes } from '@/data/countryCodes'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar' // Import Avatar components
 
 export default function PersonalDataPage() {
-  const session = useSession() // Fetch session data and loading state
+  const { session, loading: sessionLoading } = useSession() // Fetch session data and loading state
   const [loading, setLoading] = useState(true);
   const [profileImage, setProfileImage] = useState('/placeholder.svg')
   const [bannerImage, setBannerImage] = useState('/placeholder.svg?height=200&width=600')
@@ -44,15 +46,11 @@ export default function PersonalDataPage() {
 
   // Handle session data update when available
   useEffect(() => {
-    setLoading(true)
     if (session?.user?.user_metadata) {
       setFullName(session.user.user_metadata.full_name || '')
-      // setUsername(session.user.username || '') // Assuming 'username' exists
       setEmail(session.user.email || '')
       setPhone(session.user.phone || '')
       setProfileImage(session.user?.user_metadata?.avatar_url || '/placeholder.svg')
-      // setBannerImage(session.user.banner_image || '/placeholder.svg?height=200&width=600')
-      // setCountryCode(session.user.country_code || '+60')
       setLoading(false)
     }
   }, [session]) // Re-run when session data changes
@@ -81,7 +79,7 @@ export default function PersonalDataPage() {
   }
 
   // Prevent rendering the form until session data is fully loaded
-  if (loading) {
+  if (sessionLoading || loading) {
     return <LoadingOverlay /> // Optionally, show a loading spinner or message
   }
 
@@ -125,13 +123,17 @@ export default function PersonalDataPage() {
         <div className="absolute left-1/2 -translate-x-1/2 -bottom-16">
           <div className="relative">
             <div className="h-32 w-32 rounded-full border-4 border-white dark:border-gray-900 overflow-hidden">
-              <Image
-                src={profileImage}
-                alt="Profile"
-                width={128}
-                height={128}
-                className="object-cover"
-              />
+              {sessionLoading || loading ? (
+                <Skeleton className="w-full h-full rounded-full" />
+              ) : (
+                <Avatar className="w-32 h-32">
+                  <AvatarImage
+                    src={profileImage}
+                    alt="Profile"
+                  />
+                 <AvatarFallback />
+                </Avatar>
+              )}
             </div>
             <label className="absolute right-0 bottom-0 cursor-pointer">
               <div className="rounded-full bg-white dark:bg-gray-800 p-2 shadow-lg">
@@ -176,9 +178,6 @@ export default function PersonalDataPage() {
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <Label htmlFor="email">Email</Label>
-              {/* <Button variant="link" className="text-blue-500 h-auto p-0">
-                Change
-              </Button> */}
             </div>
             <Input
               id="email"
@@ -188,17 +187,11 @@ export default function PersonalDataPage() {
               disabled
               onChange={(e) => setEmail(e.target.value)}
             />
-            {/* <p className="text-sm text-gray-500 dark:text-gray-400">
-              If you change it, you must re-verify
-            </p> */}
           </div>
 
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <Label htmlFor="phone">Phone Number</Label>
-              {/* <Button variant="link" className="text-blue-500 h-auto p-0">
-                Change
-              </Button> */}
             </div>
             <div className="flex gap-2">
               <Select value={countryCode} onValueChange={setCountryCode}>
@@ -222,9 +215,6 @@ export default function PersonalDataPage() {
                 onChange={(e) => setPhone(e.target.value)}
               />
             </div>
-            {/* <p className="text-sm text-gray-500 dark:text-gray-400">
-              If you change it, you must re-verify
-            </p> */}
           </div>
 
           <Button

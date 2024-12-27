@@ -138,7 +138,6 @@ export function QRCodeView() {
                   size={200}
                   level="H"
                   className="dark:bg-white p-2 rounded-lg"
-                  alt="QR code to add the user"
                 />
               </div>
 

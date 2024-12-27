@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 'use client'
 
 import { useState, useEffect } from 'react'
@@ -31,7 +32,7 @@ export function NavMenu() {
   const pathname = usePathname()
   const { session, loading } = useSession(); // Use session hook
   const [mounted, setMounted] = useState(false);
-
+  const avatarUrl =  session?.user?.user_metadata?.avatar_url as string;
   // UseEffect to handle client-side behavior after mount (hydration fix)
   useEffect(() => {
     setMounted(true); // Set mounted to true after the component mounts
@@ -86,12 +87,14 @@ export function NavMenu() {
           })}
         </div>
         <div className="py-4">
+          {/* Avatar instead of User icon */}
           <Button variant="ghost" size="icon" asChild className="rounded-full">
             <Link href="/profile">
               <Avatar className="w-9 h-9">
-                <AvatarImage src={session.user?.avatar_url || "/placeholder.svg?height=36&width=36"} alt="Profile" />
-                <AvatarFallback>ME</AvatarFallback>
+                <AvatarImage src={avatarUrl || "/placeholder.svg?height=36&width=36"} alt="Profile" />
+                <AvatarFallback><User className="w-5 h-5" /></AvatarFallback>
               </Avatar>
+              <span className="sr-only">Profile</span>
             </Link>
           </Button>
         </div>
@@ -125,9 +128,14 @@ export function NavMenu() {
               </Button>
             )
           })}
+          {/* Avatar instead of User icon for mobile */}
           <Button variant="ghost" size="icon" asChild className="rounded-full">
             <Link href="/profile">
-              <User className="w-5 h-5" />
+              <Avatar className="w-9 h-9">
+                {/* @ts-ignore */}
+                <AvatarImage src={avatarUrl || "/placeholder.svg?height=36&width=36"} alt="Profile" />
+                <AvatarFallback><User className="w-5 h-5" /></AvatarFallback>
+              </Avatar>
               <span className="sr-only">Profile</span>
             </Link>
           </Button>
