@@ -62,6 +62,7 @@ const AuthForm: React.FC<FormProps> = ({
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                autoComplete="email"
               />
             </div>
             <div className="space-y-2">
@@ -74,6 +75,7 @@ const AuthForm: React.FC<FormProps> = ({
                   placeholder="type your password"
                   onChange={(e) => setPassword(e.target.value)}
                   required
+                  autoComplete="current-password"
                 />
                 <button
                   type="button"

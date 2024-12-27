@@ -1,25 +1,29 @@
-'use client'
-import { useState } from 'react'
-import LoadingOverlay from './loading-overlay'
+'use client';
+
+import { useState } from 'react';
+import { useRouter } from 'next/navigation'; // Import the useRouter hook for navigation
+import { supabase } from '@/lib/supabase'; // Import your supabase client
+import LoadingOverlay from './loading-overlay';
 
 export default function LogoutButton() {
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
+  const router = useRouter(); // Initialize the useRouter hook for navigation
 
   const handleLogout = async () => {
-    setLoading(true)
+    setLoading(true);
 
     try {
-      // Call the logout API route to delete cookies
-      await fetch('/api/logout', { method: 'GET' });
+      // Perform the logout using Supabase's signOut method
+      await supabase.auth.signOut();
 
-      // Redirect the user to the login page (triggers a revalidation of the page)
-      window.location.href = '/auth/login';
+      // Navigate to the login page
+      router.push('/auth/login');
     } catch (error) {
-      console.error('Error during logout:', error)
+      console.error('Error during logout:', error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <>
@@ -33,9 +37,7 @@ export default function LogoutButton() {
       </button>
 
       {/* Loading Overlay */}
-      {loading && (
-        <LoadingOverlay />
-      )}
+      {loading && <LoadingOverlay />}
     </>
-  )
+  );
 }

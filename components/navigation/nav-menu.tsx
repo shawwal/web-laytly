@@ -1,11 +1,13 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { MessageCircle, LinkIcon, Settings, Menu, User } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
+import useSession from '@/hooks/useSessions'; // Import custom hook for session
 
 const navItems = [
   {
@@ -27,6 +29,23 @@ const navItems = [
 
 export function NavMenu() {
   const pathname = usePathname()
+  const { session, loading } = useSession(); // Use session hook
+  const [mounted, setMounted] = useState(false);
+
+  // UseEffect to handle client-side behavior after mount (hydration fix)
+  useEffect(() => {
+    setMounted(true); // Set mounted to true after the component mounts
+  }, []);
+
+  // If still loading or component isn't mounted, show nothing or loading state
+  if (!mounted || loading) {
+    return null;
+  }
+
+  // If session doesn't exist, don't render the nav menu
+  if (!session) {
+    return null; // Don't render the nav menu if there's no session
+  }
 
   return (
     <>
@@ -70,7 +89,7 @@ export function NavMenu() {
           <Button variant="ghost" size="icon" asChild className="rounded-full">
             <Link href="/profile">
               <Avatar className="w-9 h-9">
-                <AvatarImage src="/placeholder.svg?height=36&width=36" alt="Profile" />
+                <AvatarImage src={session.user?.avatar_url || "/placeholder.svg?height=36&width=36"} alt="Profile" />
                 <AvatarFallback>ME</AvatarFallback>
               </Avatar>
             </Link>
@@ -117,4 +136,3 @@ export function NavMenu() {
     </>
   )
 }
-

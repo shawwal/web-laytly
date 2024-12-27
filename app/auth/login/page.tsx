@@ -1,32 +1,56 @@
 'use client';
 import { useState } from 'react'; // Importing useState
-import { useAuth } from '@/hooks/useAuth';
+import { useRouter } from 'next/navigation'; // To handle redirects after login
 import AuthForm from '@/components/AuthForm';
 import LoadingOverlay from '@/components/loading-overlay';
+import { supabase } from '@/lib/supabase';
 
 export default function LoginPage() {
-  const { loading, loginWithGoogle } = useAuth();
+  const router = useRouter(); // For navigation after successful login
   const [isSubmitting, setIsSubmitting] = useState(false); // Track the submission state
 
   const handleLogin = async (email: string, password: string) => {
     try {
       setIsSubmitting(true); // Set submitting to true when login starts
-      const res = await fetch('/api/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+      const { error, data } = await supabase.auth.signInWithPassword({
+        email,
+        password,
       });
 
-      if (res.ok) {
-        // Redirect user to the dashboard (or trigger revalidation in some other way)
-        window.location.href = '/';
-      } else {
-        const data = await res.json();
-        console.error(data.error);
-        // Optionally handle error
+      if (error) {
+        console.error(error.message); // Log any error
+        alert(error.message); // Optionally show the error
+        return;
       }
+
+      // Redirect to the dashboard after successful login
+      // console.log('User logged in:', data);
+      router.push('/'); // Redirect to the dashboard or home page
     } catch (error) {
-      console.error("Login failed", error);
+      console.error('Login failed', error);
+    } finally {
+      setIsSubmitting(false); // Reset submitting state once request is done
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+      setIsSubmitting(true); // Set submitting to true when login starts
+      const { error, data } = await supabase.auth.signInWithOAuth({
+        provider: 'google', // OAuth provider (Google)
+      });
+
+      if (error) {
+        console.error(error.message); // Log any error
+        alert(error.message); // Optionally show the error
+        return;
+      }
+
+      // Redirect to the dashboard after successful login
+      console.log('User logged in with Google:', data);
+      router.push('/'); // Redirect to the dashboard or home page
+    } catch (error) {
+      console.error('Google login failed', error);
     } finally {
       setIsSubmitting(false); // Reset submitting state once request is done
     }
@@ -35,18 +59,16 @@ export default function LoginPage() {
   return (
     <div className="relative">
       {/* Loading Overlay */}
-      {(loading || isSubmitting) && (
-        <LoadingOverlay />
-      )}
+      {isSubmitting && <LoadingOverlay />}
 
       <AuthForm
         title="Login"
         description="Enter your email below to login to your account"
         buttonText="Login"
         onSubmit={handleLogin}
-        loading={loading}
-        googleLogin={loginWithGoogle}
-        showGoogleButton={false}
+        loading={isSubmitting}
+        googleLogin={handleGoogleLogin} // Use the Google login handler here
+        showGoogleButton={true} // Show the Google login button
         showLinks={true}
       />
     </div>

@@ -1,11 +1,12 @@
 'use client'
 
-import useSession from '@/hooks/useSessions' // Assuming this hook fetches session data
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { ThemeToggle } from '@/components/theme-toggle'
-import { ChevronRight, User, Shield, Bell, Bookmark, Globe, Moon, Mail, Users, InfoIcon as PrivacyIcon, FileText } from 'lucide-react'
-import LogoutButton from '@/components/logout'
-import LoadingOverlay from '@/components/loading-overlay'
+// import { useEffect, useState } from 'react';
+import useSession from '@/hooks/useSessions'; // Assuming this hook fetches session data
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { ThemeToggle } from '@/components/theme-toggle';
+import { ChevronRight, User, Shield, Bell, Bookmark, Globe, Moon, Mail, Users, InfoIcon as PrivacyIcon, FileText } from 'lucide-react';
+import LogoutButton from '@/components/logout';
+import LoadingOverlay from '@/components/loading-overlay';
 
 const settingsGroups = [
   {
@@ -33,14 +34,19 @@ const settingsGroups = [
       { icon: FileText, label: 'Terms of Service (EULA)', href: '/settings/terms' },
     ],
   },
-]
+];
 
 export default function SettingsPage() {
-  const session = useSession() // Get session data, which includes user info
+  const { session, loading } = useSession(); // Get session data, which includes user info
+
+  // Check if session is loading or not available
+  if (loading) {
+    return <LoadingOverlay />;
+  }
 
   if (!session || !session.user) {
-    // Optionally, you could add a loading state here or redirect if no session is available
-    return <LoadingOverlay />
+    // If no session or user, optionally redirect to login or show a message
+    return <LoadingOverlay />;
   }
 
   return (
@@ -53,12 +59,14 @@ export default function SettingsPage() {
           <div className="flex items-center gap-4 mb-8">
             <Avatar className="w-16 h-16">
               {/* Dynamically set avatar */}
-              <AvatarImage src={session.user?.user_metadata?.avatar_url  || '/placeholder.svg'} />
+              <AvatarImage
+                src={session.user?.user_metadata?.avatar_url || '/placeholder.svg'}
+              />
               <AvatarFallback />
             </Avatar>
             <div>
               {/* Dynamically set user's name and email */}
-              <h2 className="text-xl font-semibold">{session?.user?.user_metadata?.name}</h2>
+              <h2 className="text-xl font-semibold">{session.user?.user_metadata?.name}</h2>
               <p className="text-gray-500 dark:text-gray-400">{session.user.email}</p>
             </div>
           </div>
@@ -101,9 +109,11 @@ export default function SettingsPage() {
               </div>
             ))}
           </div>
+
+          {/* Logout Button */}
           <LogoutButton />
         </div>
       </div>
     </div>
-  )
+  );
 }

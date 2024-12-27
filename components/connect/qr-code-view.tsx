@@ -11,10 +11,9 @@ import useSession from '@/hooks/useSessions'; // Assuming this is the correct im
 import { Skeleton } from '@/components/ui/skeleton'; // Import Skeleton component
 
 export function QRCodeView() {
-  // const [copied, setCopied] = useState(false);
   const { toast } = useToast();
-  const session = useSession(); // Get session data using your custom hook
-  const qrValue = session?.user.email as string; // This would be dynamic in a real app
+  const { session } = useSession(); // Get session data using your custom hook
+  const qrValue = session?.user?.email || ''; // This would be dynamic in a real app
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -26,11 +25,11 @@ export function QRCodeView() {
   // Handle clipboard copy
   const handleCopy = async () => {
     try {
+      if (!qrValue) return; // Return if there's no value to copy
       await navigator.clipboard.writeText(qrValue);
       toast({
         description: "QR code link copied to clipboard",
       });
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       toast({
         variant: "destructive",
@@ -41,20 +40,24 @@ export function QRCodeView() {
 
   // Handle sharing the QR code
   const handleShare = async () => {
-    if (navigator.share) {
+    if (navigator.share && qrValue) {
       try {
         await navigator.share({
           title: 'Add me on Chat App',
           text: 'Scan my QR code to add me',
           url: qrValue,
         });
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (error) {
         toast({
           variant: "destructive",
           description: "Failed to share",
         });
       }
+    } else {
+      toast({
+        variant: "destructive",
+        description: "Sharing not supported or QR code missing",
+      });
     }
   };
 
@@ -66,8 +69,22 @@ export function QRCodeView() {
       link.download = 'my-qr-code.png';
       link.href = canvas.toDataURL();
       link.click();
+    } else {
+      toast({
+        variant: "destructive",
+        description: "Failed to find the QR code canvas",
+      });
     }
   };
+
+  // Handle case where there's no session
+  if (loading || !session) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <Skeleton className="w-32 h-32 rounded-full" />
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col min-h-full bg-gray-50 dark:bg-gray-900">
@@ -101,7 +118,11 @@ export function QRCodeView() {
                 <div>
                   {/* User Name */}
                   <h2 className="font-semibold">
-                    {loading ? <Skeleton className="w-32 h-6" /> : session?.user?.user_metadata?.name || 'Username'}
+                    {loading ? (
+                      <Skeleton className="w-32 h-6" />
+                    ) : (
+                      session?.user?.user_metadata?.name || 'Username'
+                    )}
                   </h2>
                   {/* User Status */}
                   <span className="text-sm text-gray-500 dark:text-gray-400">
@@ -117,6 +138,7 @@ export function QRCodeView() {
                   size={200}
                   level="H"
                   className="dark:bg-white p-2 rounded-lg"
+                  alt="QR code to add the user"
                 />
               </div>
 
@@ -169,7 +191,7 @@ export function QRCodeView() {
               size="lg"
               className="w-full"
             >
-            <ScanLine className="mr-2 h-5 w-5" />
+              <ScanLine className="mr-2 h-5 w-5" />
               Scan QR Code
             </Button>
           </div>

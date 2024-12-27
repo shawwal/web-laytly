@@ -2,7 +2,7 @@ import { Metadata } from 'next'
 import { QRCodeView } from '@/components/connect/qr-code-view'
 
 export const metadata: Metadata = {
-  title: 'My QR Code | Laytly App',
+  title: 'My QR Code',
   description: 'Share your QR code with friends',
 }
 

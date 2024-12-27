@@ -3,7 +3,7 @@ import { Metadata } from 'next'
 import React from 'react';
 
 export const metadata: Metadata = {
-  title: 'Profile | Laytly App',
+  title: 'Profile',
   description: 'View and edit your profile',
 }
 

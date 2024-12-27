@@ -1,25 +1,36 @@
-import { redirect } from 'next/navigation'
-import { Metadata } from 'next'
-import { ContactList } from '@/components/chat/contact-list'
-import { ChatView } from '@/components/chat/chat-view'
-import { ChatProvider } from '@/contexts/chat-context'
-import { getSupabaseToken } from '@/utils/tokenUtils' // Import the async token check function
+'use client';
 
-export const metadata: Metadata = {
-  title: 'Laytly App',
-  description: 'Sharing your life lately',
-}
+import { useEffect, useState } from 'react';
+import { redirect } from 'next/navigation';
+import { ContactList } from '@/components/chat/contact-list';
+import { ChatView } from '@/components/chat/chat-view';
+import { ChatProvider } from '@/contexts/chat-context';
+import useSession from '@/hooks/useSessions'; // Import the custom hook
+import LoadingOverlay from '@/components/loading-overlay';
 
-export default async function Page() {
-  // Check if the user is authenticated by verifying the Supabase token
-  const token = await getSupabaseToken() // Await the token check
+export default function Page() {
+  const { session, loading } = useSession(); // Use the custom session hook
+  const [isRedirecting, setIsRedirecting] = useState(false); // To prevent multiple redirects
+  const [mounted, setMounted] = useState(false); // Track mounting status
 
-  // If no token is found, redirect to the login page
-  if (!token) {
-    redirect('/auth/login')
+  useEffect(() => {
+    setMounted(true); // After first mount, we can perform client-specific logic
+  }, []);
+
+  useEffect(() => {
+    if (!loading && !session && mounted) {
+      // Only perform the redirect on the client side after hydration
+      setIsRedirecting(true);
+      redirect('/auth/login');
+    }
+  }, [loading, session, mounted]);
+
+  // While session is loading or redirecting, show loading message
+  if (loading || isRedirecting || !mounted) {
+    return <LoadingOverlay />;
   }
 
-  // If token exists, render the page content
+  // If session exists, render the page content
   return (
     <ChatProvider>
       <div className="flex h-full bg-white dark:bg-gray-900">
@@ -27,5 +38,5 @@ export default async function Page() {
         <ChatView />
       </div>
     </ChatProvider>
-  )
+  );
 }
