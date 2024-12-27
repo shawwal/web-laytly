@@ -1,7 +1,8 @@
-import { Search } from 'lucide-react'
+import { Search, UserPlus, Users } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { ContactCard } from '@/components/settings/contact-card'
 import { alphabet } from '@/utils/alphabet'
+import { Button } from "@/components/ui/button"
 
 interface Contact {
   id: string
@@ -11,11 +12,13 @@ interface Contact {
 }
 interface ContactListProps {
   contacts: Contact[]
-  search: string
+  search: string,
+  onNewContact?: () => void
+  onNewGroup?: () => void
   setSearch: React.Dispatch<React.SetStateAction<string>>
 }
 
-export const ContactList = ({ contacts, search, setSearch }: ContactListProps) => {
+export const ContactList = ({ contacts, search, setSearch, onNewContact, onNewGroup }: ContactListProps) => {
   // Filter contacts based on search
   const filteredContacts = contacts.filter(contact =>
     contact.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -24,7 +27,7 @@ export const ContactList = ({ contacts, search, setSearch }: ContactListProps) =
 
   // Group contacts by alphabet
   const groupedContacts = alphabet.reduce((acc, letter) => {
-    const letterContacts = filteredContacts.filter(contact => 
+    const letterContacts = filteredContacts.filter(contact =>
       contact.name.toUpperCase().startsWith(letter)
     )
     if (letterContacts.length > 0) {
@@ -46,6 +49,29 @@ export const ContactList = ({ contacts, search, setSearch }: ContactListProps) =
             className="pl-9 bg-white dark:bg-gray-800"
           />
         </div>
+
+
+        <div className="bg-white dark:bg-gray-800 rounded-lg divide-y dark:divide-gray-700 mr-6">
+          <div className="p-4 flex items-center gap-4">
+            <div className="h-12 w-12 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
+              <UserPlus className="h-6 w-6" />
+            </div>
+            <div>
+              <h3 className="font-medium">New Contact</h3>
+              <p className="text-sm text-gray-500">Add a contact to start chatting</p>
+            </div>
+          </div>
+          <div className="p-4 flex items-center gap-4">
+            <div className="h-12 w-12 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
+              <Users className="h-6 w-6" />
+            </div>
+            <div>
+              <h3 className="font-medium">New Group</h3>
+              <p className="text-sm text-gray-500">Create a group to share ideas</p>
+            </div>
+          </div>
+        </div>
+
 
         {/* Grouped Contacts */}
         <div className="relative flex">
