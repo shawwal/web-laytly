@@ -5,7 +5,7 @@ import { redirect } from 'next/navigation';
 import { ContactList } from '@/components/chat/contact-list';
 import { ChatView } from '@/components/chat/chat-view';
 import { ChatProvider } from '@/contexts/chat-context';
-import useSession from '@/hooks/useSessions'; // Import the custom hook
+import useSession from '@/hooks/useSession'; // Import the custom hook
 import LoadingOverlay from '@/components/loading-overlay';
 
 export default function Page() {

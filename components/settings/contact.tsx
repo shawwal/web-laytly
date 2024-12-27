@@ -2,7 +2,6 @@ import { Search, UserPlus, Users } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { ContactCard } from '@/components/settings/contact-card'
 import { alphabet } from '@/utils/alphabet'
-import { Button } from "@/components/ui/button"
 
 interface Contact {
   id: string

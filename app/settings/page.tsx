@@ -1,7 +1,7 @@
 'use client'
 
 // import { useEffect, useState } from 'react';
-import useSession from '@/hooks/useSessions'; // Assuming this hook fetches session data
+import useSession from '@/hooks/useSession'; // Assuming this hook fetches session data
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { ChevronRight, User, Shield, Bell, Bookmark, Globe, Moon, Mail, Users, InfoIcon as PrivacyIcon, FileText } from 'lucide-react';

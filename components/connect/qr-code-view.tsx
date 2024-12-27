@@ -7,7 +7,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Search, Copy, Share2, Download, QrCode, ScanLine } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { useToast } from '@/components/ui/use-toast';
-import useSession from '@/hooks/useSessions'; // Assuming this is the correct import for your useSession hook
+import useSession from '@/hooks/useSession'; // Assuming this is the correct import for your useSession hook
 import { Skeleton } from '@/components/ui/skeleton'; // Import Skeleton component
 
 export function QRCodeView() {

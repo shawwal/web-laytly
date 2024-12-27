@@ -3,7 +3,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton'; // Import Skeleton component
-import useSession from '@/hooks/useSessions'; // Your useSession hook
+import useSession from '@/hooks/useSession'; // Your useSession hook
 import Link from 'next/link';
 import LoadingOverlay from '@/components/loading-overlay'; // Loading overlay component to match SettingsPage style
 

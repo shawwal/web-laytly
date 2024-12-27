@@ -8,7 +8,7 @@ import { usePathname } from 'next/navigation'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
-import useSession from '@/hooks/useSessions'; // Import custom hook for session
+import useSession from '@/hooks/useSession'; // Import custom hook for session
 
 const navItems = [
   {
