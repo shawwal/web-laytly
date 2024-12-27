@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { useState } from 'react'
 import { ContactList } from '@/components/settings/contact'
 
-const contacts = [
+const friends = [
   { id: '1', name: 'Aaron Tan', phone: '091234567', avatar: 'https://i.pravatar.cc/150?u=aaron' },
   { id: '2', name: 'Amelia Lim', phone: '081234570', avatar: 'https://i.pravatar.cc/150?u=amelia' },
   { id: '3', name: 'Alvin Chua', phone: '074321987', avatar: 'https://i.pravatar.cc/150?u=alvin' },
@@ -18,21 +18,22 @@ const contacts = [
   { id: '9', name: 'Catherine Koh', phone: '098876432', avatar: 'https://i.pravatar.cc/150?u=catherine' },
 ]
 
-export default function ContactsPage() {
+export default function FriendListPage() {
   const [search, setSearch] = useState('')
 
   return (
     <div className="min-h-full bg-gray-50 dark:bg-gray-900">
       <div className="flex items-center gap-4 p-4 border-b bg-white dark:bg-gray-800">
         <Button variant="ghost" size="icon" asChild>
-          <Link href="/settings">
+          <Link href="/dashboard">
             <ChevronLeft className="h-5 w-5" />
           </Link>
         </Button>
-        <h1 className="text-lg font-semibold">Contact List</h1>
-        <span className="text-sm text-gray-500">450 contacts</span>
+        <h1 className="text-lg font-semibold">Friends List</h1>
+        <span className="text-sm text-gray-500">{friends.length} friends</span>
       </div>
-      <ContactList contacts={contacts} search={search} setSearch={setSearch} />
+
+      <ContactList contacts={friends} search={search} setSearch={setSearch} />
     </div>
   )
 }
