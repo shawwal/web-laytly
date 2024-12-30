@@ -60,12 +60,18 @@ export function ContactList() {
   }
 
   return (
-    <div className={cn("flex-1 md:flex-none md:w-80 border-r dark:border-gray-800", isMobileMessageView ? 'hidden md:block' : 'block')}>
+    <div
+      className={cn(
+        "flex-1 md:flex-none md:w-80 border-r dark:border-gray-800",
+        isMobileMessageView ? 'hidden md:block' : 'block',
+        "overflow-hidden" // Added bottom padding for mobile view to avoid navigation bar overlap
+      )}
+    >
       <div className="flex flex-col h-full">
         <div className="p-4 border-b dark:border-gray-800">
-          <h2 className="text-lg font-semibold">Chats</h2>
+          <h2 className="text-lg font-semibold">Messages</h2>
         </div>
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto space-y-4 pb-16 sm:pb-0">
           {sortedContacts.map((contact) => (
             <button
               key={contact.id}
