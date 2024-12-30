@@ -97,7 +97,7 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
           className="object-cover"
         />
         <label className="absolute right-4 top-4 cursor-pointer">
-          <div className="rounded-full bg-white/50 backdrop-blur-sm p-2 dark:bg-gray-900/50">
+          {/* <div className="rounded-full bg-white/50 backdrop-blur-sm p-2 dark:bg-gray-900/50">
             <Camera className="h-6 w-6" />
           </div>
           <input
@@ -106,7 +106,7 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
             className="hidden"
             onChange={handleBannerImageChange}
             disabled={isLoading}  // Disable input while uploading
-          />
+          /> */}
         </label>
       </div>
             {/* Profile Image */}
@@ -123,7 +123,7 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
             )}
           </div>
           <label className="absolute right-0 bottom-0 cursor-pointer">
-            <div className="rounded-full bg-white dark:bg-gray-800 p-2 shadow-lg">
+            {/* <div className="rounded-full bg-white dark:bg-gray-800 p-2 shadow-lg">
               <Camera className="h-5 w-5" />
             </div>
             <input
@@ -131,7 +131,7 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
               accept="image/*"
               className="hidden"
               onChange={onProfileImageChange}
-            />
+            /> */}
           </label>
         </div>
       </div>

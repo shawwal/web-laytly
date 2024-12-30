@@ -16,7 +16,7 @@ export default function PersonalDataPage() {
   const { currentProfile, loading, handleUpdateProfile } = useProfile()
   const { toast } = useToast()  // Initialize toast function
   const [profileImage, setProfileImage] = useState('/placeholder.svg')
-  const [bannerImage, setBannerImage] = useState('/placeholder.svg?height=200&width=600')
+  const [bannerImage, setBannerImage] = useState('/banner-bg.jpg')
   const [countryCode, setCountryCode] = useState('+60')
   const [fullName, setFullName] = useState('')
   const [username, setUsername] = useState('')
@@ -31,7 +31,7 @@ export default function PersonalDataPage() {
     email: currentProfile?.email || '',
     phone_number: currentProfile?.phone_number || '',
     avatar_url: currentProfile?.avatar_url || '/placeholder.svg',
-    banner_url: currentProfile?.banner_url || '/placeholder.svg?height=200&width=600',
+    banner_url: currentProfile?.banner_url || '/banner-bg.jpg)',
     country_code: currentProfile?.country_code || '+60'
   }
 
@@ -77,6 +77,8 @@ export default function PersonalDataPage() {
     }
   }
 
+  // console.log('currentProfile?.banner_url', currentProfile?.banner_url)
+
   const handleBannerImageUpdate = (newBannerUrl: string) => {
     setBannerImage(newBannerUrl);  // Update the state with the new banner image URL
   };
@@ -99,7 +101,7 @@ export default function PersonalDataPage() {
       }
     }
 
-    console.log('currentProfile?.banner_url', currentProfile?.banner_url)
+    // console.log('submitted current banner', currentProfile?.banner_url)
 
     const updatedProfile: Profile = {
       ...currentProfile,
