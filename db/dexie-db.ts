@@ -4,17 +4,17 @@ import Dexie, { Table } from 'dexie';
 // Define the structure of a profile in the local database
 export interface Profile {
   id: string;
-  username: string;
-  full_name: string;
-  avatar_url: string;
-  banner_url: string;
-  website: string;
-  phone_number: string;
+  username?: string;
+  full_name?: string;
+  avatar_url?: string;
+  banner_url?: string;
+  website?: string;
+  phone_number?: string;
   email: string;
-  expo_push_token: string;
-  storage_used: number;
-  total_storage: number;
-  updated_at: string;
+  expo_push_token?: string;
+  storage_used?: number;
+  total_storage?: number;
+  updated_at?: string;
 }
 
 class MyAppDatabase extends Dexie {

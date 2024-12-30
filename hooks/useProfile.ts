@@ -10,7 +10,6 @@ export const useProfile = () => {
   const { profiles, loading: profileLoading } = useProfiles();
   const updateProfile = useUpdateProfile();
   const [currentProfile, setCurrentProfile] = useState<Profile | null>(null);
-  console.log('session', session);
   useEffect(() => {
     if (sessionLoading || profileLoading) return; // Don't run logic if data is still loading
 
@@ -27,7 +26,7 @@ export const useProfile = () => {
       }
     }
   }, [session, profiles, sessionLoading, profileLoading]); // Re-run whenever session or profiles change
-  console.log('currentProfile', currentProfile);
+
   const handleUpdateProfile = async (updatedProfile: Profile) => {
     if (currentProfile && isProfileChanged(currentProfile, updatedProfile)) {
       try {

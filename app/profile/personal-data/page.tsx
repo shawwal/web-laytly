@@ -7,6 +7,7 @@ import { ProfileHeader } from '@/components/profile-header'
 import { ProfileFormFields } from '@/components/profile-form-fields'
 import { DeleteAccountDialog } from '@/components/delete-account-dialog'
 import LoadingOverlay from '@/components/loading-overlay'
+import { Profile } from '@/db/dexie-db'
 
 export default function PersonalDataPage() {
   const { currentProfile, loading, handleUpdateProfile } = useProfile()
@@ -21,9 +22,9 @@ export default function PersonalDataPage() {
   useEffect(() => {
     if (currentProfile) {
       setFullName(currentProfile.full_name || '')
-      setUsername(currentProfile.username)
+      setUsername(currentProfile.username || '')
       setEmail(currentProfile.email)
-      setPhone(currentProfile.phone_number)
+      setPhone(currentProfile.phone_number || '')
       setProfileImage(currentProfile.avatar_url || '/placeholder.svg')
       setBannerImage(currentProfile.banner_url || '/placeholder.svg?height=200&width=600')
     }
@@ -53,7 +54,19 @@ export default function PersonalDataPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    const updatedProfile = { ...currentProfile, full_name: fullName, username, phone_number: phone }
+    const updatedProfile: Profile = {
+      ...currentProfile,
+      full_name: fullName,
+      username,
+      phone_number: phone,
+      avatar_url: currentProfile?.avatar_url ?? '',
+      banner_url: currentProfile?.banner_url ?? '',
+      expo_push_token: currentProfile?.expo_push_token || '',
+      storage_used: currentProfile?.storage_used || 0,
+      website: currentProfile?.website || '',
+      id: currentProfile?.id ?? '',
+      email: currentProfile?.email ?? ''
+    }
     handleUpdateProfile(updatedProfile)
   }
 
