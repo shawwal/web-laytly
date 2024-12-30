@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-// /utils/supabase/chat.ts
 import { supabase } from '@/lib/supabase'; // Assuming Supabase client is set up
 import { Chat } from '@/models/chat'; // Assuming you have a Chat model
 
@@ -20,7 +18,9 @@ export const fetchChatsFromSupabase = async (sessionUserId: string): Promise<Cha
         user_id,
         last_message,
         timestamp,
-        is_group
+        is_group,
+        avatar_url,
+        name
       `)
       .or(`user_id.eq.${sessionUserId},friend_id.eq.${sessionUserId}`)
       .order('timestamp', { ascending: false });
@@ -44,7 +44,7 @@ export const fetchChatsFromSupabase = async (sessionUserId: string): Promise<Cha
           id: chat.id,
           name: chat.name || 'Group Chat',
           lastMessage: chat.last_message || 'No message',
-          timestamp: new Date(chat.timestamp).toISOString(),
+          timestamp: chat.timestamp ? new Date(chat.timestamp).toISOString() : '',
           unreadCount: 0,
           avatarUrl: chat.avatar_url || 'group.png',
           email: '',
@@ -94,7 +94,7 @@ export const fetchChatsFromSupabase = async (sessionUserId: string): Promise<Cha
           id: chat.id,
           name: userProfile.username || userProfile.email || 'Unknown',
           lastMessage: chat.last_message || 'No message',
-          timestamp: new Date(chat.timestamp).toISOString(),
+          timestamp: chat.timestamp ? new Date(chat.timestamp).toISOString() : '',
           unreadCount,
           avatarUrl: userProfile.avatar_url,
           email: userProfile.email,
@@ -164,7 +164,7 @@ export const fetchChatsFromSupabase = async (sessionUserId: string): Promise<Cha
           id: chat.id,
           name: chat.name || 'Group Chat',
           lastMessage: chat.last_message || 'No message',
-          timestamp: new Date(chat.timestamp).toISOString(),
+          timestamp: chat.timestamp ? new Date(chat.timestamp).toISOString() : '',
           unreadCount,
           avatarUrl: chat?.avatar_url || 'group.png',
           email: '',
@@ -178,14 +178,21 @@ export const fetchChatsFromSupabase = async (sessionUserId: string): Promise<Cha
       }
     }));
 
-    // Combine and sort individual and group chats
+    // Combine individual and group chats
     const allChats = [
       ...individualChats.filter(chat => chat !== null),
       ...groupChats.filter(chat => chat !== null)
     ];
 
+    // Remove duplicates by ensuring unique chat IDs
+    const uniqueChats = Array.from(
+      new Map(allChats.map(chat => [chat.id, chat])).values()
+    );
+
     // Sort by timestamp, descending (most recent first)
-    const sortedChats = allChats.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+    const sortedChats = uniqueChats
+      .filter(chat => chat.timestamp) // Ensure no empty timestamps
+      .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
     return sortedChats.map(chat => ({
       id: chat.id,
@@ -203,6 +210,7 @@ export const fetchChatsFromSupabase = async (sessionUserId: string): Promise<Cha
     return [];  // Return an empty array in case of error
   }
 };
+
 
 // Update a single chat in Supabase
 export const updateChatInSupabase = async (chat: Chat): Promise<void> => {

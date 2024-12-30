@@ -1,12 +1,13 @@
-// /components/ContactList.tsx
 'use client'
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useChat } from '@/contexts/chat-context';  // For setting active chat
 import { useChats } from '@/db/useChats';  // Importing the combined useChats hook
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton'; // Import the Skeleton component from ShadCN UI
+
+import { formatDistanceToNow } from 'date-fns';
 
 export function ContactList() {
   const [activeContactId, setActiveContactId] = useState<string>('');
@@ -17,6 +18,13 @@ export function ContactList() {
     setActiveContactId(contactId);
     setIsMobileMessageView(true);
   };
+
+  // Sorting contacts by the latest `lastMessageTime` (descending order)
+  const sortedContacts = useMemo(() => {
+    return contacts
+      .slice() // Create a shallow copy to avoid mutating the original array
+      .sort((a, b) => new Date(b.lastMessageTime).getTime() - new Date(a.lastMessageTime).getTime());
+  }, [contacts]);
 
   // Skeleton UI for loading state using ShadCN's Skeleton component
   if (loading) {
@@ -58,7 +66,7 @@ export function ContactList() {
           <h2 className="text-lg font-semibold">Chats</h2>
         </div>
         <div className="flex-1 overflow-y-auto">
-          {contacts.map((contact) => (
+          {sortedContacts.map((contact) => (
             <button
               key={contact.id}
               onClick={() => handleContactClick(contact.id)}
@@ -79,10 +87,7 @@ export function ContactList() {
                 <div className="flex justify-between items-baseline">
                   <h3 className="text-sm font-medium truncate">{contact.name}</h3>
                   <span className="text-xs text-gray-500 dark:text-gray-400">
-                    {new Date(contact.lastMessageTime).toLocaleTimeString([], {
-                      hour: '2-digit',
-                      minute: '2-digit',
-                    })}
+                    {formatDistanceToNow(new Date(contact.lastMessageTime), { addSuffix: true })}
                   </span>
                 </div>
                 <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
