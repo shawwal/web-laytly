@@ -84,6 +84,7 @@ export default function PersonalDataPage() {
         setBannerImage(reader.result as string)
       }
       reader.readAsDataURL(file)
+      console.log('file', file)
     }
   }
 
@@ -105,6 +106,8 @@ export default function PersonalDataPage() {
       }
     }
 
+    console.log('currentProfile?.banner_url', currentProfile?.banner_url)
+
     const updatedProfile: Profile = {
       ...currentProfile,
       full_name: fullName,
@@ -112,9 +115,6 @@ export default function PersonalDataPage() {
       phone_number: phone,
       avatar_url: currentProfile?.avatar_url ?? '',
       banner_url: currentProfile?.banner_url ?? '',
-      expo_push_token: currentProfile?.expo_push_token || '',
-      storage_used: currentProfile?.storage_used || 0,
-      website: currentProfile?.website || '',
       id: currentProfile?.id ?? '',
       email: currentProfile?.email ?? '',
       country_code: countryCode,  // Add country code to updated profile
