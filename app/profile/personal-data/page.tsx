@@ -8,9 +8,13 @@ import { ProfileFormFields } from '@/components/profile-form-fields'
 import { DeleteAccountDialog } from '@/components/delete-account-dialog'
 import LoadingOverlay from '@/components/loading-overlay'
 import { Profile } from '@/db/dexie-db'
+import { useToast } from '@/components/ui/use-toast'  // Import the useToast hook
+import checkUsernameExists from '@/utils/checkUsername'  // Import the function to check username availability
+import { syncProfileWithSupabase } from '@/db/profile-sync'  // Assuming the function is in this path
 
 export default function PersonalDataPage() {
   const { currentProfile, loading, handleUpdateProfile } = useProfile()
+  const { toast } = useToast()  // Initialize toast function
   const [profileImage, setProfileImage] = useState('/placeholder.svg')
   const [bannerImage, setBannerImage] = useState('/placeholder.svg?height=200&width=600')
   const [countryCode, setCountryCode] = useState('+60')
@@ -52,8 +56,24 @@ export default function PersonalDataPage() {
     }
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+  
+    // Check if the username has changed
+    if (username !== currentProfile?.username) {
+      const usernameError = await checkUsernameExists(username)
+  
+      if (usernameError) {
+        // If username already exists or there was an error, show the error toast and stop further execution
+        toast({
+          title: 'Username Error',
+          description: usernameError,
+          variant: 'destructive',
+        })
+        return
+      }
+    }
+  
     const updatedProfile: Profile = {
       ...currentProfile,
       full_name: fullName,
@@ -67,8 +87,40 @@ export default function PersonalDataPage() {
       id: currentProfile?.id ?? '',
       email: currentProfile?.email ?? ''
     }
-    handleUpdateProfile(updatedProfile)
+  
+    try {
+      // Call the function to sync the profile to Supabase
+      const syncSuccess = await syncProfileWithSupabase(updatedProfile.id)
+  
+      if (!syncSuccess) {
+        // Show error toast if sync fails (e.g., due to some issue in the syncing process)
+        toast({
+          title: 'Sync Failed',
+          description: 'There was an issue syncing your profile with Supabase. Please try again.',
+          variant: 'destructive',
+        })
+        return;  // Don't proceed if sync failed
+      }
+  
+      // Proceed with updating the profile locally if sync is successful
+      await handleUpdateProfile(updatedProfile)
+  
+      // Show success toast notification only if the sync and update were successful
+      toast({
+        title: 'Profile Updated',
+        description: 'Your personal data has been successfully updated.',
+        variant: 'default',
+      })
+    } catch (error: any) {
+      // Catch any errors that occurred during the process
+      toast({
+        title: 'Update Failed',
+        description: error.message || 'There was an issue updating your profile. Please try again later.',
+        variant: 'destructive',
+      })
+    }
   }
+  
 
   if (loading) {
     return <LoadingOverlay />

@@ -4,17 +4,22 @@ import { fetchProfileFromSupabase, updateProfileInSupabase } from '@/utils/supab
 import db from '@/db/dexie-db';
 
 // Sync profile from Supabase to local Dexie database
-export const syncProfileWithSupabase = async (userId: string) => {
+// Sync profile from Supabase to local Dexie database
+export const syncProfileWithSupabase = async (userId: string): Promise<boolean> => {
   try {
     const profileFromSupabase = await fetchProfileFromSupabase(userId);
-
-    // Store the profile locally in Dexie DB
-    await db.profiles.put(profileFromSupabase);
+    
+    // Simulate storing the profile locally in Dexie DB
+    await db.profiles.put(profileFromSupabase);  // Assuming you are using Dexie to store this locally
+    
+    return true;  // Indicate success
   } catch (error) {
-    console.error('Error syncing profile with Supabase:', error);
+    console.error('Error syncing updated profile to Supabase:', error);
+
+    // Return false to indicate failure
+    return false;
   }
 };
-
 // Sync updated profile from local Dexie DB to Supabase
 export const syncUpdatedProfileToSupabase = async (profile: Profile) => {
   try {
