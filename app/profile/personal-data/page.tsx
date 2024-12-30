@@ -18,21 +18,52 @@ export default function PersonalDataPage() {
   const [profileImage, setProfileImage] = useState('/placeholder.svg')
   const [bannerImage, setBannerImage] = useState('/placeholder.svg?height=200&width=600')
   const [countryCode, setCountryCode] = useState('+60')
-  const [fullName, setFullName] = useState(currentProfile?.full_name || '')
-  const [username, setUsername] = useState(currentProfile?.username || '')
-  const [email, setEmail] = useState(currentProfile?.email || '')
-  const [phone, setPhone] = useState(currentProfile?.phone_number || '')
+  const [fullName, setFullName] = useState('')
+  const [username, setUsername] = useState('')
+  const [email, setEmail] = useState('')
+  const [phone, setPhone] = useState('')
+  const [isFormChanged, setIsFormChanged] = useState(false) // Track if form has been changed
 
+  const initialProfile = {
+    full_name: currentProfile?.full_name || '',
+    username: currentProfile?.username || '',
+    email: currentProfile?.email || '',
+    phone_number: currentProfile?.phone_number || '',
+    avatar_url: currentProfile?.avatar_url || '/placeholder.svg',
+    banner_url: currentProfile?.banner_url || '/placeholder.svg?height=200&width=600',
+    country_code: currentProfile?.country_code || '+60'
+  }
+
+  // Populate the state with the current profile data initially
   useEffect(() => {
     if (currentProfile) {
       setFullName(currentProfile.full_name || '')
       setUsername(currentProfile.username || '')
-      setEmail(currentProfile.email)
+      setEmail(currentProfile.email || '')
       setPhone(currentProfile.phone_number || '')
       setProfileImage(currentProfile.avatar_url || '/placeholder.svg')
       setBannerImage(currentProfile.banner_url || '/placeholder.svg?height=200&width=600')
+      setCountryCode(currentProfile.country_code || '+60')
     }
   }, [currentProfile])
+
+  // Track if the form values are different from the initial profile data
+  useEffect(() => {
+    // Compare current form state with the initial profile values to check if there's any change
+    if (
+      fullName !== initialProfile.full_name ||
+      username !== initialProfile.username ||
+      email !== initialProfile.email ||
+      phone !== initialProfile.phone_number ||
+      profileImage !== initialProfile.avatar_url ||
+      bannerImage !== initialProfile.banner_url ||
+      countryCode !== initialProfile.country_code
+    ) {
+      setIsFormChanged(true)
+    } else {
+      setIsFormChanged(false)
+    }
+  }, [fullName, username, email, phone, profileImage, bannerImage, countryCode, initialProfile.full_name, initialProfile.username, initialProfile.email, initialProfile.phone_number, initialProfile.avatar_url, initialProfile.banner_url, initialProfile.country_code])
 
   const handleProfileImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -58,11 +89,11 @@ export default function PersonalDataPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-  
+
     // Check if the username has changed
     if (username !== currentProfile?.username) {
       const usernameError = await checkUsernameExists(username)
-  
+
       if (usernameError) {
         // If username already exists or there was an error, show the error toast and stop further execution
         toast({
@@ -73,7 +104,7 @@ export default function PersonalDataPage() {
         return
       }
     }
-  
+
     const updatedProfile: Profile = {
       ...currentProfile,
       full_name: fullName,
@@ -85,13 +116,14 @@ export default function PersonalDataPage() {
       storage_used: currentProfile?.storage_used || 0,
       website: currentProfile?.website || '',
       id: currentProfile?.id ?? '',
-      email: currentProfile?.email ?? ''
+      email: currentProfile?.email ?? '',
+      country_code: countryCode,  // Add country code to updated profile
     }
-  
+
     try {
       // Call the function to sync the profile to Supabase
       const syncSuccess = await syncProfileWithSupabase(updatedProfile.id)
-  
+
       if (!syncSuccess) {
         // Show error toast if sync fails (e.g., due to some issue in the syncing process)
         toast({
@@ -101,10 +133,10 @@ export default function PersonalDataPage() {
         })
         return;  // Don't proceed if sync failed
       }
-  
+
       // Proceed with updating the profile locally if sync is successful
       await handleUpdateProfile(updatedProfile)
-  
+
       // Show success toast notification only if the sync and update were successful
       toast({
         title: 'Profile Updated',
@@ -120,7 +152,6 @@ export default function PersonalDataPage() {
       })
     }
   }
-  
 
   if (loading) {
     return <LoadingOverlay />
@@ -154,6 +185,7 @@ export default function PersonalDataPage() {
           <Button
             type="submit"
             className="w-full bg-[#5BA4A4] hover:bg-[#4A8F8F] text-white"
+            disabled={!isFormChanged}  // Disable the button when no changes have been made
           >
             Save Changes
           </Button>

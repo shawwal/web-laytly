@@ -9,6 +9,7 @@ export interface Profile {
   avatar_url?: string;
   banner_url?: string;
   website?: string;
+  country_code?: string;
   phone_number?: string;
   email: string;
   expo_push_token?: string;
