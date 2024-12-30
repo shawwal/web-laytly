@@ -24,6 +24,7 @@ export default function PersonalDataPage() {
   const [phone, setPhone] = useState('')
   const [isFormChanged, setIsFormChanged] = useState(false) // Track if form has been changed
 
+  // console.log('currentProfile?.banner_url', currentProfile )
   const initialProfile = {
     full_name: currentProfile?.full_name || '',
     username: currentProfile?.username || '',
@@ -76,17 +77,9 @@ export default function PersonalDataPage() {
     }
   }
 
-  const handleBannerImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) {
-      const reader = new FileReader()
-      reader.onloadend = () => {
-        setBannerImage(reader.result as string)
-      }
-      reader.readAsDataURL(file)
-      console.log('file', file)
-    }
-  }
+  const handleBannerImageUpdate = (newBannerUrl: string) => {
+    setBannerImage(newBannerUrl);  // Update the state with the new banner image URL
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -160,10 +153,12 @@ export default function PersonalDataPage() {
   return (
     <div className="min-h-full bg-gray-50 dark:bg-gray-900">
       <ProfileHeader
+        userId={currentProfile?.id || ''}
         profileImage={profileImage}
         bannerImage={bannerImage}
+        currentBannerImage={bannerImage}
         onProfileImageChange={handleProfileImageChange}
-        onBannerImageChange={handleBannerImageChange}
+        onBannerImageUpdate={handleBannerImageUpdate}
         isLoading={loading}
       />
       <div className="max-w-2xl mx-auto px-4 pt-24 pb-8">
