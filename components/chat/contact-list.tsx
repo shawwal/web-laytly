@@ -1,48 +1,35 @@
+// /components/ContactList.tsx
 'use client'
 
-import { useEffect, useState } from 'react'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { getContacts, initDB } from '@/lib/db'
-import { useChat } from '@/contexts/chat-context'
-import { cn } from '@/lib/utils'
-
-interface Contact {
-  id: string
-  name: string
-  avatar: string
-  lastMessage: string
-  lastMessageTime: number
-  unreadCount: number
-}
+import { useState } from 'react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useChat } from '@/contexts/chat-context';  // For setting active chat
+import { useChats } from '@/db/useChats';  // Importing the combined useChats hook
+import { cn } from '@/lib/utils';
 
 export function ContactList() {
-  const [contacts, setContacts] = useState<Contact[]>([])
-  const { 
-    activeContactId, 
-    setActiveContactId, 
-    isMobileMessageView, 
-    setIsMobileMessageView 
-  } = useChat()
-
-  useEffect(() => {
-    initDB().then(() => {
-      getContacts().then(setContacts)
-    })
-  }, [])
+  const [activeContactId, setActiveContactId] = useState<string>('');
+  const { contacts, loading, syncError } = useChats();  // Using the combined hook
+  const { isMobileMessageView, setIsMobileMessageView } = useChat();  // From the chat context
 
   const handleContactClick = (contactId: string) => {
-    setActiveContactId(contactId)
-    setIsMobileMessageView(true)
+    setActiveContactId(contactId);
+    setIsMobileMessageView(true);
+  };
+
+  if (loading) {
+    return <div>Loading chats...</div>;  // You can replace with a loading spinner
+  }
+
+  if (syncError) {
+    return <div>Error syncing chats: {syncError}</div>;  // Error state
   }
 
   return (
-    <div className={cn(
-      "flex-1 md:flex-none md:w-80 border-r dark:border-gray-800",
-      isMobileMessageView ? 'hidden md:block' : 'block'
-    )}>
+    <div className={cn("flex-1 md:flex-none md:w-80 border-r dark:border-gray-800", isMobileMessageView ? 'hidden md:block' : 'block')}>
       <div className="flex flex-col h-full">
         <div className="p-4 border-b dark:border-gray-800">
-          <h2 className="text-lg font-semibold">Messages</h2>
+          <h2 className="text-lg font-semibold">Chats</h2>
         </div>
         <div className="flex-1 overflow-y-auto">
           {contacts.map((contact) => (
@@ -55,7 +42,7 @@ export function ContactList() {
               )}
             >
               <Avatar>
-                <AvatarImage src={contact.avatar} />
+                <AvatarImage src={contact.avatar || '/default-avatar.png'} />
                 <AvatarFallback>{contact.name[0]}</AvatarFallback>
               </Avatar>
               <div className="flex-1 min-w-0 text-left">
@@ -82,6 +69,5 @@ export function ContactList() {
         </div>
       </div>
     </div>
-  )
+  );
 }
-

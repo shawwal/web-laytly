@@ -1,6 +1,6 @@
 // /utils/supabase/profile.ts
 import { supabase } from '@/lib/supabase';
-import { Profile } from '@/db/dexie-db';
+import { Profile } from '@/models/profile';
 
 // Fetch profile from Supabase by userId
 export const fetchProfileFromSupabase = async (userId: string): Promise<Profile> => {

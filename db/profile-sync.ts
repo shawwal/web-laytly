@@ -1,7 +1,7 @@
 // /db/profile-sync.ts
-import { Profile } from '@/db/dexie-db';
 import { fetchProfileFromSupabase, updateProfileInSupabase } from '@/utils/supabase/profile';
 import db from '@/db/dexie-db';
+import { Profile } from '@/models/profile';
 
 // Sync profile from Supabase to local Dexie database
 // Sync profile from Supabase to local Dexie database

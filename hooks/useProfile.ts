@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useProfiles, useUpdateProfile } from '@/db/dexie-hooks';
 import { syncProfileWithSupabase, syncUpdatedProfileToSupabase } from '@/db/profile-sync';
-import { Profile } from '@/db/dexie-db';
 import { isProfileChanged } from '@/utils/profile-utils';
 import useSession from '@/hooks/useSession';
+import { Profile } from '@/models/profile';
 
 export const useProfile = () => {
   const { session, loading: sessionLoading } = useSession(); // Assuming useSession returns session object

@@ -7,16 +7,16 @@ import { ProfileHeader } from '@/components/profile-header'
 import { ProfileFormFields } from '@/components/profile-form-fields'
 import { DeleteAccountDialog } from '@/components/delete-account-dialog'
 import LoadingOverlay from '@/components/loading-overlay'
-import { Profile } from '@/db/dexie-db'
 import { useToast } from '@/components/ui/use-toast'  // Import the useToast hook
 import checkUsernameExists from '@/utils/checkUsername'  // Import the function to check username availability
 import { syncProfileWithSupabase } from '@/db/profile-sync'  // Assuming the function is in this path
+import { Profile } from '@/models/profile'
 
 export default function PersonalDataPage() {
   const { currentProfile, loading, handleUpdateProfile } = useProfile()
   const { toast } = useToast()  // Initialize toast function
   const [profileImage, setProfileImage] = useState('/placeholder.svg')
-  const [bannerImage, setBannerImage] = useState('/banner-bg.jpg')
+  const [bannerImage, setBannerImage] = useState('/abstract-bg.jpg')
   const [countryCode, setCountryCode] = useState('+60')
   const [fullName, setFullName] = useState('')
   const [username, setUsername] = useState('')
@@ -31,7 +31,7 @@ export default function PersonalDataPage() {
     email: currentProfile?.email || '',
     phone_number: currentProfile?.phone_number || '',
     avatar_url: currentProfile?.avatar_url || '/placeholder.svg',
-    banner_url: currentProfile?.banner_url || '/banner-bg.jpg)',
+    banner_url: currentProfile?.banner_url || '/abstract-bg.jpg)',
     country_code: currentProfile?.country_code || '+60'
   }
 
