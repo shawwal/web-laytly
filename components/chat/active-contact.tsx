@@ -18,7 +18,11 @@ export function ActiveContact({ contact }: ActiveContactProps) {
       className="flex items-center gap-4 flex-1 hover:opacity-80 transition-opacity"
     >
       <Avatar className="h-10 w-10">
-        <AvatarImage src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/avatars/` + contact.avatar || '/default-avatar.png'} alt={contact.name} />
+        <AvatarImage 
+          src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/avatars/` + contact.avatar || '/default-avatar.png'} 
+          alt={contact.name}
+          className="object-cover w-full h-full rounded-full" 
+        />
         <AvatarFallback>{contact.name[0]}</AvatarFallback>
       </Avatar>
       <div>
