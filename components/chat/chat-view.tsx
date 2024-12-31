@@ -2,7 +2,6 @@
 // @ts-nocheck
 
 import { useEffect, useState } from 'react'
-// import { MessageInput } from './message-input'
 import { addMessage, getMessages, initDB, getContacts } from '@/lib/db'
 import { useChat } from '@/contexts/chat-context'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -15,67 +14,67 @@ import Link from 'next/link'
 export function ChatView() {
   const [messages, setMessages] = useState<any[]>([])
   const [activeContact, setActiveContact] = useState<any>(null)
-  const { 
-    activeContactId, 
-    setActiveContactId,
-    isMobileMessageView,
-    setIsMobileMessageView
-  } = useChat()
+  const { activeContactId, isMobileMessageView, setIsMobileMessageView } = useChat()
 
+  // We are now only depending on activeContactId
   useEffect(() => {
     if (activeContactId) {
+      // Ensure the database is initialized
       initDB().then(() => {
-        getMessages(activeContactId).then(setMessages)
+        // Fetch the messages only if they are different
+        getMessages(activeContactId).then((newMessages) => {
+          // Only set messages if the newMessages is different (by length or content)
+          if (newMessages.length !== messages.length) {
+            setMessages(newMessages)
+          }
+        })
+
+        // Fetch the contact only if it's different
         getContacts().then(contacts => {
           const contact = contacts.find(c => c.id === activeContactId)
-          setActiveContact(contact)
+          if (contact && contact !== activeContact) {
+            setActiveContact(contact)
+          }
         })
       })
     }
-  }, [activeContactId])
-
+  }, [activeContactId]) // Only depend on activeContactId to avoid unnecessary re-renders
   const handleSend = async (content: string, audioBlob?: Blob) => {
-    // Ensure activeContactId is not null before proceeding
     if (!activeContactId) {
-      console.error("No active contact selected.");
-      return;
+      console.error("No active contact selected.")
+      return
     }
 
-    // Type guard: Ensure receiverId is a string, not null
-    const receiverId = activeContactId as string; // Explicit cast to string
+    const receiverId = activeContactId as string
 
     const optimisticMessage = {
       id: Date.now().toString(),
       content,
       senderId: 'me',
-      receiverId, // This is now a guaranteed string
+      receiverId,
       timestamp: Date.now(),
       status: 'sending' as const,
       audioUrl: audioBlob ? URL.createObjectURL(audioBlob) : undefined
-    };
+    }
 
-    // Update state optimistically
-    setMessages((prev) => [...prev, optimisticMessage]);
+    setMessages((prev) => [...prev, optimisticMessage])
 
-    await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate network delay
+    await new Promise((resolve) => setTimeout(resolve, 1000)) // Simulate network delay
 
-    // After the optimistic update, update the message to 'sent'
-    const sentMessage = { ...optimisticMessage, status: 'sent' as const };
+    const sentMessage = { ...optimisticMessage, status: 'sent' as const }
 
-    // Call the addMessage function with the correct type
-    await addMessage(sentMessage);
+    await addMessage(sentMessage)
 
-    // Update the state with the sent message
     setMessages((prev) =>
       prev.map((msg) =>
         msg.id === optimisticMessage.id ? sentMessage : msg
       )
-    );
-  };
+    )
+  }
 
   const handleBack = () => {
-    setIsMobileMessageView(false);
-  };
+    setIsMobileMessageView(false)
+  }
 
   if (!activeContactId || (!isMobileMessageView && window.innerWidth < 768)) {
     return (
@@ -84,7 +83,7 @@ export function ChatView() {
           Select a conversation to start messaging
         </p>
       </div>
-    );
+    )
   }
 
   return (
@@ -92,6 +91,7 @@ export function ChatView() {
       "flex flex-col flex-1 relative z-10",
       !isMobileMessageView && 'hidden md:flex'
     )}>
+      { console.log('activeContactId', activeContactId)}
       <div className="border-b dark:border-gray-800 p-4 flex items-center backdrop-blur-xl bg-white/50 dark:bg-gray-900/50">
         <Button
           variant="ghost"
@@ -121,5 +121,5 @@ export function ChatView() {
         <ChatTabs messages={messages} onSend={handleSend} />
       </div>
     </div>
-  );
+  )
 }

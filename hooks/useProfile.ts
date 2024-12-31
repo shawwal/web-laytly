@@ -1,3 +1,4 @@
+// hooks/useProfile.ts 
 import { useState, useEffect } from 'react';
 import { useProfiles, useUpdateProfile } from '@/db/dexie-hooks';
 import { syncProfileWithSupabase, syncUpdatedProfileToSupabase } from '@/db/profile-sync';

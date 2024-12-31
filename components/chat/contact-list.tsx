@@ -1,22 +1,20 @@
 'use client'
 
-import { useState, useMemo } from 'react';
+import { useMemo } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useChat } from '@/contexts/chat-context';  // For setting active chat
 import { useChats } from '@/db/useChats';  // Importing the combined useChats hook
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton'; // Import the Skeleton component from ShadCN UI
-
 import { formatDistanceToNow } from 'date-fns';
 
 export function ContactList() {
-  const [activeContactId, setActiveContactId] = useState<string>('');
+  const { activeContactId, setActiveContactId, isMobileMessageView, setIsMobileMessageView } = useChat();  // From the chat context
   const { contacts, loading, syncError } = useChats();  // Using the combined hook
-  const { isMobileMessageView, setIsMobileMessageView } = useChat();  // From the chat context
 
   const handleContactClick = (contactId: string) => {
-    setActiveContactId(contactId);
-    setIsMobileMessageView(true);
+    setActiveContactId(contactId);  // Update global activeContactId from context
+    setIsMobileMessageView(true);  // Set mobile message view state
   };
 
   // Sorting contacts by the latest `lastMessageTime` (descending order)
@@ -75,7 +73,7 @@ export function ContactList() {
           {sortedContacts.map((contact) => (
             <button
               key={contact.id}
-              onClick={() => handleContactClick(contact.id)}
+              onClick={() => handleContactClick(contact.id)}  // Set active contact on click
               className={cn(
                 "flex items-center gap-3 p-4 w-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors",
                 activeContactId === contact.id && "bg-gray-100 dark:bg-gray-800"
