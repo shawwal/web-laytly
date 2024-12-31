@@ -1,11 +1,12 @@
 'use client'
 
 import { cn } from "@/lib/utils"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { LibraryView } from "./library-view"
 import { AlbumsView } from "./albums-view"
 import { MessageList } from "./message-list"
 import { MessageInput } from "./message-input"
+import useSession from "@/hooks/useSession"
 
 interface Tab {
   id: string
@@ -26,13 +27,28 @@ interface ChatTabsProps {
 
 export function ChatTabs({ messages, onSend }: ChatTabsProps) {
   const [activeTab, setActiveTab] = useState('chat')
+  const { session, isLoading } = useSession() as any;  // Destructure `isLoading` to check if the session is available
+
+  useEffect(() => {
+    if (session?.user?.id) {
+      // Ensure that we have the session and the user id before rendering
+    }
+  }, [session]); // React to session changes
 
   const renderContent = () => {
+    if (isLoading) {
+      return <div>Loading...</div>; // Show a loading state if session is still loading
+    }
+
     switch (activeTab) {
       case 'chat':
         return (
           <div className="flex flex-col h-full">
-            <MessageList messages={messages} />
+            {session?.user?.id ? (
+              <MessageList messages={messages} currentUserId={session.user.id} />
+            ) : (
+              <div>No user data available</div> // Show message if user is not found
+            )}
             <div className="p-4 pb-20 md:pb-4 space-y-4">
               {/* <div className="flex flex-wrap gap-2">
                 {["Sure thing!", "Sounds good!", "Take care!", "Absolutely!"].map((reply) => (

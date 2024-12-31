@@ -13,13 +13,20 @@ interface Message {
   id: string
   content: string
   senderId: string
-  timestamp: number
+  timestamp: string
   status: 'sending' | 'sent' | 'seen'
   images?: string[]
   audioUrl?: string
+  sender_id?: string
+  sender: {
+    id: string
+    username: string
+    email: string
+    avatar_url: string
+  }
 }
 
-export function MessageList({ messages }: { messages: Message[] }) {
+export function MessageList({ messages, currentUserId }: { messages: Message[], currentUserId: string }) {
   const bottomRef = useRef<HTMLDivElement>(null)
   const [galleryImages, setGalleryImages] = useState<string[]>([])
   const [galleryInitialIndex, setGalleryInitialIndex] = useState(0)
@@ -94,12 +101,12 @@ export function MessageList({ messages }: { messages: Message[] }) {
       </div>
     )
   }
-
+  // console.log('messages', messages)
   return (
     <>
       <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 space-y-4">
         {messages.map((message, index) => {
-          const isMe = message.senderId === 'me'
+          const isMe = message?.sender_id === currentUserId
           const showAvatar = !isMe && (!messages[index - 1] || messages[index - 1].senderId !== message.senderId)
 
           return (
@@ -110,14 +117,18 @@ export function MessageList({ messages }: { messages: Message[] }) {
                 isMe ? 'ml-auto flex-row-reverse' : ''
               )}
             >
-              {/* {showAvatar && !isMe && (
-                <Link href={`/user/${message.senderId}`}>
+              {/* Display Avatar only if the sender is different from the previous message's sender */}
+              {showAvatar && !isMe && (
+                <Link href={`/user/${message.sender.id}`}>
                   <Avatar className="w-6 h-6 mb-1">
-                    <AvatarImage src={`https://i.pravatar.cc/24?u=${message.senderId}`} alt="User avatar" />
-                    <AvatarFallback>{message.senderId[0].toUpperCase()}</AvatarFallback>
+                    <AvatarImage 
+                      src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/avatars/${message.sender.avatar_url}`} 
+                      alt={message.sender.username} 
+                    />
+                    <AvatarFallback>{message.sender.username[0].toUpperCase()}</AvatarFallback>
                   </Avatar>
                 </Link>
-              )} */}
+              )}
               {!showAvatar && !isMe && <div className="w-6" />}
               <div
                 className={cn(
@@ -176,4 +187,3 @@ export function MessageList({ messages }: { messages: Message[] }) {
     </>
   )
 }
-

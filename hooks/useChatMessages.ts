@@ -32,7 +32,8 @@ export function useChatMessages(params: ChatParams) {
           sender:profiles!messages_sender_id_fkey (
             id,
             username,
-            email
+            email,
+            avatar_url
           )
         `)
         .eq('chat_id', params.chat_id) // Ensure chat_id is valid
