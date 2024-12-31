@@ -32,7 +32,7 @@ export const fetchStatuses = async (userId: string, currentUserId: string) => {
       isFriend: friendsData.length > 0,
       isBlocked: blockedData.length > 0,
     };
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error fetching statuses:', error.message);
     return { isFriend: false, isBlocked: false };
   }
@@ -48,7 +48,7 @@ export const handleBlockUser = async (userId: string, currentUserId: string) => 
     if (error) throw error;
 
     return true;
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error blocking user:', error.message);
     return false;
   }
@@ -66,7 +66,7 @@ export const handleUnblockUser = async (userId: string, currentUserId: string) =
     if (error) throw error;
 
     return true;
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error unblocking user:', error.message);
     return false;
   }
@@ -84,7 +84,7 @@ export const checkFriendExists = async (userId: string, currentUserId: string) =
     if (error) throw error;
 
     return existingFriend.length > 0;
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error checking if friend exists:', error.message);
     return false;
   }
@@ -107,7 +107,7 @@ export const handleAddFriend = async (userId: string, currentUserId: string) => 
     if (error) throw error;
 
     return true;
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error adding friend:', error.message);
     return false;
   }
