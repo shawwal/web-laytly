@@ -15,7 +15,7 @@ export function ChatView() {
   const { activeContactId, activeName, activeAvatar, isMobileMessageView, setIsMobileMessageView } = useChat()
 
   // Fetch chat messages using the custom hook
-  const { messages, loading, fetchChatMessages } = useChatMessages({ chat_id: activeContactId });
+  const { messages, loading, fetchChatMessages } = useChatMessages({ chat_id: activeContactId ?? '' });
 
   // Fetch contact details when activeContactId changes
   useEffect(() => {

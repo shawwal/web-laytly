@@ -20,6 +20,7 @@ const tabs: Tab[] = [
 
 interface ChatTabsProps {
   messages: any[]
+  loading: boolean
   onSend: (content: string, audioBlob?: Blob, images?: File[]) => void
 }
 

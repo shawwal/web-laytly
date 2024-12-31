@@ -56,7 +56,7 @@ export const useMessage = (chatId: string) => {
         content: newMessage.trim(),
         timestamp: new Date().toISOString(),
         status: 'sending',
-        sender: { username: 'You', email: session?.user?.email || '' },
+        // sender: { username: 'You', email: session?.user?.email || '' },
       };
       const updatedMessages = [...currentMessages, optimisticMessage];
       setCurrentMessages(updatedMessages);
