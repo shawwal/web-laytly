@@ -82,7 +82,7 @@ export default function useChatMessages(params?: any) {
     try {
       // Remove 'msg-' prefix if it exists in the replyToId
       const cleanedReplyToId = replyToId ? replyToId.replace(/^msg-/, '') : null;
-      const validReplyToId = cleanedReplyToId && isValidUUID(cleanedReplyToId) ? cleanedReplyToId : null;
+      const validReplyToId = cleanedReplyToId && await isValidUUID(cleanedReplyToId) ? cleanedReplyToId : null;
 
       const messageData = {
         chat_id: forwardId || params.chat_id,
