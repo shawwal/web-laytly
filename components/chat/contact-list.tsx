@@ -7,6 +7,7 @@ import { useChats } from '@/db/useChats';  // Importing the combined useChats ho
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton'; // Import the Skeleton component from ShadCN UI
 import { formatDistanceToNow } from 'date-fns';
+import { checkMediaMessage } from '@/utils/messageUtils';
 
 export function ContactList() {
   const { 
@@ -21,7 +22,6 @@ export function ContactList() {
   const { contacts, loading, syncError } = useChats();  // Using the combined hook
 
   const handleContactClick = (contactId: string, name: string, avatar: string) => {
-    // Set the active chat information in the context
     setActiveContactId(contactId);  // Update global activeContactId from context
     setActiveName(name);
     setActiveAvatar(avatar);
@@ -99,14 +99,14 @@ export function ContactList() {
                 <AvatarFallback>{contact.name[0]}</AvatarFallback>
               </Avatar>
               <div className="flex-1 min-w-0 text-left">
-                <div className="flex justify-between items-baseline">
-                  <h3 className="text-sm font-medium truncate">{contact.name}</h3>
-                  <span className="text-xs text-gray-500 dark:text-gray-400">
+                <div className="flex justify-between items-baseline gap-2">
+                  <h3 className="text-sm font-medium truncate" style={{ maxWidth: 'calc(100% - 50px)' }}>{contact.name}</h3>
+                  <span className="text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">
                     {formatDistanceToNow(new Date(contact.lastMessageTime), { addSuffix: true })}
                   </span>
                 </div>
-                <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
-                  {contact.lastMessage}
+                <p className="text-sm text-gray-500 dark:text-gray-400 truncate max-w-full">
+                  {checkMediaMessage(contact.lastMessage)}
                 </p>
               </div>
               {contact.unreadCount > 0 && (
