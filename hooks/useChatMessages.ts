@@ -13,11 +13,20 @@ export function useChatMessages(params: ChatParams) {
 
   // Function to fetch chat messages from Supabase
   const fetchChatMessages = async (isOlderFetch = false) => {
+    // console.log('Fetched chat_id:', params.chat_id); // Log chat_id to debug
+
+    // Check if chat_id is valid (non-empty and non-null)
+    if (!params.chat_id || params.chat_id.trim() === '') {
+      // console.error('Invalid chat_id, skipping message fetch');
+      setLoading(false);
+      return;
+    }
+
+    setLoading(true); // Set loading state while fetching
+
+    const currentOffset = isOlderFetch ? messages.length : 0;
+
     try {
-      setLoading(true); // Set loading state while fetching
-
-      const currentOffset = isOlderFetch ? messages.length : 0;
-
       const { data, error } = await supabase
         .from('messages')
         .select(`
@@ -44,30 +53,39 @@ export function useChatMessages(params: ChatParams) {
         throw new Error('Error fetching chat messages: ' + error.message);
       }
 
-      // Optionally reverse the order if you want them in ascending order
+      // Reverse the messages to maintain order from the oldest to the newest
       const newMessages = data.reverse().map((message: any) => ({
         ...message,
         sender: message.sender || { username: 'Unknown User', email: 'unknown@example.com' },
       }));
 
-      // Update state with the new messages
-      setMessages(prevMessages => [...prevMessages, ...newMessages]);
+      // If we are fetching older messages, append them to the existing messages
+      setMessages(prevMessages => {
+        if (isOlderFetch) {
+          return [...newMessages, ...prevMessages]; // Prepend to keep newest at the bottom
+        }
+        return newMessages; // Replace messages with the latest fetched messages
+      });
 
       setLoading(false);
-      return newMessages;
     } catch (error) {
       console.error('Error fetching chat messages:', error);
       setLoading(false);
-      return [];
     }
   };
 
   // Effect to fetch initial messages when `chat_id` changes
   useEffect(() => {
-    if (params?.chat_id) {
+    // console.log('Chat ID updated:', params.chat_id); // Log chat_id updates
+
+    // Only fetch messages if the chat_id is valid
+    if (params?.chat_id?.trim()) {
+      setMessages([]); // Reset messages when switching chats
       fetchChatMessages(); // Fetch messages for the chat when the component mounts
+    } else {
+      // console.log('Skipping fetch due to invalid chat_id');
     }
-  }, [params?.chat_id]);
+  }, [params?.chat_id]); // Depend on `chat_id` to fetch new messages when it changes
 
   return { messages, loading, fetchChatMessages };
 }

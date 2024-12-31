@@ -64,12 +64,12 @@ export function MessageList({ messages, currentUserId }: { messages: Message[], 
     const remainingImages = totalImages - 4
 
     return (
-      <div 
+      <div
         className={cn(
           "grid gap-1 cursor-pointer",
           totalImages === 1 ? "grid-cols-1" :
-          totalImages === 2 ? "grid-cols-2" :
-          "grid-cols-2"
+            totalImages === 2 ? "grid-cols-2" :
+              "grid-cols-2"
         )}
         onClick={() => {
           setGalleryImages(images)
@@ -121,11 +121,13 @@ export function MessageList({ messages, currentUserId }: { messages: Message[], 
               {showAvatar && !isMe && (
                 <Link href={`/user/${message.sender.id}`}>
                   <Avatar className="w-6 h-6 mb-1">
-                    <AvatarImage 
-                      src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/avatars/${message.sender.avatar_url}`} 
-                      alt={message.sender.username} 
+                    <AvatarImage
+                      src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/avatars/${message.sender.avatar_url}`}
+                      alt={message.sender.username}
                     />
-                    <AvatarFallback>{message.sender.username[0].toUpperCase()}</AvatarFallback>
+                    <AvatarFallback>
+                      {message.sender.username ? message.sender.username[0].toUpperCase() : message.sender.email[0].toUpperCase()}
+                    </AvatarFallback>
                   </Avatar>
                 </Link>
               )}

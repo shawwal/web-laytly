@@ -2,7 +2,7 @@
 // @ts-nocheck
 
 import { useEffect, useState } from 'react'
-import { useChatMessages } from '@/hooks/useChatMessages' // Import the custom hook
+import { useChatMessages } from '@/hooks/useChatMessages'  // Import the custom hook
 import { useChat } from '@/contexts/chat-context'
 import { Button } from '@/components/ui/button'
 import { ChevronLeft } from 'lucide-react'
@@ -20,18 +20,22 @@ export function ChatView() {
   // Fetch contact details when activeContactId changes
   useEffect(() => {
     if (activeContactId) {
-      // Here you could use the same logic you used to get the contact from Supabase or Dexie DB
-      // For now, we'll just mock the contact fetching
+      // Fetch the contact details for the active chat.
       fetchContacts();
     }
+    // Clear previous messages when switching chats.
+    return () => {
+      // This ensures that when the activeContactId changes, previous messages are cleared.
+      fetchChatMessages(true);  // Calling with true to reset the messages on chat switch
+    };
   }, [activeContactId]);
 
+  // Fetch contact details for the active contact
   const fetchContacts = async () => {
-    // Replace this with logic to fetch contacts from Supabase or Dexie
-    // For now, we'll just simulate a contact for demonstration
+    // Replace this with actual logic to fetch the contact details, like from Supabase or Dexie
     setActiveContact({
       id: activeContactId,
-      name: activeName,  // Replace with dynamic data
+      name: activeName,
       avatar: activeAvatar
     });
   };
@@ -54,22 +58,23 @@ export function ChatView() {
       audioUrl: audioBlob ? URL.createObjectURL(audioBlob) : undefined
     };
 
-    // Update the UI optimistically
-    fetchChatMessages(true); // Fetch older messages (if any)
+    // Optimistically update the UI by calling fetchChatMessages to reflect new messages
+    fetchChatMessages(true);  // This will load older messages if any
 
-    await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate network delay
+    await new Promise((resolve) => setTimeout(resolve, 1000));  // Simulate network delay
 
-    // Update the message status to sent after the delay
+    // Update the message status to 'sent'
     const sentMessage = { ...optimisticMessage, status: 'sent' as const };
 
-    // You can sync this message with Supabase or Dexie here (if needed)
-    // After the message is added, re-fetch or update the state as needed
+    // Sync this message with your backend (Supabase or Dexie) if needed
+    // After syncing, re-fetch or update the state accordingly
   };
 
   const handleBack = () => {
     setIsMobileMessageView(false);
   };
 
+  // Render loading or empty state if no active contact is selected or on small screens
   if (!activeContactId || (!isMobileMessageView && window.innerWidth < 768)) {
     return (
       <div className="hidden md:flex flex-col flex-1 items-center justify-center text-center p-4">
