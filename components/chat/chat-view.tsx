@@ -2,7 +2,7 @@
 // @ts-nocheck
 
 import { useEffect, useState } from 'react'
-import { addMessage, getMessages, initDB, getContacts } from '@/lib/db'
+import { useChatMessages } from '@/hooks/useChatMessages' // Import the custom hook
 import { useChat } from '@/contexts/chat-context'
 import { Button } from '@/components/ui/button'
 import { ChevronLeft } from 'lucide-react'
@@ -11,38 +11,38 @@ import { ChatTabs } from '@/components/chat/chat-tabs'
 import { ActiveContact } from '@/components/chat/active-contact'
 
 export function ChatView() {
-  const [messages, setMessages] = useState<any[]>([])
   const [activeContact, setActiveContact] = useState<any>(null)
-  const { activeContactId, isMobileMessageView, setIsMobileMessageView } = useChat()
+  const { activeContactId, activeName, activeAvatar, isMobileMessageView, setIsMobileMessageView } = useChat()
 
+  // Fetch chat messages using the custom hook
+  const { messages, loading, fetchChatMessages } = useChatMessages({ chat_id: activeContactId });
+
+  // Fetch contact details when activeContactId changes
   useEffect(() => {
     if (activeContactId) {
-      initDB().then(() => {
-        // Fetch messages
-        getMessages(activeContactId).then((newMessages) => {
-          if (newMessages.length !== messages.length) {
-            setMessages(newMessages)
-          }
-        })
-
-        // Fetch contact
-        getContacts().then(contacts => {
-          const contact = contacts.find(c => c.id === activeContactId)
-          if (contact && contact !== activeContact) {
-            setActiveContact(contact)
-          }
-        })
-      })
+      // Here you could use the same logic you used to get the contact from Supabase or Dexie DB
+      // For now, we'll just mock the contact fetching
+      fetchContacts();
     }
-  }, [activeContactId]) // Only depend on activeContactId to avoid unnecessary re-renders
+  }, [activeContactId]);
+
+  const fetchContacts = async () => {
+    // Replace this with logic to fetch contacts from Supabase or Dexie
+    // For now, we'll just simulate a contact for demonstration
+    setActiveContact({
+      id: activeContactId,
+      name: activeName,  // Replace with dynamic data
+      avatar: activeAvatar
+    });
+  };
 
   const handleSend = async (content: string, audioBlob?: Blob) => {
     if (!activeContactId) {
-      console.error("No active contact selected.")
-      return
+      console.error("No active contact selected.");
+      return;
     }
 
-    const receiverId = activeContactId as string
+    const receiverId = activeContactId as string;
 
     const optimisticMessage = {
       id: Date.now().toString(),
@@ -52,26 +52,23 @@ export function ChatView() {
       timestamp: Date.now(),
       status: 'sending' as const,
       audioUrl: audioBlob ? URL.createObjectURL(audioBlob) : undefined
-    }
+    };
 
-    setMessages((prev) => [...prev, optimisticMessage])
+    // Update the UI optimistically
+    fetchChatMessages(true); // Fetch older messages (if any)
 
-    await new Promise((resolve) => setTimeout(resolve, 1000)) // Simulate network delay
+    await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate network delay
 
-    const sentMessage = { ...optimisticMessage, status: 'sent' as const }
+    // Update the message status to sent after the delay
+    const sentMessage = { ...optimisticMessage, status: 'sent' as const };
 
-    await addMessage(sentMessage)
-
-    setMessages((prev) =>
-      prev.map((msg) =>
-        msg.id === optimisticMessage.id ? sentMessage : msg
-      )
-    )
-  }
+    // You can sync this message with Supabase or Dexie here (if needed)
+    // After the message is added, re-fetch or update the state as needed
+  };
 
   const handleBack = () => {
-    setIsMobileMessageView(false)
-  }
+    setIsMobileMessageView(false);
+  };
 
   if (!activeContactId || (!isMobileMessageView && window.innerWidth < 768)) {
     return (
@@ -80,7 +77,7 @@ export function ChatView() {
           Select a conversation to start messaging
         </p>
       </div>
-    )
+    );
   }
 
   return (
@@ -100,8 +97,8 @@ export function ChatView() {
         {activeContact && <ActiveContact contact={activeContact} />}
       </div>
       <div className="flex-1 overflow-hidden flex flex-col">
-        <ChatTabs messages={messages} onSend={handleSend} />
+        <ChatTabs messages={messages} loading={loading} onSend={handleSend} />
       </div>
     </div>
-  )
+  );
 }

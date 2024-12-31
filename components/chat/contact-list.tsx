@@ -9,11 +9,14 @@ import { Skeleton } from '@/components/ui/skeleton'; // Import the Skeleton comp
 import { formatDistanceToNow } from 'date-fns';
 
 export function ContactList() {
-  const { activeContactId, setActiveContactId, isMobileMessageView, setIsMobileMessageView } = useChat();  // From the chat context
+  const { activeContactId, setActiveContactId, setActiveAvatar, setActiveName, isMobileMessageView, setIsMobileMessageView } = useChat();  // From the chat context
   const { contacts, loading, syncError } = useChats();  // Using the combined hook
 
-  const handleContactClick = (contactId: string) => {
+  const handleContactClick = (contactId: string, name: string, avatar: string) => {
+    // console.log('avatar', avatar)
     setActiveContactId(contactId);  // Update global activeContactId from context
+    setActiveName(name);
+    setActiveAvatar(avatar)
     setIsMobileMessageView(true);  // Set mobile message view state
   };
 
@@ -73,7 +76,7 @@ export function ContactList() {
           {sortedContacts.map((contact) => (
             <button
               key={contact.id}
-              onClick={() => handleContactClick(contact.id)}  // Set active contact on click
+              onClick={() => handleContactClick(contact.id, contact.name, contact.avatar)}  // Set active contact on click
               className={cn(
                 "flex items-center gap-3 p-4 w-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors",
                 activeContactId === contact.id && "bg-gray-100 dark:bg-gray-800"

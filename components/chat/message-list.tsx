@@ -110,14 +110,14 @@ export function MessageList({ messages }: { messages: Message[] }) {
                 isMe ? 'ml-auto flex-row-reverse' : ''
               )}
             >
-              {showAvatar && !isMe && (
+              {/* {showAvatar && !isMe && (
                 <Link href={`/user/${message.senderId}`}>
                   <Avatar className="w-6 h-6 mb-1">
                     <AvatarImage src={`https://i.pravatar.cc/24?u=${message.senderId}`} alt="User avatar" />
                     <AvatarFallback>{message.senderId[0].toUpperCase()}</AvatarFallback>
                   </Avatar>
                 </Link>
-              )}
+              )} */}
               {!showAvatar && !isMe && <div className="w-6" />}
               <div
                 className={cn(
