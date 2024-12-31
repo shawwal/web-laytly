@@ -6,15 +6,17 @@ import Link from 'next/link'
 interface ActiveContactProps {
   contact: {
     id: string,
+    friend_id: string;
     name: string,
     avatar: string,
   };
 }
 
 export function ActiveContact({ contact }: ActiveContactProps) {
+  console.log('contact', contact);
   return (
     <Link 
-      href={`/user/${contact.id}`}
+      href={`/user/${contact.friend_id}`}
       className="flex items-center gap-4 flex-1 hover:opacity-80 transition-opacity"
     >
       <Avatar className="h-10 w-10">

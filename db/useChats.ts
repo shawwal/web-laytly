@@ -19,7 +19,7 @@ export const useChats = () => {
       syncChats();
     }
   }, [session, sessionLoading, chats, syncChats]);  // Re-run on session change
-
+  // console.log('chats', chats);
   useEffect(() => {
     if (!chatsLoading && !syncing) {
       const mappedContacts = chats.map((chat) => ({
@@ -29,6 +29,7 @@ export const useChats = () => {
         lastMessage: chat.last_message || 'No messages yet',
         lastMessageTime: chat.timestamp ? new Date(chat.timestamp).getTime() : 0,
         unreadCount: 0,  // Unread count logic can be added later
+        friend_id: chat.friend_id,
       }));
       setContacts(mappedContacts);  // Set contacts for display
     }

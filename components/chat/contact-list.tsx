@@ -15,16 +15,18 @@ export function ContactList() {
     setActiveContactId, 
     setActiveAvatar, 
     setActiveName, 
+    setFriendId,
     isMobileMessageView, 
     setIsMobileMessageView 
   } = useChat();  // From the chat context
 
   const { contacts, loading, syncError } = useChats();  // Using the combined hook
 
-  const handleContactClick = (contactId: string, name: string, avatar: string) => {
+  const handleContactClick = (contactId: string, name: string, avatar: string, friendId: string) => {
     setActiveContactId(contactId);  // Update global activeContactId from context
     setActiveName(name);
     setActiveAvatar(avatar);
+    setFriendId(friendId);
     setIsMobileMessageView(true);  // Set mobile message view state
   };
 
@@ -81,10 +83,11 @@ export function ContactList() {
           <h2 className="text-lg font-semibold">Messages</h2>
         </div>
         <div className="flex-1 overflow-y-auto space-y-4 pb-16 sm:pb-0">
+          
           {sortedContacts.map((contact) => (
             <button
               key={contact.id}
-              onClick={() => handleContactClick(contact.id, contact.name, contact.avatar)}  // Set active contact on click
+              onClick={() => handleContactClick(contact.id, contact.name, contact.avatar, contact.friend_id)}  // Set active contact on click
               className={cn(
                 "flex items-center gap-3 p-4 w-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors",
                 activeContactId === contact.id && "bg-gray-100 dark:bg-gray-800"

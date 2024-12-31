@@ -10,6 +10,8 @@ interface ChatContextType {
   setActiveName: (id: string | null) => void
   activeAvatar: string | null
   setActiveAvatar: (name: string | null) => void
+  friendId: string | null
+  setFriendId: (id: string | null) => void
   isMobileMessageView: boolean
   setIsMobileMessageView: (value: boolean) => void
 }
@@ -21,6 +23,8 @@ const ChatContext = createContext<ChatContextType>({
   setActiveName: () => {},
   activeAvatar: null,
   setActiveAvatar: () => {},
+  friendId: null,
+  setFriendId: () => {},
   isMobileMessageView: false,
   setIsMobileMessageView: () => {},
 })
@@ -29,6 +33,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
   const [activeContactId, setActiveContactId] = useState<string | null>(null)
   const [activeName, setActiveName] = useState<string | null>(null)
   const [activeAvatar, setActiveAvatar] = useState<string | null>(null)
+  const [friendId, setFriendId] = useState<string | null>(null)
   const [isMobileMessageView, setIsMobileMessageView] = useState(false)
 
   return (
@@ -40,6 +45,8 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
         setActiveName,
         activeAvatar,
         setActiveAvatar,
+        friendId,
+        setFriendId,
         isMobileMessageView,
         setIsMobileMessageView
       }}

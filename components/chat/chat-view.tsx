@@ -12,7 +12,7 @@ import { ActiveContact } from '@/components/chat/active-contact'
 
 export function ChatView() {
   const [activeContact, setActiveContact] = useState<any>(null)
-  const { activeContactId, activeName, activeAvatar, isMobileMessageView, setIsMobileMessageView } = useChat()
+  const { activeContactId, activeName, activeAvatar, isMobileMessageView, friendId, setIsMobileMessageView } = useChat()
 
   // Fetch chat messages using the custom hook
   const { messages, loading, fetchChatMessages } = useChatMessages({ chat_id: activeContactId ?? '' });
@@ -35,6 +35,7 @@ export function ChatView() {
     // Replace this with actual logic to fetch the contact details, like from Supabase or Dexie
     setActiveContact({
       id: activeContactId,
+      friend_id: friendId,
       name: activeName,
       avatar: activeAvatar
     });
