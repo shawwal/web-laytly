@@ -68,4 +68,12 @@ export interface MonthGroup {
   month: string;
   items: MediaItem[];
 }
-
+export interface Album {
+  id: string;              // Unique identifier for the album
+  chat_id: string;         // ID associated with the chat
+  cover_image: string;     // Path to the cover image
+  created_at: string;      // Date when the album was created
+  updated_at: string;      // Date when the album was last updated
+  name: string;            // Name of the album
+  item_count: number;      // Number of items (photos or videos) in the album
+}
