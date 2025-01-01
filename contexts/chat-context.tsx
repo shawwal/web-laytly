@@ -12,6 +12,8 @@ interface ChatContextType {
   setActiveAvatar: (name: string | null) => void
   friendId: string | null
   setFriendId: (id: string | null) => void
+  isGroup: boolean,
+  setIsGroup: (value: boolean) => void,
   isMobileMessageView: boolean
   setIsMobileMessageView: (value: boolean) => void
 }
@@ -25,6 +27,8 @@ const ChatContext = createContext<ChatContextType>({
   setActiveAvatar: () => {},
   friendId: null,
   setFriendId: () => {},
+  isGroup: false,
+  setIsGroup: () => {},
   isMobileMessageView: false,
   setIsMobileMessageView: () => {},
 })
@@ -34,6 +38,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
   const [activeName, setActiveName] = useState<string | null>(null)
   const [activeAvatar, setActiveAvatar] = useState<string | null>(null)
   const [friendId, setFriendId] = useState<string | null>(null)
+  const [isGroup, setIsGroup] = useState(false)
   const [isMobileMessageView, setIsMobileMessageView] = useState(false)
 
   return (
@@ -47,6 +52,8 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
         setActiveAvatar,
         friendId,
         setFriendId,
+        isGroup,
+        setIsGroup,
         isMobileMessageView,
         setIsMobileMessageView
       }}

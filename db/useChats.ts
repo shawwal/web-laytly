@@ -30,6 +30,7 @@ export const useChats = () => {
         lastMessageTime: chat.timestamp ? new Date(chat.timestamp).getTime() : 0,
         unreadCount: 0,  // Unread count logic can be added later
         friend_id: chat.friend_id,
+        is_group: chat.is_group
       }));
       setContacts(mappedContacts);  // Set contacts for display
     }

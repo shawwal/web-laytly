@@ -7,6 +7,7 @@ import { AlbumsView } from "./albums-view"
 import { MessageList } from "./message-list"
 import { MessageInput } from "./message-input"
 import useSession from "@/hooks/useSession"
+import LoadingOverlay from "@/components/loading-overlay"
 
 interface Tab {
   id: string
@@ -37,9 +38,8 @@ export function ChatTabs({ messages, onSend }: ChatTabsProps) {
 
   const renderContent = () => {
     if (isLoading) {
-      return <div>Loading...</div>; // Show a loading state if session is still loading
+      return <LoadingOverlay />; // Show a loading state if session is still loading
     }
-
     switch (activeTab) {
       case 'chat':
         return (

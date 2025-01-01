@@ -3,7 +3,8 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation'; // Import the useRouter hook for navigation
 import { supabase } from '@/lib/supabase'; // Import your supabase client
-import LoadingOverlay from './loading-overlay';
+import LoadingOverlay from '@/components/loading-overlay';
+import { clearDexieDb } from '@/lib/dexieUtils'; // Import the utility function
 
 export default function LogoutButton() {
   const [loading, setLoading] = useState(false);
@@ -13,6 +14,9 @@ export default function LogoutButton() {
     setLoading(true);
 
     try {
+      // Clear all tables in Dexie DB using the utility function
+      await clearDexieDb();
+
       // Perform the logout using Supabase's signOut method
       await supabase.auth.signOut();
 
