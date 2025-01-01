@@ -77,3 +77,20 @@ export interface Album {
   name: string;            // Name of the album
   item_count: number;      // Number of items (photos or videos) in the album
 }
+export interface Sender {
+  id: string
+  email: string
+  username: string
+  avatar_url: string
+}
+export interface ChatMessage {
+  id: string
+  content: string
+  is_forwarded: boolean
+  original_message_id: string | null
+  reply_to: string | null
+  reply_to_id: string | null
+  sender: Sender
+  sender_id: string
+  timestamp: string
+}

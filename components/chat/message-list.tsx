@@ -1,32 +1,15 @@
-'use client'
-
-import { useEffect, useRef, useState } from 'react'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { cn } from '@/lib/utils'
-import Image from 'next/image'
+// components/chat/message-list.tsx
+import { useState, useEffect, useRef } from 'react'
+import { MessageItem } from './message-item'
 import { ImageGalleryModal } from './image-gallery-modal'
-import Link from 'next/link'
-import { Play, Pause } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { ChatMessage } from '@/types'
 
-interface Message {
-  id: string
-  content: string
-  senderId: string
-  timestamp: string
-  status: 'sending' | 'sent' | 'seen'
-  images?: string[]
-  audioUrl?: string
-  sender_id?: string
-  sender: {
-    id: string
-    username: string
-    email: string
-    avatar_url: string
-  }
+interface MessageListProps {
+  messages: ChatMessage[]
+  currentUserId: string
 }
 
-export function MessageList({ messages, currentUserId }: { messages: Message[], currentUserId: string }) {
+export function MessageList({ messages, currentUserId }: MessageListProps) {
   const bottomRef = useRef<HTMLDivElement>(null)
   const [galleryImages, setGalleryImages] = useState<string[]>([])
   const [galleryInitialIndex, setGalleryInitialIndex] = useState(0)
@@ -58,124 +41,25 @@ export function MessageList({ messages, currentUserId }: { messages: Message[], 
     }
   }
 
-  const renderImages = (images: string[], messageId: string) => {
-    const totalImages = images.length
-    const displayImages = images.slice(0, 4)
-    const remainingImages = totalImages - 4
-
-    return (
-      <div
-        className={cn(
-          "grid gap-1 cursor-pointer",
-          totalImages === 1 ? "grid-cols-1" :
-            totalImages === 2 ? "grid-cols-2" :
-              "grid-cols-2"
-        )}
-        onClick={() => {
-          setGalleryImages(images)
-          setGalleryInitialIndex(0)
-        }}
-      >
-        {displayImages.map((image, index) => (
-          <div
-            key={`${messageId}-${index}`}
-            className={cn(
-              "relative rounded-lg overflow-hidden",
-              index === 3 && remainingImages > 0 && "relative"
-            )}
-          >
-            <Image
-              src={image || '/placeholder.svg'}
-              alt="Shared image"
-              width={200}
-              height={200}
-              className="object-cover w-full h-full"
-            />
-            {index === 3 && remainingImages > 0 && (
-              <div className="absolute inset-0 bg-black/50 flex items-center justify-center text-white text-xl font-bold">
-                +{remainingImages}
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
-    )
+  const handleOpenGallery = (images: string[], index: number) => {
+    setGalleryImages(images)
+    setGalleryInitialIndex(index)
   }
-  // console.log('messages', messages)
+
   return (
     <>
       <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 space-y-4">
-        {messages.map((message, index) => {
-          const isMe = message?.sender_id === currentUserId
-          const showAvatar = !isMe && (!messages[index - 1] || messages[index - 1].senderId !== message.senderId)
-
+        {messages.map((message) => {
+          const isMe = message.sender_id === currentUserId
           return (
-            <div
+            <MessageItem
               key={message.id}
-              className={cn(
-                'flex items-end gap-2 max-w-[85%]',
-                isMe ? 'ml-auto flex-row-reverse' : ''
-              )}
-            >
-              {/* Display Avatar only if the sender is different from the previous message's sender */}
-              {showAvatar && !isMe && (
-                <Link href={`/user/${message.sender.id}`}>
-                  <Avatar className="w-6 h-6 mb-1">
-                    <AvatarImage
-                      src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/avatars/${message.sender.avatar_url}`}
-                      alt={message.sender.username}
-                    />
-                    <AvatarFallback>
-                      {message.sender.username ? message.sender.username[0].toUpperCase() : message.sender.email[0].toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                </Link>
-              )}
-              {!showAvatar && !isMe && <div className="w-6" />}
-              <div
-                className={cn(
-                  'rounded-2xl px-4 py-2',
-                  isMe
-                    ? 'bg-[#3B82F6] text-white rounded-br-sm'
-                    : 'bg-[#5BA4A4] text-white rounded-bl-sm'
-                )}
-              >
-                {message.images && message.images.length > 0 && renderImages(message.images, message.id)}
-                {message.audioUrl ? (
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8 rounded-full hover:bg-white/10"
-                      onClick={() => handleAudioPlayback(message.id, message.audioUrl!)}
-                    >
-                      {playingAudio === message.id ? (
-                        <Pause className="h-4 w-4" />
-                      ) : (
-                        <Play className="h-4 w-4" />
-                      )}
-                    </Button>
-                    <span>Voice message</span>
-                  </div>
-                ) : (
-                  <p>{message.content}</p>
-                )}
-                <div className={cn(
-                  "text-[10px] mt-1",
-                  isMe ? "text-blue-100" : "text-teal-100"
-                )}>
-                  {new Date(message.timestamp).toLocaleTimeString([], {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                  })}
-                  {isMe && (
-                    <span className="ml-2">
-                      {message.status === 'seen' ? '✓✓' : '✓'}
-                    </span>
-                  )}
-                </div>
-              </div>
-            </div>
+              message={message}
+              isMe={isMe}
+              playingAudio={playingAudio}
+              onToggleAudio={handleAudioPlayback}
+              onOpenGallery={handleOpenGallery}
+            />
           )
         })}
         <div ref={bottomRef} />
