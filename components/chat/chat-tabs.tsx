@@ -49,7 +49,7 @@ export function ChatTabs({ messages, onSend }: ChatTabsProps) {
             ) : (
               <div>No user data available</div> // Show message if user is not found
             )}
-            <div className="p-4 pb-20 md:pb-4 space-y-4">
+            <div className="p-4 pb-16 md:pb-4 space-y-4">
               {/* <div className="flex flex-wrap gap-2">
                 {["Sure thing!", "Sounds good!", "Take care!", "Absolutely!"].map((reply) => (
                   <button

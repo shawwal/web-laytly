@@ -103,7 +103,7 @@ export function ChatView() {
         </Button>
         {activeContact && <ActiveContact contact={activeContact} />}
       </div>
-      <div className="flex-1 overflow-y-auto flex flex-col w-full max-h-[calc(100vh_-_60px)]">
+      <div className="flex-1 overflow-hidden flex flex-col">
         <ChatTabs messages={messages} loading={loading} onSend={handleSend} />
       </div>
     </div>
