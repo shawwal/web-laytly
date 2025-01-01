@@ -52,7 +52,7 @@ export const fetchAlbumImages = async (albumId: string) => {
               .eq('id', item.id);
 
             console.log(`Item with ID ${item.id} deleted from DB due to thumbnail URL error.`);
-          } catch (deleteError) {
+          } catch (deleteError: any) {
             console.error(`Error deleting item ${item.id} from DB:`, deleteError.message);
           }
 
