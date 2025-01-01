@@ -117,7 +117,7 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
               <div className="w-full h-full rounded-full bg-gray-200 dark:bg-gray-700"></div>
             ) : (
               <Avatar className="w-32 h-32">
-                <AvatarImage src={profileImage} alt="Profile" />
+                <AvatarImage src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/avatars/` + profileImage} alt="Profile" />
                 <AvatarFallback />
               </Avatar>
             )}

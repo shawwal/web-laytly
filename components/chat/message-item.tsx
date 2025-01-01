@@ -3,7 +3,7 @@ import { AvatarDisplay } from './avatar-display'
 import { AudioPlayer } from './audio-player'
 import { ImageGallery } from './image-gallery'
 import { useChat } from '@/contexts/chat-context';
-import { stringToColor } from '@/utils/string-to-colour';
+import { stringToColor } from '@/utils/string-to-color';
 import { useTheme } from 'next-themes'
 // import { ChatMessage } from '@/types'
 
@@ -21,7 +21,7 @@ export function MessageItem({ message, isMe, playingAudio, onToggleAudio, onOpen
   const senderColor = stringToColor(sender); // Generate a color based on the sender's name/email
   const { isGroup } = useChat();
   const { theme }  = useTheme();
-  const senderBg = theme === 'light' ? '#B8BCC5'  :   '#26252A'
+
   return (
     <div className={`flex items-end gap-2 max-w-[85%] ${isMe ? 'ml-auto flex-row-reverse' : ''}`}>
       {showAvatar && !isMe && (
@@ -56,7 +56,7 @@ export function MessageItem({ message, isMe, playingAudio, onToggleAudio, onOpen
         ) : (
           <>
           {isGroup && !isMe && (
-            <p className="font-semibold white-space-pre-wrap line-clamp-1" style={{ color: senderColor }}>
+            <p className="font-semibold white-space-pre-wrap text-sm line-clamp-1" style={{ color: senderColor }}>
               {sender}
             </p>
           )}
