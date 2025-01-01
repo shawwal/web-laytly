@@ -89,7 +89,8 @@ export function ChatView() {
   return (
     <div className={cn(
       "flex flex-col flex-1 relative z-10",
-      !isMobileMessageView && 'hidden md:flex'
+      !isMobileMessageView && 'hidden md:flex',
+      "w-full"  // Ensure the container takes up full width
     )}>
       <div className="border-b dark:border-gray-800 p-4 flex items-center backdrop-blur-xl bg-white/50 dark:bg-gray-900/50">
         <Button
@@ -102,9 +103,10 @@ export function ChatView() {
         </Button>
         {activeContact && <ActiveContact contact={activeContact} />}
       </div>
-      <div className="flex-1 overflow-hidden flex flex-col">
+      <div className="flex-1 overflow-y-auto flex flex-col w-full max-h-[calc(100vh_-_60px)]">
         <ChatTabs messages={messages} loading={loading} onSend={handleSend} />
       </div>
     </div>
+
   );
 }

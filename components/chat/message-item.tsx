@@ -26,7 +26,7 @@ export function MessageItem({ message, isMe, playingAudio, onToggleAudio, onOpen
         />
       )}
       <div
-        className={`rounded-2xl px-4 py-2 ${isMe ? 'bg-[#3B82F6] text-white rounded-br-sm' : 'bg-[#5BA4A4] text-white rounded-bl-sm'}`}
+        className={`rounded-2xl px-4 py-2 max-w-[100%] ${isMe ? 'bg-[#3B82F6] text-white rounded-br-sm' : 'bg-[#5BA4A4] text-white rounded-bl-sm'}`}
       >
         {message.images && message.images.length > 0 && (
           <ImageGallery images={message.images} messageId={message.id} onOpenGallery={onOpenGallery} />
@@ -39,7 +39,7 @@ export function MessageItem({ message, isMe, playingAudio, onToggleAudio, onOpen
             onToggleAudio={onToggleAudio}
           />
         ) : (
-          <p>{message.content}</p>
+          <p className="break-words white-space-pre-wrap">{message.content}</p>
         )}
         <div className={`text-[10px] mt-1 ${isMe ? 'text-blue-100' : 'text-teal-100'}`}>
           {new Date(message.timestamp).toLocaleTimeString([], {
