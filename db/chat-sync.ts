@@ -4,10 +4,10 @@ import db from '@/db/dexie-db'; // Your Dexie instance
 import { Chat } from '@/models/chat'; // Your Chat model
 
 // Sync chats from Supabase to local Dexie database
-export const syncChatsWithSupabase = async (userId: string): Promise<boolean> => {
+export const syncChatsWithSupabase = async (): Promise<boolean> => {
   try {
     // Fetch the chats from Supabase
-    const chatsFromSupabase = await fetchChatsFromSupabase(userId);
+    const chatsFromSupabase = await fetchChatsFromSupabase();
 
     // Store chats locally in Dexie DB
     await db.chats.bulkPut(chatsFromSupabase); // Use bulkPut to insert or update multiple chats at once

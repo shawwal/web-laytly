@@ -5,8 +5,6 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { getContacts, initDB } from '@/lib/db'
 import { useChat } from '@/contexts/chat-context'
 import { cn } from '@/lib/utils'
-import { ChevronLeft } from 'lucide-react'
-import { Button } from '@/components/ui/button'
 
 interface Contact {
   id: string

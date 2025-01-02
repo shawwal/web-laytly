@@ -7,4 +7,5 @@ export interface Chat {
   is_group: boolean;  // Whether it's a group chat
   name: string;       // Chat name (either friend name or group name)
   avatar_url: string; // Avatar URL for the chat
+  unread_count: number; // Number of unread messages
 }

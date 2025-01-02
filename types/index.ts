@@ -93,4 +93,5 @@ export interface ChatMessage {
   sender: Sender
   sender_id: string
   timestamp: string
+  unreadCount: number
 }

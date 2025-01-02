@@ -4,11 +4,25 @@ import { Chat } from '@/models/chat'; // Assuming you have a Chat model
 /**
  * Fetches chat list for the current user including individual and group chats.
  * 
- * @param sessionUserId - User ID to fetch chats for.
  * @returns A list of chats including unread counts.
  */
-export const fetchChatsFromSupabase = async (sessionUserId: string): Promise<Chat[]> => {
+export const fetchChatsFromSupabase = async (): Promise<Chat[]> => {
   try {
+    // Fetch the current session
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    
+    if (sessionError || !session) {
+      console.error('Session not found or invalid:', sessionError);
+      return []; // Return an empty array if no session is found
+    }
+
+    const sessionUserId = session.user.id; // Extract user ID from the session
+
+    if (!sessionUserId) {
+      console.error('Session User ID is not available. Waiting for session...');
+      return []; // Return empty array or handle as per your requirement
+    }
+
     // Fetch individual chats where the user is either the sender or the receiver
     const { data: chatData, error: chatError } = await supabase
       .from('chats')
@@ -45,7 +59,7 @@ export const fetchChatsFromSupabase = async (sessionUserId: string): Promise<Cha
           name: chat.name || 'Group Chat',
           lastMessage: chat.last_message || 'No message',
           timestamp: chat.timestamp ? new Date(chat.timestamp).toISOString() : '',
-          unreadCount: 0,
+          unreadCount: chat.unread_count || 0,
           avatarUrl: chat.avatar_url || 'group.png',
           email: '',
           userId: sessionUserId,
@@ -83,7 +97,7 @@ export const fetchChatsFromSupabase = async (sessionUserId: string): Promise<Cha
           .eq('user_id', sessionUserId);
 
         if (unreadError) {
-          console.error('Error fetching unread count:', unreadError);
+          console.error('Error fetching unread count for individual chat:', unreadError);
           return null;
         }
 
@@ -178,16 +192,26 @@ export const fetchChatsFromSupabase = async (sessionUserId: string): Promise<Cha
       }
     }));
 
+    // Log individual and group chat data before combining
+    // console.log('Individual Chats:', individualChats);
+    // console.log('Group Chats:', groupChats);
+
     // Combine individual and group chats
     const allChats = [
       ...individualChats.filter(chat => chat !== null),
       ...groupChats.filter(chat => chat !== null)
     ];
 
+    // Log all chats before deduplication
+    // console.log('All Chats (Before Deduplication):', allChats);
+
     // Remove duplicates by ensuring unique chat IDs
     const uniqueChats = Array.from(
       new Map(allChats.map(chat => [chat.id, chat])).values()
     );
+
+    // Log unique chats
+    // console.log('Unique Chats:', uniqueChats);
 
     // Sort by timestamp, descending (most recent first)
     const sortedChats = uniqueChats

@@ -22,7 +22,6 @@ export function ContactList() {
   } = useChat();  // From the chat context
 
   const { contacts, loading, syncError } = useChats();  // Using the combined hook
-
   const handleContactClick = (contactId: string, name: string, avatar: string, friendId: string, isGroup: boolean) => {
     setActiveContactId(contactId);  // Update global activeContactId from context
     setActiveName(name);
@@ -45,7 +44,7 @@ export function ContactList() {
       <div className="flex-1 md:flex-none md:w-80 border-r dark:border-gray-800">
         <div className="flex flex-col h-full">
           <div className="p-4 border-b dark:border-gray-800">
-            <h2 className="text-lg font-semibold">Chats</h2>
+            <h2 className="text-lg font-semibold">Retrieving Messages ...</h2>
           </div>
           <div className="flex-1 overflow-y-auto space-y-4">
             {/* Skeleton Loader */}

@@ -19,7 +19,7 @@ export const useChats = () => {
       syncChats();
     }
   }, [session, sessionLoading, chats, syncChats]);  // Re-run on session change
-  // console.log('chats', chats);
+  
   useEffect(() => {
     if (!chatsLoading && !syncing) {
       const mappedContacts = chats.map((chat) => ({
@@ -28,7 +28,7 @@ export const useChats = () => {
         avatar: chat.avatar_url || '/default-avatar.png',
         lastMessage: chat.last_message || 'No messages yet',
         lastMessageTime: chat.timestamp ? new Date(chat.timestamp).getTime() : 0,
-        unreadCount: 0,  // Unread count logic can be added later
+        unreadCount: chat.unread_count || 0,  // Add the 'unreadCount' property with a default value of 0
         friend_id: chat.friend_id,
         is_group: chat.is_group
       }));

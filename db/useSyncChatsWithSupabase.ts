@@ -14,7 +14,7 @@ export const useSyncChatsWithSupabase = (userId: string) => {
     setSyncError(null);  // Reset any previous errors
 
     try {
-      await syncChatsWithSupabase(userId);  // Sync chats from Supabase
+      await syncChatsWithSupabase();  // Sync chats from Supabase
     } catch (error) {
       console.error('Error syncing chats with Supabase:', error);
       setSyncError('Failed to sync chats');
