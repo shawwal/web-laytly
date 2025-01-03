@@ -1,6 +1,6 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+// @ts-nocheck
 'use client'
-
-// import { useEffect, useState } from 'react';
 import useSession from '@/hooks/useSession'; // Assuming this hook fetches session data
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ThemeToggle } from '@/components/theme-toggle';

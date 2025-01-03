@@ -1,26 +1,29 @@
+'use client'
 import { useEffect, useState } from 'react';
 import useSession from '@/hooks/useSession';
 import db from '@/db/dexie-db';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useSyncChatsWithSupabase } from './useSyncChatsWithSupabase';
-import { Chat } from '@/models/chat'; // Import your Chat type
+import { Chat } from '@/models/chat';
 
 export const useChats = () => {
   const { session, loading: sessionLoading } = useSession();
-  const liveChats = useLiveQuery<Chat[]>(() => db.chats.toArray()); // Use type argument here
+  const liveChats = useLiveQuery<Chat[]>(() => db.chats.toArray());
   const [contacts, setContacts] = useState<any[]>([]);
   const { syncing, syncChats, syncError } = useSyncChatsWithSupabase(session?.user?.id || '');
+    const [dexieLoading, setDexieLoading] = useState<boolean>(true)
 
   useEffect(() => {
     if (sessionLoading) return;
 
-    if (liveChats && liveChats.length === 0 && session?.user?.id) { // Check if liveChats is defined
+    if (liveChats && liveChats.length === 0 && session?.user?.id) {
       syncChats();
     }
   }, [session, sessionLoading, syncChats, liveChats]);
 
   useEffect(() => {
-    if (liveChats) { // Check if liveChats is defined
+    if (liveChats) {
+        setDexieLoading(false)
       const mappedContacts = liveChats.map((chat) => ({
         id: chat.id,
         name: chat.name || 'Unnamed Chat',
@@ -32,8 +35,10 @@ export const useChats = () => {
         is_group: chat.is_group,
       }));
       setContacts(mappedContacts);
+    } else {
+        setDexieLoading(true)
     }
   }, [liveChats]);
 
-  return { contacts, loading: !liveChats || liveChats === undefined || liveChats.loading || syncing, syncError }; // Correct loading logic
+  return { contacts, loading: dexieLoading || syncing, syncError };
 };

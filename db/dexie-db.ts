@@ -1,3 +1,4 @@
+'use client'
 import Dexie, { Table } from 'dexie';
 import { Profile } from '@/models/profile';
 import { Message } from '@/models/message';
