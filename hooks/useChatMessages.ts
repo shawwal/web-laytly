@@ -54,7 +54,7 @@ export function useChatMessages(params: ChatParams) {
       }
 
       // Reverse the messages to maintain order from the oldest to the newest
-      const newMessages = data.reverse().map((message: any) => ({
+      const newMessages = data.map((message: any) => ({
         ...message,
         sender: message.sender || { username: 'Unknown User', email: 'unknown@example.com' },
       }));

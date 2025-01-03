@@ -104,7 +104,7 @@ export function ChatView() {
         {activeContact && <ActiveContact contact={activeContact} />}
       </div>
       <div className="flex-1 overflow-hidden flex flex-col">
-        <ChatTabs messages={messages} loading={loading} onSend={handleSend} />
+        <ChatTabs messages={messages} chatId={activeContactId} loading={loading} onSend={handleSend} />
       </div>
     </div>
 

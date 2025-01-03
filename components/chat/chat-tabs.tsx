@@ -8,6 +8,7 @@ import { MessageList } from "./message-list"
 import { MessageInput } from "./message-input"
 import useSession from "@/hooks/useSession"
 import LoadingOverlay from "@/components/loading-overlay"
+import { useChat } from "../chat-context"
 
 interface Tab {
   id: string
@@ -23,10 +24,11 @@ const tabs: Tab[] = [
 interface ChatTabsProps {
   messages: any[]
   loading: boolean
+  chatId: string
   onSend: (content: string, audioBlob?: Blob, images?: File[]) => void
 }
 
-export function ChatTabs({ messages, onSend }: ChatTabsProps) {
+export function ChatTabs({ messages, loading, chatId, onSend }: ChatTabsProps) {
   const [activeTab, setActiveTab] = useState('chat')
   const { session, isLoading } = useSession() as any;  // Destructure `isLoading` to check if the session is available
 
@@ -44,10 +46,10 @@ export function ChatTabs({ messages, onSend }: ChatTabsProps) {
       case 'chat':
         return (
           <div className="flex flex-col h-full">
-            {session?.user?.id ? (
+            {session?.user?.id && chatId && !loading ? (
               <MessageList messages={messages} currentUserId={session.user.id} />
             ) : (
-              <div>No user data available</div> // Show message if user is not found
+              null // Show message if user is not found
             )}
             <div className="p-4 pb-16 md:pb-4 space-y-4">
               {/* <div className="flex flex-wrap gap-2">
@@ -61,7 +63,9 @@ export function ChatTabs({ messages, onSend }: ChatTabsProps) {
                   </button>
                 ))}
               </div> */}
-              <MessageInput onSend={onSend} />
+               {session?.user?.id && chatId && !loading && (
+                <MessageInput onSend={onSend} />
+              )}
             </div>
           </div>
         )

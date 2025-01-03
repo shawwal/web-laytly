@@ -8,6 +8,18 @@ interface MessageListProps {
   currentUserId: string;
 }
 
+function ScrollToBottom() {
+  const elementRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (elementRef.current) {
+      elementRef.current.scrollIntoView({ behavior: 'instant' });
+    }
+  }, []);
+
+  return <div ref={elementRef} />;
+}
+
 export function MessageList({ messages, currentUserId }: MessageListProps) {
   const listRef = useRef<HTMLDivElement>(null);
   const [galleryImages, setGalleryImages] = useState<string[]>([]);
@@ -16,17 +28,15 @@ export function MessageList({ messages, currentUserId }: MessageListProps) {
   const audioRefs = useRef<{ [key: string]: HTMLAudioElement }>({});
   const [isListRendered, setIsListRendered] = useState(false);
 
+  // Reverse the messages so the newest one is at the bottom
+  const reversedMessages = [...messages].reverse();
+
   useEffect(() => {
-    // Check if messages are available, and scroll to the bottom only if they are
-    if (listRef.current && messages.length > 0) {
-      requestAnimationFrame(() => {
-        // Ensure the list scrolls to the bottom after rendering new messages
-        listRef.current!.scrollTop = listRef.current!.scrollHeight;
+    // Set a small timeout to simulate the message loading time, then set the list as rendered
+    if (messages.length > 0) {
+      setTimeout(() => {
         setIsListRendered(true);
-      });
-    } else if (messages.length === 0) {
-      // If no messages, we can just render the list immediately
-      setIsListRendered(true);
+      }, 300); // Adjust this timeout to suit your needs (500ms for example)
     }
   }, [messages]);
 
@@ -55,16 +65,23 @@ export function MessageList({ messages, currentUserId }: MessageListProps) {
     setGalleryInitialIndex(index);
   };
 
+  // Scroll to the bottom when the list is fully rendered
+  useEffect(() => {
+    if (isListRendered && listRef.current) {
+      listRef.current.scrollTop = listRef.current.scrollHeight;
+    }
+  }, [isListRendered, messages]); // Trigger scroll when the list is rendered or messages change
+
   return (
     <>
-      {/* Chat Message List with hidden opacity until it's fully rendered */}
+      {/* Chat Message List with conditional rendering */}
       <div
-        className={`flex-1 overflow-y-auto overflow-x-hidden p-4 space-y-4 flex flex-col transition-opacity duration-1000 ${
+        className={`flex-1 overflow-y-auto overflow-x-hidden p-4 space-y-4 flex flex-col transition-opacity duration-300 no-scrollbar ${
           isListRendered ? 'opacity-100' : 'opacity-0'
         }`}
         ref={listRef}
       >
-        {messages.map((message) => {
+        {reversedMessages.map((message) => {
           const isMe = message.sender_id === currentUserId;
           return (
             <MessageItem
@@ -77,6 +94,9 @@ export function MessageList({ messages, currentUserId }: MessageListProps) {
             />
           );
         })}
+        
+        {/* Scroll to the bottom after the list is rendered */}
+        {isListRendered && <ScrollToBottom />}
       </div>
 
       {/* Image gallery modal */}
