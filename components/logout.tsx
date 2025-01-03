@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation'; // Import the useRouter hook for navigation
 import { supabase } from '@/lib/supabase'; // Import your supabase client
 import LoadingOverlay from '@/components/loading-overlay';
-import { clearDexieDb } from '@/lib/dexieUtils'; // Import the utility function
+import db from '@/db/dexie-db'; // Import the Dexie DB instance
 
 export default function LogoutButton() {
   const [loading, setLoading] = useState(false);
@@ -15,13 +15,13 @@ export default function LogoutButton() {
 
     try {
       // Clear all tables in Dexie DB using the utility function
-      await clearDexieDb();
-
+      await db.clearAllData(); // Clear and recreate tables before logging out
+      
       // Perform the logout using Supabase's signOut method
       await supabase.auth.signOut();
 
       // Navigate to the login page
-      router.push('/auth/login');
+      router.replace('/auth/login');
     } catch (error) {
       console.error('Error during logout:', error);
     } finally {

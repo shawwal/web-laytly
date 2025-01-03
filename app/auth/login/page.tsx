@@ -4,10 +4,11 @@ import { useRouter } from 'next/navigation'; // To handle redirects after login
 import AuthForm from '@/components/AuthForm';
 import LoadingOverlay from '@/components/loading-overlay';
 import { supabase } from '@/lib/supabase';
+import db from '@/db/dexie-db';
 
 export default function LoginPage() {
-  const router = useRouter(); // For navigation after successful login
-  const [isSubmitting, setIsSubmitting] = useState(false); // Track the submission state
+  const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleLogin = async (email: string, password: string) => {
     try {
@@ -23,9 +24,11 @@ export default function LoginPage() {
         return;
       }
 
-      // Redirect to the dashboard after successful login
-      // console.log('User logged in:', data);
-      router.push('/'); // Redirect to the dashboard or home page
+      // Successful Login: Open Dexie database and then redirect
+      await db.open(); // Open the Dexie database
+      console.log('User logged in and Dexie database opened successfully.');
+
+      router.replace('/'); // Redirect to the dashboard or home page
     } catch (error) {
       console.error('Login failed', error);
     } finally {
@@ -46,8 +49,10 @@ export default function LoginPage() {
         return;
       }
 
-      // Redirect to the dashboard after successful login
-      console.log('User logged in with Google:', data);
+      // Successful Login with Google: Open Dexie database and then redirect
+      await db.open(); // Open the Dexie database
+      console.log('User logged in with Google and Dexie database opened successfully.');
+
       router.push('/'); // Redirect to the dashboard or home page
     } catch (error) {
       console.error('Google login failed', error);
