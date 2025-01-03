@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
 'use client'
 import useSession from '@/hooks/useSession'; // Assuming this hook fetches session data
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
