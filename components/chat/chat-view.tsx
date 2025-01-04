@@ -23,11 +23,6 @@ export function ChatView() {
       // Fetch the contact details for the active chat.
       fetchContacts();
     }
-    // Clear previous messages when switching chats.
-    return () => {
-      // This ensures that when the activeContactId changes, previous messages are cleared.
-      fetchChatMessages(true);  // Calling with true to reset the messages on chat switch
-    };
   }, [activeContactId]);
 
   // Fetch contact details for the active contact

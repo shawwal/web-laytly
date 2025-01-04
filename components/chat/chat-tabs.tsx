@@ -8,7 +8,6 @@ import { MessageList } from "./message-list"
 import { MessageInput } from "./message-input"
 import useSession from "@/hooks/useSession"
 import LoadingOverlay from "@/components/loading-overlay"
-import { useChat } from "../chat-context"
 
 interface Tab {
   id: string
