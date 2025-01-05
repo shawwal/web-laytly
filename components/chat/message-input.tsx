@@ -18,9 +18,9 @@ interface MessageInputProps {
 
 export function MessageInput({ onSend, onFocus, onBlur }: MessageInputProps) {
   const [message, setMessage] = useState('');
+  const [isSending, setIsSending] = useState(false);  // Flag to prevent multiple sends
 
   const { isRecording, recordingTime, startRecording, stopRecording } = useAudioRecorder();
-
   const { handleImageSelect } = useImageSender(onSend); // Use the custom hook for images
 
   const handleFocus = (event: React.FocusEvent<HTMLInputElement>) => {
@@ -30,10 +30,33 @@ export function MessageInput({ onSend, onFocus, onBlur }: MessageInputProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (message.trim()) {
-      onSend(message);
-      setMessage('');
+    
+    // Debug log to check if multiple submits are happening
+    console.log('Form submit triggered');
+
+    if (isSending || !message.trim()) {
+      console.log('Message send skipped due to isSending flag or empty message');
+      return; // Prevent sending the message if already sending or empty
     }
+
+    // Set isSending flag to true to prevent multiple submits
+    setIsSending(true);
+    
+    // Debug log for checking the message content
+    console.log('Submitting message:', message);
+
+    onSend(message)
+      .then(() => {
+        console.log('Message sent successfully');
+        setMessage('');  // Clear message after sending
+      })
+      .catch((error) => {
+        console.error('Error sending message:', error);
+      })
+      .finally(() => {
+        console.log('Resetting isSending flag');
+        setIsSending(false);  // Reset flag after message is sent or failed
+      });
   };
 
   return (
