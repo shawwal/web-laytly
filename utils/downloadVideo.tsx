@@ -12,7 +12,7 @@ export const downloadVideo = async (path: string): Promise<string | null> => {
       .createSignedUrl(path, 86400); // URL valid for 24 hours (86400 seconds)
 
     if (urlError) {
-      console.error('Error generating signed URL:', urlError.message); // Log error message
+      // console.error('Error generating signed URL:', urlError.message); // Log error message
       throw urlError; // Rethrow the error to handle it
     }
 
