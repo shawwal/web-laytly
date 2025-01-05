@@ -1,26 +1,27 @@
 'use client'
 
-import { useState, useRef } from 'react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { ImageIcon, Mic, Smile, Square } from 'lucide-react'
-import { cn } from '@/lib/utils'
-import { useAudioRecorder } from '@/hooks/useAudioRecorder'  // Use the new custom hook
-import { RecordingUI } from '@/components/recording-ui'  // Use the new Recording UI component
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Smile, Mic, Square } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { useAudioRecorder } from '@/hooks/useAudioRecorder';
+import { RecordingUI } from '@/components/recording-ui';
+import { ImageSelector } from '@/components/image-selector'; // Import ImageSelector
+import { useImageSender } from '@/hooks/useImageSender'; // Import useImageSender hook
 
 interface MessageInputProps {
-  onSend: (content: string, audioBlob?: Blob, images?: File[]) => void
-  onFocus: () => void
-  onBlur: () => void
+  onSend: (content: string, audioBlob?: Blob, images?: File[]) => void;
+  onFocus: () => void;
+  onBlur: () => void;
 }
 
 export function MessageInput({ onSend, onFocus, onBlur }: MessageInputProps) {
   const [message, setMessage] = useState('');
-  const [selectedImages, setSelectedImages] = useState<File[]>([]);
 
-  const { isRecording, recordingTime, startRecording, stopRecording } = useAudioRecorder(); // Use the custom hook
+  const { isRecording, recordingTime, startRecording, stopRecording } = useAudioRecorder();
 
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { handleImageSelect } = useImageSender(onSend); // Use the custom hook for images
 
   const handleFocus = (event: React.FocusEvent<HTMLInputElement>) => {
     event.stopPropagation();
@@ -35,37 +36,10 @@ export function MessageInput({ onSend, onFocus, onBlur }: MessageInputProps) {
     }
   };
 
-  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-    setSelectedImages(prev => [...prev, ...files].slice(0, 6)); // Limit to 6 images
-  };
-
-  const handleSendImages = () => {
-    if (selectedImages.length > 0) {
-      onSend('📸 Image(s) selected', undefined, selectedImages);
-      setSelectedImages([]); // Clear images after sending
-    }
-  };
-
   return (
     <form onSubmit={handleSubmit} className="flex items-center gap-2 bg-gray-100 dark:bg-gray-800 rounded-full p-2 sticky bottom-0 md:bottom-4 mx-4 mb-4 md:mb-0">
-      <input
-        type="file"
-        ref={fileInputRef}
-        className="hidden"
-        accept="image/*"
-        multiple
-        onChange={handleImageSelect}
-      />
-      <Button
-        type="button"
-        size="icon"
-        variant="ghost"
-        className="rounded-full"
-        onClick={() => fileInputRef.current?.click()}
-      >
-        <ImageIcon className="w-6 h-6" />
-      </Button>
+      {/* ImageSelector Component */}
+      <ImageSelector onImagesSelected={handleImageSelect} />
 
       {/* Input field */}
       <Input
