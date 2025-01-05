@@ -16,7 +16,6 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const isProd = process.env.NODE_ENV === 'production';
-  console.log('isProd', isProd);
   return (
     <html lang="en" suppressHydrationWarning className="dark">
       <body>
