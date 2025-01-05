@@ -58,10 +58,11 @@ export function useChatMessages(params: ChatParams) {
 
       // If we are fetching older messages, append them to the existing messages
       setMessages(prevMessages => {
-        if (isOlderFetch) {
-          return [...newMessages, ...prevMessages]; // Prepend to keep newest at the bottom
-        }
-        return newMessages; // Replace messages with the latest fetched messages
+        const uniqueMessages = [
+          ...newMessages.filter(msg => !prevMessages.some(existingMsg => existingMsg.id === msg.id)),
+          ...prevMessages, // Prepend to keep the newest at the bottom
+        ];
+        return uniqueMessages;
       });
 
       setLoading(false);
@@ -73,7 +74,20 @@ export function useChatMessages(params: ChatParams) {
 
   // Function to add a message to the state
   const addMessage = (message: Message) => {
-    setMessages(prevMessages => [message, ...prevMessages]); // Add the new message to the front
+    // Log the message being added
+    console.log('Adding message:', message);
+
+    setMessages(prevMessages => {
+      // Check if the message is already in the state (by ID)
+      const isDuplicate = prevMessages.some(existingMsg => existingMsg.id === message.id);
+      if (isDuplicate) {
+        console.log('Duplicate message found, skipping addition');
+        return prevMessages; // Skip adding the message if it already exists
+      }
+
+      // Otherwise, add the message
+      return [message, ...prevMessages];
+    });
   };
 
   // Function to remove a message (if needed)
