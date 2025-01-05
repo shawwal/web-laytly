@@ -8,8 +8,8 @@ interface MediaItemCardProps {
   groupIndex: number;
   itemIndex: number;
   onMediaSelect: (groupIndex: number, itemIndex: number) => void;
-  onLike: (groupIndex: number, itemIndex: number) => void;
   onSave: (groupIndex: number, itemIndex: number) => void;
+  userId: string;  // Add userId as a prop
 }
 
 export function MediaItemCard({
@@ -17,8 +17,8 @@ export function MediaItemCard({
   groupIndex,
   itemIndex,
   onMediaSelect,
-  onLike,
-  onSave
+  onSave,
+  userId,  // Destructure userId
 }: MediaItemCardProps) {
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden">
@@ -39,7 +39,7 @@ export function MediaItemCard({
           item={item}
           groupIndex={groupIndex}
           itemIndex={itemIndex}
-          onLike={onLike}
+          userId={userId}  // Pass userId down to MediaActions
           onSave={onSave}
         />
       </div>

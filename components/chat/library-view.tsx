@@ -6,12 +6,15 @@ import { MediaItem, MonthGroup } from '@/types';
 import fetchThumbnails from '@/utils/fetchThumbnails';
 import { useChat } from '@/contexts/chat-context';
 
-export function LibraryView() {
+interface LibraryViewProps {
+  currentUserId: string;  // Add userId as a prop
+}
+
+export function LibraryView({ currentUserId }: LibraryViewProps) {
   const [mediaGroups, setMediaGroups] = useState<MonthGroup[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const { activeContactId } = useChat();
   const chatId = activeContactId as string;
-
   useEffect(() => {
     const loadThumbnails = async () => {
       setLoading(true);
@@ -57,16 +60,6 @@ export function LibraryView() {
     loadThumbnails();
   }, [chatId]);
 
-  const handleLike = (groupIndex: number, itemIndex: number) => {
-    setMediaGroups((prevGroups) => {
-      const newGroups = [...prevGroups];
-      const item = newGroups[groupIndex].items[itemIndex];
-      item.liked = !item.liked;
-      item.likes += item.liked ? 1 : -1;
-      return newGroups;
-    });
-  };
-
   const handleSave = (groupIndex: number, itemIndex: number) => {
     setMediaGroups((prevGroups) => {
       const newGroups = [...prevGroups];
@@ -91,8 +84,8 @@ export function LibraryView() {
                   item={item}
                   groupIndex={groupIndex}
                   itemIndex={itemIndex}
+                  userId={currentUserId}  // Pass userId down to MediaItemCard
                   onMediaSelect={() => {}}
-                  onLike={handleLike}
                   onSave={handleSave}
                 />
               ))}

@@ -31,7 +31,7 @@ export function ChatTabs({ messages, loading, chatId, onSend }: ChatTabsProps) {
   const [activeTab, setActiveTab] = useState('chat')
   const { session, isLoading } = useSession() as any;  // Destructure `isLoading` to check if the session is available
   const [isInputFocused, setInputFocused] = useState(false);
-
+  const userId = session?.user?.id;
   const handleInputFocus = () => {
     setInputFocused(true);
   };
@@ -56,7 +56,7 @@ export function ChatTabs({ messages, loading, chatId, onSend }: ChatTabsProps) {
         return (
           <div className="flex flex-col h-full">
             {session?.user?.id && chatId && !loading ? (
-              <MessageList messages={messages} currentUserId={session.user.id} onInputFocus={isInputFocused} />
+              <MessageList messages={messages} currentUserId={userId} onInputFocus={isInputFocused} />
             ) : (
               null // Show message if user is not found
             )}
@@ -79,7 +79,7 @@ export function ChatTabs({ messages, loading, chatId, onSend }: ChatTabsProps) {
           </div>
         )
       case 'library':
-        return <LibraryView />
+        return <LibraryView currentUserId={userId} />
       case 'albums':
         return <AlbumsView />
       default:

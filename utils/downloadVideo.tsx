@@ -23,9 +23,9 @@ export const downloadVideo = async (path: string): Promise<string | null> => {
     console.log('Signed URL:', data.signedUrl); // Log the signed URL for debugging
 
     return data.signedUrl; // Return the signed URL to be used in the video tag
-  } catch (error) {
+  } catch {
     // Log the error
-    console.error('Error in downloadVideo function:', error instanceof Error ? error.message : error);
+    // console.error('Error in downloadVideo function:', error instanceof Error ? error.message : error);
     return null;
   }
 };

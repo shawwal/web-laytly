@@ -59,10 +59,14 @@ const MessageContent: React.FC<MessageContentProps> = ({ content }) => {
               src={mediaUri}
               alt="Message Media"
               fill
-              objectFit="cover"
+              sizes="(max-width: 768px) 100vw, 33vw" // Responsive sizes for optimal loading
+              style={{
+                objectFit: 'cover',
+              }}
               className="rounded-lg cursor-pointer"
             />
           </div>
+
           {/* Modal for Image Zoom */}
           {isModalOpen && (
             <div
@@ -73,13 +77,13 @@ const MessageContent: React.FC<MessageContentProps> = ({ content }) => {
                 onClick={(e) => e.stopPropagation()} // Prevent closing the modal when clicking inside
               >
                 {/* Image Container */}
-                <div className="relative w-full h-full flex justify-center items-center overflow-hidden">
+                <div className="relative w-auto h-auto flex justify-center items-center overflow-hidden">
                   <Image
                     src={mediaUri}
                     alt="Zoomed Message Media"
                     width={400} // Set a base width for large images
                     height={200} // Set a base height for large images
-                    objectFit="contain" // Ensures the image is contained without distortion
+                    style={{ objectFit: 'contain', width: 'auto', height: 'auto' }} // Add these styles for aspect ratio
                     className="rounded-lg"
                   />
                 </div>
