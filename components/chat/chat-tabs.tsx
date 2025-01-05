@@ -30,12 +30,22 @@ interface ChatTabsProps {
 export function ChatTabs({ messages, loading, chatId, onSend }: ChatTabsProps) {
   const [activeTab, setActiveTab] = useState('chat')
   const { session, isLoading } = useSession() as any;  // Destructure `isLoading` to check if the session is available
+  const [isInputFocused, setInputFocused] = useState(false);
 
+  const handleInputFocus = () => {
+    setInputFocused(true);
+  };
+
+  const handleInputBlur = () => {
+    setInputFocused(false);
+  };
+  
   useEffect(() => {
     if (session?.user?.id) {
       // Ensure that we have the session and the user id before rendering
     }
   }, [session]); // React to session changes
+
 
   const renderContent = () => {
     if (isLoading) {
@@ -46,7 +56,7 @@ export function ChatTabs({ messages, loading, chatId, onSend }: ChatTabsProps) {
         return (
           <div className="flex flex-col h-full">
             {session?.user?.id && chatId && !loading ? (
-              <MessageList messages={messages} currentUserId={session.user.id} />
+              <MessageList messages={messages} currentUserId={session.user.id} onInputFocus={isInputFocused} />
             ) : (
               null // Show message if user is not found
             )}
@@ -63,7 +73,7 @@ export function ChatTabs({ messages, loading, chatId, onSend }: ChatTabsProps) {
                 ))}
               </div> */}
                {session?.user?.id && chatId && !loading && (
-                <MessageInput onSend={onSend} />
+                <MessageInput onSend={onSend}  onFocus={handleInputFocus} onBlur={handleInputBlur}  />
               )}
             </div>
           </div>

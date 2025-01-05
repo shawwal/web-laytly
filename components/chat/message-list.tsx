@@ -6,6 +6,7 @@ import { ChatMessage } from '@/types';
 interface MessageListProps {
   messages: ChatMessage[];
   currentUserId: string;
+  onInputFocus: boolean; // Callback for when the input is focused
 }
 
 function ScrollToBottom() {
@@ -20,7 +21,7 @@ function ScrollToBottom() {
   return <div ref={elementRef} />;
 }
 
-export function MessageList({ messages, currentUserId }: MessageListProps) {
+export function MessageList({ messages, currentUserId, onInputFocus }: MessageListProps) {
   const listRef = useRef<HTMLDivElement>(null);
   const [galleryImages, setGalleryImages] = useState<string[]>([]);
   const [galleryInitialIndex, setGalleryInitialIndex] = useState(0);
@@ -65,12 +66,24 @@ export function MessageList({ messages, currentUserId }: MessageListProps) {
     setGalleryInitialIndex(index);
   };
 
-  // Scroll to the bottom when the list is fully rendered
+  // Scroll to the bottom when the list is fully rendered or input field is focused
   useEffect(() => {
-    if (isListRendered && listRef.current) {
+    if (listRef.current) {
       listRef.current.scrollTop = listRef.current.scrollHeight;
     }
-  }, [isListRendered, messages]); // Trigger scroll when the list is rendered or messages change
+  }, [messages, isListRendered]);
+
+  // Trigger scroll to bottom when the input is focused
+  useEffect(() => {
+    if (onInputFocus === true) {
+      if (listRef.current) {
+        listRef.current.scrollTo({
+          top: listRef.current.scrollHeight, // Scroll to the bottom
+          behavior: 'smooth', // Enable smooth scrolling
+        });
+      }
+    }
+  }, [onInputFocus]); // Run when onInputFocus changes (i.e., when input is focused)
 
   return (
     <>
@@ -94,7 +107,7 @@ export function MessageList({ messages, currentUserId }: MessageListProps) {
             />
           );
         })}
-        
+
         {/* Scroll to the bottom after the list is rendered */}
         {isListRendered && <ScrollToBottom />}
       </div>

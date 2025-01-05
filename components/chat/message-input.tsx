@@ -8,9 +8,11 @@ import { cn } from '@/lib/utils'
 
 interface MessageInputProps {
   onSend: (content: string, audioBlob?: Blob, images?: File[]) => void
+  onFocus: () => void // Add a callback to notify parent component of focus
+  onBlur: () => void // Add a callback to notify parent component of blur
 }
 
-export function MessageInput({ onSend }: MessageInputProps) {
+export function MessageInput({ onSend, onFocus, onBlur }: MessageInputProps) {
   const [message, setMessage] = useState('')
   const [isRecording, setIsRecording] = useState(false)
   const [recordingTime, setRecordingTime] = useState(0)
@@ -20,7 +22,13 @@ export function MessageInput({ onSend }: MessageInputProps) {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
   const audioChunksRef = useRef<Blob[]>([])
   const recordingTimerRef = useRef<NodeJS.Timeout | undefined>(undefined)
+  const inputRef = useRef<HTMLInputElement | null>(null) // Create ref for input focus
 
+  // This will handle focus for the input field
+  const handleFocus = (event: React.FocusEvent<HTMLInputElement>) => {
+    event.stopPropagation(); // Stop the event from bubbling up
+    onFocus(); // Notify parent component when the input is focused
+  }
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (message.trim()) {
@@ -111,10 +119,13 @@ export function MessageInput({ onSend }: MessageInputProps) {
         <ImageIcon className="w-6 h-6" />
       </Button>
       <Input
+        ref={inputRef} // Attach ref to the input
         value={message}
         onChange={(e) => setMessage(e.target.value)}
         placeholder="Type message..."
         className="flex-1 border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
+        onFocus={handleFocus} // Notify when input is focused
+        onBlur={onBlur}
       />
       <div className="relative">
         <Button
@@ -147,14 +158,6 @@ export function MessageInput({ onSend }: MessageInputProps) {
           </div>
         </div>
       )}
-      {/* <Button
-        type="button"
-        size="icon"
-        variant="ghost"
-        onClick={handleSendImages}
-      >
-        Send Images
-      </Button> */}
     </form>
   )
 }

@@ -18,7 +18,7 @@ export function SkeletonLoading() {
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                  <Skeleton className="h-5 w-5" />
+                  {/* <Skeleton className="h-5 w-5" /> */}
                   <Skeleton className="h-5 w-5" />
                 </div>
                 <Skeleton className="h-5 w-5" />
