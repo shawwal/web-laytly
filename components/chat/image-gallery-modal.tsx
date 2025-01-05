@@ -1,3 +1,5 @@
+
+// component/image-galley-modal.tsx
 'use client'
 
 import { useState } from 'react'

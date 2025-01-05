@@ -3,8 +3,9 @@ import { AvatarDisplay } from './avatar-display'
 import { AudioPlayer } from './audio-player'
 import { ImageGallery } from './image-gallery'
 import { useChat } from '@/contexts/chat-context';
-import { stringToColor } from '@/utils/string-to-color';
+import { stringToColor } from '@/utils/string-to-color'
 import { useTheme } from 'next-themes'
+import MediaContent from '@/components/media-content'
 // import { ChatMessage } from '@/types'
 
 interface MessageItemProps {
@@ -60,7 +61,7 @@ export function MessageItem({ message, isMe, playingAudio, onToggleAudio, onOpen
               {sender}
             </p>
           )}
-          <p className="break-words white-space-pre-wrap">{message.content}</p>
+          <MediaContent content={message.content} />
         </>
         )}
         <div className={`text-[10px] mt-1 ${isMe ? 'text-blue-100' : 'text-teal-100'}`}>
