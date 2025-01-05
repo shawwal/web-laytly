@@ -9,6 +9,7 @@ import { MessageInput } from "./message-input"
 import useSession from "@/hooks/useSession"
 import LoadingOverlay from "@/components/loading-overlay"
 import { useChatMessages } from '@/hooks/useChatMessages'
+import { v4 as uuidv4 } from 'uuid';  // Import UUID to generate unique IDs
 
 interface Tab {
   id: string
@@ -30,48 +31,64 @@ export function ChatTabs({ chatId }: ChatTabsProps) {
   const { session, isLoading } = useSession() as any
   const [isInputFocused, setInputFocused] = useState(false)
   const [isLoadingMessages, setIsLoadingMessages] = useState(true)  // Loading state for fetching messages
+  const [isSending, setIsSending] = useState(false) // Prevent double sending of messages
   const userId = session?.user?.id
   
   // Chat Messages Logic
-  const { messages, loading, fetchChatMessages, addMessage, removeMessage } = useChatMessages({ chat_id: chatId })
-  
-  // Log messages only when they change
-  useEffect(() => {
-    if (messages.length > 0) {
-      console.log('messages', messages);
-    }
-  }, [messages]);
-
+  const { messages, loading, addMessage } = useChatMessages({ chat_id: chatId })
   const handleInputFocus = () => setInputFocused(true)
   const handleInputBlur = () => setInputFocused(false)
 
   // Send message logic (Optimistic UI)
   const sendMessage = useCallback(
     async (content: string, audioBlob?: Blob, images?: File[]) => {
-      if (!chatId) return;
+      if (!chatId || isSending) {
+        console.log('Message send skipped, isSending:', isSending)  // Log when skipping send
+        return; // Prevent sending if already in progress
+      }
+
+      setIsSending(true); // Set sending state to true
+      console.log('Sending message:', content); // Log the message being sent
 
       const optimisticMessage = {
-        id: Date.now().toString(),
+        id: uuidv4(),  // Use UUID for a unique message ID
         content,
-        senderId: 'me',
+        senderId: session?.user?.id,  // Use session user ID as sender
         receiverId: chatId,
-        timestamp: Date.now(),
+        timestamp: new Date().toISOString(),  // Use ISO string for timestamp
         status: 'sending' as const,
-        audioUrl: audioBlob ? URL.createObjectURL(audioBlob) : undefined,
-        images: images || [],
+        is_forwarded: false,  // Set to false by default
+        original_message_id: null,  // No original message when sending new one
+        reply_to: null,  // No reply for optimistic message
+        reply_to_id: null,  // No reply ID
+        sender: {
+          id: session?.user?.id,  // Use session user ID
+          username: session?.user?.username || 'Unknown',
+          email: session?.user?.email || 'unknown@example.com',
+          avatar_url: session?.user?.avatar_url || 'default-avatar.jpg',
+        },
       }
+
+      console.log('Optimistically adding message:', optimisticMessage); // Log the optimistic message
 
       // Optimistically add the message
       addMessage(optimisticMessage)
 
-      // Simulate network delay (e.g., for actual message sending)
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      try {
+        // Simulate network delay (e.g., for actual message sending)
+        await new Promise((resolve) => setTimeout(resolve, 1000))
 
-      // After sending, update the message status to 'sent'
-      const sentMessage = { ...optimisticMessage, status: 'sent' as const }
-      addMessage(sentMessage) // Update the message state
+        // After sending, update the message status to 'sent'
+        const sentMessage = { ...optimisticMessage, status: 'sent' as const }
+        console.log('Message sent, updating status:', sentMessage); // Log the sent message
+        addMessage(sentMessage) // Update the message state
+      } catch (error) {
+        console.error('Error sending message:', error)
+      } finally {
+        setIsSending(false); // Reset sending state
+      }
     },
-    [chatId, addMessage]
+    [chatId, addMessage, isSending, session?.user] // Ensure it uses the current user
   )
 
   // Reset the loading state when messages are fetched
@@ -110,6 +127,16 @@ export function ChatTabs({ chatId }: ChatTabsProps) {
         return null
     }
   }
+
+  // Log messages and check for duplication
+  useEffect(() => {
+    console.log('Messages:', messages);  // Log messages after they are updated
+    const messageIds = messages.map(msg => msg.id);
+    const duplicateIds = messageIds.filter((id, index) => messageIds.indexOf(id) !== index);
+    if (duplicateIds.length > 0) {
+      console.error('Duplicate message IDs detected:', duplicateIds);  // Log duplicate IDs if found
+    }
+  }, [messages]);
 
   return (
     <div className="flex flex-col h-full overflow-hidden">

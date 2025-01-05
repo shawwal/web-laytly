@@ -18,7 +18,7 @@ interface MessageItemProps {
 
 export function MessageItem({ message, isMe, playingAudio, onToggleAudio, onOpenGallery }: MessageItemProps) {
   const showAvatar = !isMe && (!message.previousSender || message.previousSender !== message.senderId)
-  const sender = message.sender.username || message.sender.email;
+  const sender = message.sender?.username || message.sender?.email || 'Unknown User';
   const senderColor = stringToColor(sender); // Generate a color based on the sender's name/email
   const { isGroup } = useChat();
   const { theme }  = useTheme();

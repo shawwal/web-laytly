@@ -9,17 +9,12 @@ interface ChatParams {
 export function useChatMessages(params: ChatParams) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [sending, setSending] = useState<boolean>(false); // State to track if a message is being sent
   const limit = 30; // Number of messages to fetch at a time
 
   // Function to fetch chat messages from Supabase
   const fetchChatMessages = async (isOlderFetch = false) => {
-    // Log the chat_id being fetched
-    console.log('Fetching messages for chat_id:', params.chat_id);
-
     // Check if chat_id is valid (non-empty and non-null)
     if (!params.chat_id || params.chat_id.trim() === '') {
-      console.error('Invalid chat_id, skipping message fetch');
       setLoading(false);
       return;
     }
@@ -76,55 +71,23 @@ export function useChatMessages(params: ChatParams) {
     }
   };
 
-  // Function to send a message
-  const sendMessage = async (content: string, chat_id: string) => {
-    if (!content || !chat_id) {
-      console.error('Message content or chat_id is missing');
-      return;
-    }
+  // Function to add a message to the state
+  const addMessage = (message: Message) => {
+    setMessages(prevMessages => [message, ...prevMessages]); // Add the new message to the front
+  };
 
-    setSending(true);
-    try {
-      // Add the message to the database
-      const { data, error } = await supabase
-        .from('messages')
-        .insert([
-          {
-            content,
-            chat_id,
-            sender_id: 'some-user-id', // Replace with the actual user ID
-            timestamp: new Date().toISOString(),
-          },
-        ]);
-
-      if (error) {
-        throw new Error('Error sending message: ' + error.message);
-      }
-
-      console.log('Message sent:', data);
-
-      // After successfully sending, fetch the updated messages
-      fetchChatMessages();
-
-      setSending(false);
-    } catch (error) {
-      console.error('Error sending message:', error);
-      setSending(false);
-    }
+  // Function to remove a message (if needed)
+  const removeMessage = (messageId: string) => {
+    setMessages(prevMessages => prevMessages.filter(msg => msg.id !== messageId));
   };
 
   // Effect to fetch initial messages when `chat_id` changes
   useEffect(() => {
-    console.log('Chat ID updated:', params.chat_id); // Log when chat_id changes
-
-    // Only fetch messages if the chat_id is valid
     if (params?.chat_id?.trim()) {
       setMessages([]); // Reset messages when switching chats
       fetchChatMessages(); // Fetch messages for the chat when the component mounts
-    } else {
-      console.log('Skipping fetch due to invalid chat_id');
     }
   }, [params?.chat_id]); // Depend on `chat_id` to fetch new messages when it changes
 
-  return { messages, loading, sending, fetchChatMessages, sendMessage };
+  return { messages, loading, fetchChatMessages, addMessage, removeMessage };
 }

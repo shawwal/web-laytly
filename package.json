@@ -46,7 +46,8 @@
     "recoil": "^0.7.7",
     "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7",
-    "tus-js-client": "^4.2.3"
+    "tus-js-client": "^4.2.3",
+    "uuid": "^11.0.4"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
