@@ -115,16 +115,16 @@ export function MediaModal({
                 <ChevronLeft className="h-5 w-5" />
               </Button>
               <Avatar className="h-8 w-8">
-                <AvatarImage src={media.user.avatar} />
-                <AvatarFallback>{media.user.name[0]}</AvatarFallback>
+                {/* <AvatarImage src={media.user.avatar} />
+                <AvatarFallback>{media.user.name[0]}</AvatarFallback> */}
               </Avatar>
               <div>
-                <p className="font-medium text-sm">{media.user.name}</p>
-                <p className="text-xs text-gray-500">@{media.user.username}</p>
+                {/* <p className="font-medium text-sm">{media.user.name}</p>
+                <p className="text-xs text-gray-500">@{media.user.username}</p> */}
               </div>
             </div>
             <Button variant="ghost" size="icon">
-              <MoreHorizontal className="h-5 w-5" />
+              {/* <MoreHorizontal className="h-5 w-5" /> */}
             </Button>
           </div>
 
@@ -177,19 +177,19 @@ export function MediaModal({
             </div>
 
             <div className="space-y-1">
-              <p className="font-medium text-sm">{likesCount.toLocaleString()} likes</p>
+              {/* <p className="font-medium text-sm">{likesCount.toLocaleString()} likes</p> */}
               {media.caption && (
                 <p className="text-sm">
                   <span className="font-medium">{media.user.name}</span>{' '}
                   {media.caption}
                 </p>
               )}
-              <button
+              {/* <button
                 onClick={() => setShowComments(true)}
                 className="text-sm text-gray-500"
               >
                 View all {media.comments} comments
-              </button>
+              </button> */}
               <p className="text-xs text-gray-500">
                 {media.timestamp.toLocaleDateString(undefined, {
                   month: 'long',
