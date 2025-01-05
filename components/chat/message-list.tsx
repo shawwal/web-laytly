@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { MessageItem } from './message-item';
 import { ImageGalleryModal } from './image-gallery-modal';
-import { ChatMessage } from '@/types';
+// import { ChatMessage } from '@/types';
 
 interface MessageListProps {
-  messages: ChatMessage[];
+  messages: any[];
   currentUserId: string;
   onInputFocus: boolean; // Callback for when the input is focused
 }

@@ -1,13 +1,14 @@
 'use client'
 
+import { useState, useEffect, useCallback } from "react"
 import { cn } from "@/lib/utils"
-import { useState, useEffect } from "react"
 import { LibraryView } from "./library-view"
 import { AlbumsView } from "./albums-view"
 import { MessageList } from "./message-list"
 import { MessageInput } from "./message-input"
 import useSession from "@/hooks/useSession"
 import LoadingOverlay from "@/components/loading-overlay"
+import { useChatMessages } from '@/hooks/useChatMessages'
 
 interface Tab {
   id: string
@@ -21,35 +22,69 @@ const tabs: Tab[] = [
 ]
 
 interface ChatTabsProps {
-  messages: any[]
-  loading: boolean
   chatId: string
-  onSend: (content: string, audioBlob?: Blob, images?: File[]) => void
 }
 
-export function ChatTabs({ messages, loading, chatId, onSend }: ChatTabsProps) {
+export function ChatTabs({ chatId }: ChatTabsProps) {
   const [activeTab, setActiveTab] = useState('chat')
-  const { session, isLoading } = useSession() as any;  // Destructure `isLoading` to check if the session is available
-  const [isInputFocused, setInputFocused] = useState(false);
-  const userId = session?.user?.id;
-  const handleInputFocus = () => {
-    setInputFocused(true);
-  };
-
-  const handleInputBlur = () => {
-    setInputFocused(false);
-  };
+  const { session, isLoading } = useSession() as any
+  const [isInputFocused, setInputFocused] = useState(false)
+  const [isLoadingMessages, setIsLoadingMessages] = useState(true)  // Loading state for fetching messages
+  const userId = session?.user?.id
   
+  // Chat Messages Logic
+  const { messages, loading, fetchChatMessages, addMessage, removeMessage } = useChatMessages({ chat_id: chatId })
+  
+  // Log messages only when they change
   useEffect(() => {
-    if (session?.user?.id) {
-      // Ensure that we have the session and the user id before rendering
+    if (messages.length > 0) {
+      console.log('messages', messages);
     }
-  }, [session]); // React to session changes
+  }, [messages]);
 
+  const handleInputFocus = () => setInputFocused(true)
+  const handleInputBlur = () => setInputFocused(false)
 
+  // Send message logic (Optimistic UI)
+  const sendMessage = useCallback(
+    async (content: string, audioBlob?: Blob, images?: File[]) => {
+      if (!chatId) return;
+
+      const optimisticMessage = {
+        id: Date.now().toString(),
+        content,
+        senderId: 'me',
+        receiverId: chatId,
+        timestamp: Date.now(),
+        status: 'sending' as const,
+        audioUrl: audioBlob ? URL.createObjectURL(audioBlob) : undefined,
+        images: images || [],
+      }
+
+      // Optimistically add the message
+      addMessage(optimisticMessage)
+
+      // Simulate network delay (e.g., for actual message sending)
+      await new Promise((resolve) => setTimeout(resolve, 1000))
+
+      // After sending, update the message status to 'sent'
+      const sentMessage = { ...optimisticMessage, status: 'sent' as const }
+      addMessage(sentMessage) // Update the message state
+    },
+    [chatId, addMessage]
+  )
+
+  // Reset the loading state when messages are fetched
+  useEffect(() => {
+    if (!loading && messages.length > 0) {
+      setIsLoadingMessages(false)  // Set loading to false once messages are fetched
+    }
+  }, [messages, loading])
+
+  // Render content for the selected tab
   const renderContent = () => {
-    if (isLoading) {
-      return <LoadingOverlay />; // Show a loading state if session is still loading
+    if (isLoading || isLoadingMessages) {
+      return <LoadingOverlay /> // Show loading state if session or messages are still loading
     }
     switch (activeTab) {
       case 'chat':
@@ -58,22 +93,11 @@ export function ChatTabs({ messages, loading, chatId, onSend }: ChatTabsProps) {
             {session?.user?.id && chatId && !loading ? (
               <MessageList messages={messages} currentUserId={userId} onInputFocus={isInputFocused} />
             ) : (
-              null // Show message if user is not found
+              null
             )}
             <div className="p-4 pb-16 md:pb-4 space-y-4">
-              {/* <div className="flex flex-wrap gap-2">
-                {["Sure thing!", "Sounds good!", "Take care!", "Absolutely!"].map((reply) => (
-                  <button
-                    key={reply}
-                    onClick={() => onSend(reply)}
-                    className="px-4 py-2 text-sm rounded-full bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700"
-                  >
-                    {reply}
-                  </button>
-                ))}
-              </div> */}
-               {session?.user?.id && chatId && !loading && (
-                <MessageInput onSend={onSend}  onFocus={handleInputFocus} onBlur={handleInputBlur}  />
+              {session?.user?.id && chatId && !loading && (
+                <MessageInput onSend={sendMessage} onFocus={handleInputFocus} onBlur={handleInputBlur} />
               )}
             </div>
           </div>
