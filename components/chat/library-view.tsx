@@ -41,9 +41,9 @@ export function LibraryView({ currentUserId }: LibraryViewProps) {
               saved: false,
               liked: false,
               user: {
-                name: 'Sample User',
+                name: '',
                 avatar: '/default-avatar.png',
-                username: 'sampleuser',
+                username: '',
               },
               timestamp: date,
             };
