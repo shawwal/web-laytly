@@ -10,6 +10,7 @@ import useSession from "@/hooks/useSession"
 import LoadingOverlay from "@/components/loading-overlay"
 import { useChatMessages } from '@/hooks/useChatMessages'
 import { v4 as uuidv4 } from 'uuid';  // Import UUID to generate unique IDs
+import { useProfile } from "@/hooks/useProfile"
 
 interface Tab {
   id: string
@@ -33,7 +34,8 @@ export function ChatTabs({ chatId }: ChatTabsProps) {
   const [isLoadingMessages, setIsLoadingMessages] = useState(true)  // Loading state for fetching messages
   const [isSending, setIsSending] = useState(false) // Prevent double sending of messages
   const userId = session?.user?.id
-  
+  const { currentProfile } = useProfile() 
+  console.log('currentProfile', currentProfile?.id) // Use the profile hook to get the current user's profile
   // Chat Messages Logic
   const { messages, loading, addMessage } = useChatMessages({ chat_id: chatId })
   const handleInputFocus = () => setInputFocused(true)
@@ -53,8 +55,7 @@ export function ChatTabs({ chatId }: ChatTabsProps) {
       const optimisticMessage = {
         id: uuidv4(),  // Use UUID for a unique message ID
         content,
-        senderId: session?.user?.id,  // Use session user ID as sender
-        receiverId: chatId,
+        sender_id: currentProfile?.id,  // Use session user ID as sender
         timestamp: new Date().toISOString(),  // Use ISO string for timestamp
         status: 'sending' as const,
         is_forwarded: false,  // Set to false by default
@@ -62,10 +63,10 @@ export function ChatTabs({ chatId }: ChatTabsProps) {
         reply_to: null,  // No reply for optimistic message
         reply_to_id: null,  // No reply ID
         sender: {
-          id: session?.user?.id,  // Use session user ID
-          username: session?.user?.username || 'Unknown',
-          email: session?.user?.email || 'unknown@example.com',
-          avatar_url: session?.user?.avatar_url || 'default-avatar.jpg',
+          id: currentProfile?.id,  // Use session user ID
+          username: currentProfile?.username || 'Unknown',
+          email: currentProfile?.email || 'unknown@example.com',
+          avatar_url: currentProfile?.avatar_url || 'default-avatar.jpg',
         },
       }
 
