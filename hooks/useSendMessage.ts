@@ -2,7 +2,7 @@ import { useState, useCallback } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { useProfile } from "@/hooks/useProfile";
 
-export function useSendMessage(chatId: string, addMessage: Function) {
+export function useSendMessage(chatId: string, addMessage: (message: any) => void) {
   const [isSending, setIsSending] = useState(false);
   const { currentProfile } = useProfile();
 
@@ -33,7 +33,7 @@ export function useSendMessage(chatId: string, addMessage: Function) {
       addMessage(optimisticMessage);
 
       try {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+        await new Promise((resolve) => setTimeout(resolve, 0));
       } catch (error) {
         console.error("Error sending message:", error);
       } finally {

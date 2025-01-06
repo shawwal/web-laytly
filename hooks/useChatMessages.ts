@@ -1,61 +1,33 @@
 // hooks/useChatMessages.ts
-import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
-import { Message } from '@/models/message'; // Assuming you have a Message model
+import { useState, useEffect } from "react";
+import { useMessageState } from "@/hooks/useMessageState";
+import { usePagination } from "@/hooks/usePagination";
+import { fetchMessages } from "@/hooks/useFetchMessages";
 
 interface ChatParams {
   chat_id: string;
 }
 
-export function useChatMessages(params: ChatParams) {
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const limit = 30;
+export function useChatMessages({ chat_id }: ChatParams) {
+  const { messages, addMessage, removeMessage, setMessageList } = useMessageState();
+  const { currentOffset, limit, fetchOlderMessages, resetPagination } = usePagination();
+  const [loading, setLoading] = useState(true);
+  const [isFetchingOlder, setIsFetchingOlder] = useState(false);
 
   const fetchChatMessages = async (isOlderFetch = false) => {
-    if (!params.chat_id || params.chat_id.trim() === '') {
+    if (!chat_id || chat_id.trim() === '') {
       setLoading(false);
       return;
     }
 
     setLoading(true);
-
-    const currentOffset = isOlderFetch ? messages.length : 0;
+    if (isOlderFetch) {
+      setIsFetchingOlder(true);
+    }
 
     try {
-      const { data, error } = await supabase
-        .from('messages')
-        .select(`
-          id,
-          content,
-          timestamp,
-          sender_id,
-          is_forwarded,
-          original_message_id,
-          reply_to,
-          reply_to_id,
-          sender:profiles!messages_sender_id_fkey (
-            id,
-            username,
-            email,
-            avatar_url
-          )
-        `)
-        .eq('chat_id', params.chat_id)
-        .order('timestamp', { ascending: false })
-        .range(currentOffset, currentOffset + limit - 1);
-
-      if (error) {
-        throw new Error('Error fetching chat messages: ' + error.message);
-      }
-
-      const newMessages = data.map((message: any) => ({
-        ...message,
-        sender: message.sender || { username: 'Unknown User', email: 'unknown@example.com' },
-      }));
-
-      // Prevent duplicates before adding the new messages
-      setMessages(prevMessages => {
+      const newMessages = await fetchMessages({ chatId: chat_id, limit, currentOffset });
+      setMessageList(prevMessages => {
         const uniqueMessages = [
           ...newMessages.filter(msg => !prevMessages.some(existingMsg => existingMsg.id === msg.id)),
           ...prevMessages,
@@ -63,36 +35,24 @@ export function useChatMessages(params: ChatParams) {
         return uniqueMessages;
       });
 
-      setLoading(false);
+      if (isOlderFetch) {
+        fetchOlderMessages();
+      }
     } catch (error) {
       console.error('Error fetching chat messages:', error);
+    } finally {
       setLoading(false);
+      setIsFetchingOlder(false);
     }
-  };
-
-  const addMessage = (message: Message) => {
-    console.log('Adding message:', message);
-
-    setMessages(prevMessages => {
-      const isDuplicate = prevMessages.some(existingMsg => existingMsg.id === message.id);
-      if (isDuplicate) {
-        console.log('Duplicate message found, skipping addition');
-        return prevMessages;
-      }
-      return [message, ...prevMessages]; // Add the new message
-    });
-  };
-
-  const removeMessage = (messageId: string) => {
-    setMessages(prevMessages => prevMessages.filter(msg => msg.id !== messageId));
   };
 
   useEffect(() => {
-    if (params?.chat_id?.trim()) {
-      setMessages([]);
+    if (chat_id.trim()) {
+      setMessageList([]);
+      resetPagination();
       fetchChatMessages();
     }
-  }, [params?.chat_id]);
+  }, [chat_id]);
 
-  return { messages, loading, fetchChatMessages, addMessage, removeMessage };
+  return { messages, loading, addMessage, removeMessage, fetchChatMessages, isFetchingOlder };
 }
