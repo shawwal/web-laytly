@@ -11,8 +11,7 @@ import { ActiveContact } from '@/components/chat/active-contact'
 export function ChatView() {
   const [activeContact, setActiveContact] = useState<any>(null)
   const { activeContactId, activeName, activeAvatar, isMobileMessageView, friendId, setIsMobileMessageView } = useChat()
-
-  // Fetch contact details when activeContactId changes
+  
   // Fetch contact details when activeContactId changes
   useEffect(() => {
     if (activeContactId) {

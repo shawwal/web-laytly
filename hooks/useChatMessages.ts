@@ -1,3 +1,4 @@
+// hooks/useChatMessages.ts
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Message } from '@/models/message'; // Assuming you have a Message model

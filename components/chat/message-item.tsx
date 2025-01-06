@@ -28,10 +28,10 @@ export function MessageItem({ message, isMe, playingAudio, onToggleAudio, onOpen
       {showAvatar && !isMe && (
         isGroup &&
         <AvatarDisplay
-          userId={message.sender.id}
-          avatarUrl={message.sender.avatar_url}
-          username={message.sender.username}
-          email={message.sender.email}
+          userId={message.sender?.id}
+          avatarUrl={message.sender?.avatar_url}
+          username={message.sender?.username}
+          email={message.sender?.email}
         />
       )}
       <div
