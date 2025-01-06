@@ -1,6 +1,6 @@
 import { supabase } from '@/lib/supabase'; // Assuming Supabase client is set up
 import { Chat } from '@/models/chat'; // Assuming you have a Chat model
-
+import db from '@/db/dexie-db'; 
 /**
  * Fetches chat list for the current user including individual and group chats.
  * 
@@ -235,13 +235,31 @@ export const fetchChatsFromSupabase = async (): Promise<Chat[]> => {
   }
 };
 
+export const updateChatInSupabase = async (chat: Chat) => {
+  try {
+    // Upsert the chat: Insert or update the chat in Supabase's 'chats' table
+    const { data, error } = await supabase
+      .from('chats')
+      .upsert([chat]);
+
+    if (error) {
+      throw new Error(`Error updating chat in Supabase: ${error.message}`);
+    }
+
+    // Return the updated or inserted chat data
+    return data;
+  } catch (error) {
+    console.error('Error updating chat in Supabase:', error);
+    throw error;  // Rethrow error for further handling
+  }
+};
 
 // Update a single chat in Supabase
-export const updateChatInSupabase = async (chat: Chat): Promise<void> => {
+export const insertMessageToSupabase = async (chat: Chat): Promise<void> => {
   try {
     const { error } = await supabase
       .from('chats')
-      .upsert([chat]);
+      .insert([chat]);
 
     if (error) {
       throw error;
@@ -249,5 +267,60 @@ export const updateChatInSupabase = async (chat: Chat): Promise<void> => {
   } catch (error) {
     console.error('Error updating chat in Supabase:', error);
     throw error; // Rethrow the error to propagate it
+  }
+};
+
+// Insert message to Supabase
+export const insertMessageToDexie = async (message: any) => {
+  try {
+    await db.messages.add(message);  // Insert the message into Dexie DB
+  } catch (error) {
+    console.error('Error inserting message into DexieDB:', error);
+  }
+};
+interface FetchMessagesParams {
+  chat_id: string;
+  limit: number;
+  offset: number;
+}
+
+// Fetch messages from Supabase for a given chat ID with pagination support
+export const fetchMessagesFromSupabase = async ({ chat_id, limit, offset }: FetchMessagesParams) => {
+  try {
+    const { data, error } = await supabase
+      .from('messages')
+      .select(`
+        id,
+        content,
+        timestamp,
+        sender_id,
+        is_forwarded,
+        original_message_id,
+        reply_to,
+        reply_to_id,
+        sender:profiles!messages_sender_id_fkey (
+          id,
+          username,
+          email,
+          avatar_url
+        )
+      `)
+      .eq('chat_id', chat_id)
+      .order('timestamp', { ascending: false })
+      .range(offset, offset + limit - 1);
+
+    if (error) {
+      throw new Error('Error fetching chat messages: ' + error.message);
+    }
+
+    const newMessages = data.map((message: any) => ({
+      ...message,
+      sender: message.sender || { username: 'Unknown User', email: 'unknown@example.com' },
+    }));
+
+    return newMessages;
+  } catch (error) {
+    console.error('Error fetching chat messages:', error);
+    return [];
   }
 };

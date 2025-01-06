@@ -840,7 +840,7 @@
     "@types/cookie" "^0.6.0"
     cookie "^0.7.0"
 
-"@supabase/storage-js@2.7.1":
+"@supabase/storage-js@2.7.1", "@supabase/storage-js@^2.7.1":
   version "2.7.1"
   resolved "https://registry.yarnpkg.com/@supabase/storage-js/-/storage-js-2.7.1.tgz#761482f237deec98a59e5af1ace18c7a5e0a69af"
   integrity sha512-asYHcyDR1fKqrMpytAS1zjyEfvxuOIp1CIXX7ji4lHHcJKqyk+sLl/Vxgm4sN6u8zvuUtae9e4kDxQP2qrwWBA==

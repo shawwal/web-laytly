@@ -28,9 +28,9 @@ export function MessageInput({ onSend, onFocus, onBlur }: MessageInputProps) {
     onFocus();
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Debug log to check if multiple submits are happening
     console.log('Form submit triggered');
 
@@ -41,22 +41,25 @@ export function MessageInput({ onSend, onFocus, onBlur }: MessageInputProps) {
 
     // Set isSending flag to true to prevent multiple submits
     setIsSending(true);
-    
+
     // Debug log for checking the message content
     console.log('Submitting message:', message);
 
-    onSend(message)
-      .then(() => {
-        console.log('Message sent successfully');
-        setMessage('');  // Clear message after sending
-      })
-      .catch((error) => {
-        console.error('Error sending message:', error);
-      })
-      .finally(() => {
-        console.log('Resetting isSending flag');
-        setIsSending(false);  // Reset flag after message is sent or failed
-      });
+    try {
+      // Call onSend and await the result to ensure the message is sent before continuing
+      await onSend(message);
+
+      // Clear message after sending
+      setMessage('');
+      console.log('Message sent successfully');
+    } catch (error) {
+      // Handle error if message sending fails
+      console.error('Error sending message:', error);
+    } finally {
+      // Reset the isSending flag after sending or failure
+      setIsSending(false);
+      console.log('isSending flag reset');
+    }
   };
 
   return (
