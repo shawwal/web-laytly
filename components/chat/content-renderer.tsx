@@ -1,32 +1,39 @@
 // components/chat/content-renderer.tsx
+import { useState, useEffect } from "react";
 import { MessageList } from "@/components/chat/message-list";
 import { MessageInput } from "@/components/chat/message-input";
 import { LibraryView } from "@/components/chat/library-view";
 import { AlbumsView } from "@/components/chat/albums-view";
+import { useChatMessages } from "@/hooks/useChatMessages";
+import { useSendMessage } from "@/hooks/useSendMessage";
 import LoadingOverlay from "@/components/loading-overlay";
-import { Message } from "@/models/message";
 
 interface ContentRendererProps {
   activeTab: string;
-  messages: Message[];
   userId: string;
-  isLoadingMessages: boolean;
-  sendMessage:  any;
-  isInputFocused: boolean;
-  handleInputFocus: () => void;
-  handleInputBlur:  () => void;
+  chatId: string;
 }
 
 export function ContentRenderer({
   activeTab,
-  messages,
   userId,
-  isLoadingMessages,
-  sendMessage,
-  isInputFocused,
-  handleInputFocus,
-  handleInputBlur,
+  chatId,
 }: ContentRendererProps) {
+  const { messages, loading, addMessage } = useChatMessages({ chat_id: chatId });
+  const { sendMessage } = useSendMessage(chatId, addMessage);
+
+  const [isInputFocused, setInputFocused] = useState(false);
+  const [isLoadingMessages, setIsLoadingMessages] = useState(true);
+
+  useEffect(() => {
+    if (!loading && messages.length > 0) {
+      setIsLoadingMessages(false);
+    }
+  }, [messages, loading]);
+
+  const handleInputFocus = () => setInputFocused(true);
+  const handleInputBlur = () => setInputFocused(false);
+
   if (isLoadingMessages) {
     return <LoadingOverlay />;
   }
@@ -37,7 +44,11 @@ export function ContentRenderer({
         <div className="flex flex-col h-full">
           <MessageList messages={messages} currentUserId={userId} onInputFocus={isInputFocused} />
           <div className="p-4 pb-16 md:pb-4 space-y-4">
-            <MessageInput onSend={sendMessage} onFocus={handleInputFocus} onBlur={handleInputBlur} />
+            <MessageInput
+              onSend={sendMessage}
+              onFocus={handleInputFocus}
+              onBlur={handleInputBlur}
+            />
           </div>
         </div>
       );
