@@ -1,3 +1,4 @@
+// utils/supabase/chat.ts
 import { supabase } from '@/lib/supabase'; // Assuming Supabase client is set up
 import { Chat } from '@/models/chat'; // Assuming you have a Chat model
 import db from '@/db/dexie-db'; 

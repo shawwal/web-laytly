@@ -13,7 +13,6 @@ export function ChatView({currentUser} : any) {
   const [activeContact, setActiveContact] = useState<any>(null)
   const { activeContactId, activeName, activeAvatar, isMobileMessageView, friendId, setIsMobileMessageView } = useChat()
   // Fetch contact details when activeContactId changes
-  const currentChatId = activeContactId || '' as string;
   useEffect(() => {
     if (activeContactId) {
       // Fetch the contact details for the active chat.

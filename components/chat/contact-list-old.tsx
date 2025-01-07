@@ -10,18 +10,18 @@ import { formatDistanceToNow } from 'date-fns';
 import { checkMediaMessage } from '@/utils/messageUtils';
 
 export function ContactList() {
-  const {
-    activeContactId,
-    setActiveContactId,
-    setActiveAvatar,
-    setActiveName,
+  const { 
+    activeContactId, 
+    setActiveContactId, 
+    setActiveAvatar, 
+    setActiveName, 
     setFriendId,
     setIsGroup,
-    isMobileMessageView,
-    setIsMobileMessageView
+    isMobileMessageView, 
+    setIsMobileMessageView 
   } = useChat();  // From the chat context
 
-  const { chats, loading } = useChats();  // Using the combined hook
+  const { contacts, loading, syncError } = useChats();  // Using the combined hook
   const handleContactClick = (contactId: string, name: string, avatar: string, friendId: string, isGroup: boolean) => {
     setActiveContactId(contactId);  // Update global activeContactId from context
     setActiveName(name);
@@ -31,12 +31,12 @@ export function ContactList() {
     setIsMobileMessageView(true);  // Set mobile message view state
   };
 
-  // Sorting chats by the latest `lastMessageTime` (descending order)
-  const sortedChats = useMemo(() => {
-    return chats
+  // Sorting contacts by the latest `lastMessageTime` (descending order)
+  const sortedContacts = useMemo(() => {
+    return contacts
       .slice() // Create a shallow copy to avoid mutating the original array
-      .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
-  }, [chats]);
+      .sort((a, b) => new Date(b.lastMessageTime).getTime() - new Date(a.lastMessageTime).getTime());
+  }, [contacts]);
 
   // Skeleton UI for loading state using ShadCN's Skeleton component
   if (loading) {
@@ -66,6 +66,11 @@ export function ContactList() {
     );
   }
 
+  // Error state
+  if (syncError) {
+    return <div>Error syncing chats: {syncError}</div>;  // Error state
+  }
+
   return (
     <div
       className={cn(
@@ -79,44 +84,41 @@ export function ContactList() {
           <h2 className="text-lg font-semibold">Messages</h2>
         </div>
         <div className="flex-1 overflow-y-auto space-y-4 pb-16 sm:pb-0">
-          {sortedChats.map((chat) => {
-            const  lastMessageTime = chat.timestamp ? new Date(chat.timestamp).getTime() : 0;
-            return (
-              <button
-                key={chat.id}
-                onClick={() => handleContactClick(chat.id, chat.name, chat.avatar_url, chat.friend_id, chat.is_group)}  // Set active contact on click
-                className={cn(
-                  "flex items-center gap-3 p-4 w-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors",
-                  activeContactId === chat.id && "bg-gray-100 dark:bg-gray-800"
-                )}
-              >
-                <Avatar className="w-10 h-10">
-                  <AvatarImage
-                    src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/avatars/` + chat.avatar_url || '/default-avatar.png'}
-                    alt={chat.name}
-                    className="object-cover rounded-full w-full h-full"
-                  />
-                  {/* <AvatarFallback>{chat.name[0]}</AvatarFallback> */}
-                </Avatar>
-                <div className="flex-1 min-w-0 text-left">
-                  <div className="flex justify-between items-baseline gap-2">
-                    <h3 className="text-sm font-medium truncate" style={{ maxWidth: 'calc(100% - 50px)' }}>{chat.name}</h3>
-                    <span className="text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">
-                      {formatDistanceToNow(new Date(lastMessageTime), { addSuffix: true })}
-                    </span>
-                  </div>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 truncate max-w-full">
-                    {checkMediaMessage(chat.last_message)}
-                  </p>
+          {sortedContacts.map((contact) => (
+            <button
+              key={contact.id}
+              onClick={() => handleContactClick(contact.id, contact.name, contact.avatar, contact.friend_id, contact.is_group)}  // Set active contact on click
+              className={cn(
+                "flex items-center gap-3 p-4 w-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors",
+                activeContactId === contact.id && "bg-gray-100 dark:bg-gray-800"
+              )}
+            >
+              <Avatar className="w-10 h-10">
+                <AvatarImage
+                  src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/avatars/` + contact.avatar || '/default-avatar.png'}
+                  alt={contact.name}
+                  className="object-cover rounded-full w-full h-full"
+                />
+                <AvatarFallback>{contact.name[0]}</AvatarFallback>
+              </Avatar>
+              <div className="flex-1 min-w-0 text-left">
+                <div className="flex justify-between items-baseline gap-2">
+                  <h3 className="text-sm font-medium truncate" style={{ maxWidth: 'calc(100% - 50px)' }}>{contact.name}</h3>
+                  <span className="text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">
+                    {formatDistanceToNow(new Date(contact.lastMessageTime), { addSuffix: true })}
+                  </span>
                 </div>
-                {chat.unread_count > 0 && (
-                  <div className="bg-blue-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                    {chat.unread_count}
-                  </div>
-                )}
-              </button>
-            )
-          })}
+                <p className="text-sm text-gray-500 dark:text-gray-400 truncate max-w-full">
+                  {checkMediaMessage(contact.lastMessage)}
+                </p>
+              </div>
+              {contact.unreadCount > 0 && (
+                <div className="bg-blue-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                  {contact.unreadCount}
+                </div>
+              )}
+            </button>
+          ))}
         </div>
       </div>
     </div>
