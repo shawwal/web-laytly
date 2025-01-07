@@ -64,7 +64,13 @@ export const resetDexieDb = async () => {
         media_url: undefined, // Use undefined instead of null
         reaction: undefined, // Use undefined instead of null
         reply_to: undefined, // Use undefined instead of null
-        sync_timestamp: new Date().toISOString(), // Use a valid timestamp
+        sync_timestamp: new Date().toISOString(),
+        sender: {
+          id: 'default',
+          username: 'defaultUser',
+          email: '',
+          avatar_url: ''
+        } // Provide a valid value for the sender property
       });
     }
 

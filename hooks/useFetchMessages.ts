@@ -1,11 +1,6 @@
 // hooks/useFetchMessages.ts
 import { supabase } from "@/lib/supabase";
-
-interface FetchMessagesParams {
-  chatId: string;
-  limit?: number;
-  currentOffset: number;
-}
+import { FetchMessagesParams } from "@/models/message";
 
 export async function fetchMessages({ chatId, limit = 30, currentOffset }: FetchMessagesParams) {
   try {
@@ -20,6 +15,7 @@ export async function fetchMessages({ chatId, limit = 30, currentOffset }: Fetch
         original_message_id,
         reply_to,
         reply_to_id,
+        status,
         sender:profiles!messages_sender_id_fkey (
           id,
           username,

@@ -17,9 +17,11 @@ export function AvatarDisplay({ userId, avatarUrl, username, email }: AvatarDisp
           src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/avatars/${avatarUrl}`}
           alt={username}
         />
-        <AvatarFallback>
-          {username ? username[0].toUpperCase() : email[0].toUpperCase()}
-        </AvatarFallback>
+        {username || email &&
+          <AvatarFallback>
+            {username ? username[0].toUpperCase() : email[0].toUpperCase()}
+          </AvatarFallback>
+        }
       </Avatar>
     </Link>
   )

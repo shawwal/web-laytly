@@ -1,3 +1,10 @@
+interface Sender {
+  id: string;
+  username: string;
+  email: string;
+  avatar_url: string;
+}
+
 export interface Message {
   id: string;               // UUID for the message
   chat_id: string;          // UUID for the associated chat
@@ -17,4 +24,11 @@ export interface Message {
   reaction?: string;        // Reaction (e.g., emoji or reaction text) (optional)
   reply_to?: string;        // UUID of the message being replied to (optional)
   sync_timestamp?: string;  // Timestamp when the message was synchronized (optional)
+  sender: Sender;            // Sender details
+}
+
+export interface FetchMessagesParams {
+  chatId: string;
+  limit?: number;
+  currentOffset: number;
 }

@@ -11,7 +11,7 @@ const useSenderDetails = () => {
 
     const { data, error } = await supabase
       .from('profiles')
-      .select('username, email, id')
+      .select('username, email, id, avatar_url')
       .eq('id', senderId)
       .single();
 
@@ -20,7 +20,7 @@ const useSenderDetails = () => {
       return null;
     }
 
-    const senderData = { id: data.id, username: data.username, email: data.email };
+    const senderData = { id: data.id, username: data.username, email: data.email, avatar_url: data.avatar_url };
     senderDetailsCache[senderId] = senderData;
     return senderData;
   };
