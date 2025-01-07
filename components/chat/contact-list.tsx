@@ -96,7 +96,7 @@ export function ContactList() {
                     alt={chat.name}
                     className="object-cover rounded-full w-full h-full"
                   />
-                  {/* <AvatarFallback>{chat.name[0]}</AvatarFallback> */}
+                  <AvatarFallback>{chat.name[0]}</AvatarFallback>
                 </Avatar>
                 <div className="flex-1 min-w-0 text-left">
                   <div className="flex justify-between items-baseline gap-2">

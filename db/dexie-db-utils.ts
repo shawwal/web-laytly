@@ -40,7 +40,10 @@ export const resetDexieDb = async () => {
         is_group: false,
         name: 'Default Chat',
         avatar_url: 'default_chat_avatar.png',
-        unread_count: 0
+        unread_count: 0,
+        lastMessageTime: '',
+        lastMessage: '',
+        unreadCount: 0
       });
     }
 

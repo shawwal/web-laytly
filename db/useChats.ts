@@ -1,12 +1,11 @@
-
 'use client';
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import db from '@/db/dexie-db'; // Import Dexie DB
 import { useLiveQuery } from 'dexie-react-hooks'; // Import useLiveQuery hook from dexie-react-hooks
 import { Chat } from '@/models/chat'; // Import the Chat model
-import { fetchChatsFromSupabase } from '@/utils/supabase/chat'; // The function you provided for fetching chats from Supabase
-import { fetchSenderDetails } from '@/utils/supabase/chat';
+import { fetchChatsFromSupabase } from '@/utils/supabase/chat'; // Function to fetch chats from Supabase
+// import useSenderDetails from '@/hooks/useSenderDetails';
 
 export const useChats = () => {
   const liveChats = useLiveQuery<Chat[]>(() => db.chats.toArray()); // Fetch chats from Dexie DB
@@ -15,7 +14,7 @@ export const useChats = () => {
   const [syncError, setSyncError] = useState<string | null>(null); // To handle errors during sync
   const [fetchedFromSupabase, setFetchedFromSupabase] = useState<boolean>(false); // To track if we already fetched chats from Supabase
   const [dexieLoading, setDexieLoading] = useState<boolean>(true); // Loading state for Dexie DB data
-
+  // const { fetchSenderDetails } = useSenderDetails();
   // Initialize local chats from Dexie DB and also listen for changes
   useEffect(() => {
     console.log('useEffect: liveChats changed or mounted');
@@ -80,29 +79,84 @@ export const useChats = () => {
   }, []);
 
   // Handle chat insert event (new chat added)
-  const handleChatInsert = (payload: any) => {
-    console.log('handleChatInsert: New chat inserted', payload);
+  // const handleChatInsert = async (payload: any) => {
+  //   console.log('handleChatInsert: New chat inserted', payload);
+  //   const newChat = payload.new;
+  //   console.log('newChat', newChat)
+  //   console.log('newChat.sender_id', newChat.sender_id)
+  //   try {
+  //     // Fetch sender details for the new chat (assuming we need to get sender info)
+  //     const senderData = await fetchSenderDetails(newChat.sender_id);
+  //     const updatedNewChat = { ...newChat, sender: senderData }; // Add sender details to the chat
+  //     console.log('senderData insert', senderData)
+  //     // Update Dexie DB and the chats list
+  //     await db.chats.put(updatedNewChat);
+  //     setChats((prevChats) => [updatedNewChat, ...prevChats]); // Add new chat to the state
+  //   } catch (error) {
+  //     console.error('Error inserting new chat:', error);
+  //   }
+  // };
+
+  const handleChatInsert = async (payload: any) => {
     const newChat = payload.new;
-
-    // Update Dexie DB and the chats list
-    db.chats.put(newChat).catch((error) => console.error('Error inserting new chat:', error));
-
-    setChats((prevChats) => [newChat, ...prevChats]); // Add new chat to the state
+    console.log('handleChatInsert: New chat inserted', newChat);
+  
+    try {
+      // Only update relevant fields like last_message and timestamp, no need to fetch sender details
+      const updatedNewChat = { 
+        ...newChat, 
+        last_message: newChat.last_message,  // Ensure the last message is correctly updated
+        timestamp: newChat.timestamp          // Ensure the timestamp is updated
+      };
+  
+      // Update Dexie DB with the new chat
+      await db.chats.put(updatedNewChat);
+  
+      // Update state with the new chat (prepend it to the list to keep it at the top)
+      setChats((prevChats) => [updatedNewChat, ...prevChats]);
+    } catch (error) {
+      console.error('Error inserting new chat:', error);
+    }
   };
 
   // Handle chat update event (chat data updated)
-  const handleChatUpdate = (payload: any) => {
-    console.log('handleChatUpdate: Chat updated', payload);
+  // const handleChatUpdate = async (payload: any) => {
+  //   console.log('handleChatUpdate: Chat updated', payload);
+  //   const updatedChat = payload.new;
+  //   console.log('updatedChat', updatedChat)
+  //   // console.log('updatedChat.sender_id', updatedChat.friend_id)
+  //   try {
+  //     // Fetch sender details for the updated chat (if needed)
+  //     // const senderData = await fetchSenderDetails(updatedChat.friend_id);
+  //     // console.log('senderData', senderData)
+  //     const updatedChatWithSender = { ...updatedChat, last_message: updatedChat.last_message }; // Add sender details to the chat
+  //     console.log('updatedChatWithSender', updatedChatWithSender)
+  //     // Update Dexie DB
+  //     // await db.chats.update(updatedChatWithSender.id, updatedChatWithSender);
+
+  //     // Update state with the updated chat
+  //     setChats((prevChats) => prevChats.map((chat) => (chat.id === updatedChatWithSender.id ? updatedChatWithSender : chat)));
+  //   } catch (error) {
+  //     console.error('Error updating chat:', error);
+  //   }
+  // };
+
+  const handleChatUpdate = async (payload: any) => {
     const updatedChat = payload.new;
-
-    // Update Dexie DB
-    db.chats.update(updatedChat.id, updatedChat).catch((error) => console.error('Error updating chat:', error));
-
-    setChats((prevChats) => {
-      return prevChats.map((chat) =>
-        chat.id === updatedChat.id ? { ...chat, ...updatedChat } : chat
+    console.log('updatedChat', updatedChat)
+    try {
+      // Update Dexie DB by only updating the last_message field
+      await db.chats.update(updatedChat.id, { last_message: updatedChat.last_message, timestamp: updatedChat.timestamp });
+  
+      // Update state to reflect the last_message change
+      setChats((prevChats) => 
+        prevChats.map((chat) => 
+          chat.id === updatedChat.id ? { ...chat, last_message: updatedChat.last_message, timestamp: updatedChat.timestamp } : chat
+        )
       );
-    });
+    } catch (error) {
+      console.error('Error updating chat:', error);
+    }
   };
 
   // Handle chat delete event (chat deleted)
@@ -140,12 +194,20 @@ export const useChats = () => {
   }, [chats]);
 
   // Handler for new message event
-  const handleNewMessage = (payload: any) => {
+  const handleNewMessage = async (payload: any) => {
     console.log('handleNewMessage: New message received', payload);
     const newMessage = payload.new;
 
-    // Insert the new message into Dexie DB
-    db.messages.put(newMessage).catch((error) => console.error('Error inserting new message:', error));
+    try {
+      // Fetch sender details for the new message (if needed)
+      // const senderData = await fetchSenderDetails(newMessage.sender_id);
+      // const updatedMessage = { ...newMessage, sender: senderData }; // Add sender details to the message
+
+      // Insert the new message into Dexie DB
+      await db.messages.put(newMessage);
+    } catch (error) {
+      console.error('Error inserting new message:', error);
+    }
   };
 
   // Handler for updated message event

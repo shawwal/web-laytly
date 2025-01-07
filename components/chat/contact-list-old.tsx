@@ -3,7 +3,7 @@
 import { useMemo } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useChat } from '@/contexts/chat-context';  // For setting active chat
-import { useChats } from '@/db/useChats';  // Importing the combined useChats hook
+import { useChats } from '@/db/useChats-old';  // Importing the combined useChats hook
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton'; // Import the Skeleton component from ShadCN UI
 import { formatDistanceToNow } from 'date-fns';
