@@ -12,7 +12,7 @@ export default function Page() {
   const { session, loading } = useSession(); // Use the custom session hook
   const [isRedirecting, setIsRedirecting] = useState(false); // To prevent multiple redirects
   const [mounted, setMounted] = useState(false); // Track mounting status
-
+  const userId = session?.user?.id as string;
   useEffect(() => {
     setMounted(true); // After first mount, we can perform client-specific logic
   }, []);
@@ -35,7 +35,7 @@ export default function Page() {
     <ChatProvider>
       <div className="flex h-full bg-white dark:bg-gray-900">
         <ContactList />
-        <ChatView />
+        <ChatView currentUser={userId} />
       </div>
     </ChatProvider>
   );

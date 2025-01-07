@@ -3,7 +3,7 @@ import { supabase } from '@/lib/supabase'; // Import Supabase client for web
 export const downloadVideo = async (path: string): Promise<string | null> => {
   try {
     // Log the path to debug
-    console.log('Requested path:', path);
+    // console.log('Requested path:', path);
 
     // Generate a signed URL for the video (valid for 24 hours)
     const { data, error: urlError } = await supabase

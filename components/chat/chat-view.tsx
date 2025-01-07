@@ -7,12 +7,13 @@ import { ChevronLeft } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { ChatTabs } from '@/components/chat/chat-tabs'
 import { ActiveContact } from '@/components/chat/active-contact'
+import { resetUnreadCount } from '@/utils/resetUnreadCount'
 
-export function ChatView() {
+export function ChatView({currentUser} : any) {
   const [activeContact, setActiveContact] = useState<any>(null)
   const { activeContactId, activeName, activeAvatar, isMobileMessageView, friendId, setIsMobileMessageView } = useChat()
-  
   // Fetch contact details when activeContactId changes
+  const currentChatId = activeContactId || '' as string;
   useEffect(() => {
     if (activeContactId) {
       // Fetch the contact details for the active chat.
@@ -33,6 +34,17 @@ export function ChatView() {
   const handleBack = () => {
     setIsMobileMessageView(false)
   }
+
+  useEffect(() => {
+    const resetUnread = async () => {
+      if(activeContactId && currentUser) {
+        await resetUnreadCount({ chatId: activeContactId, userId: currentUser});
+      }
+    };
+
+    resetUnread();
+  }, [activeContactId, currentUser]);
+
 
   // Render loading or empty state if no active contact is selected or on small screens
   if (!activeContactId || (!isMobileMessageView && window.innerWidth < 768)) {

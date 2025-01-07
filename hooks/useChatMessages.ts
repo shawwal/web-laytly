@@ -60,7 +60,7 @@ export function useChatMessages({ chat_id }: ChatParams) {
   useEffect(() => {
     if (!chat_id.trim()) return;
 
-    console.log(`Subscribing to real-time updates for chat_id: ${chat_id}`);
+    // console.log(`Subscribing to real-time updates for chat_id: ${chat_id}`);
 
     const handleNewMessage = async (payload: any) => {
       const senderData = await fetchSenderDetails(payload.new.sender_id);
@@ -70,16 +70,16 @@ export function useChatMessages({ chat_id }: ChatParams) {
       addMessage(newMessage); // Add the new message to state
     };
     const handleUpdateMessage = async (payload: any) => {
-      console.log('triggered edit:', payload);
+      // console.log('triggered edit:', payload);
       const updatedMessage = payload.new;
-      console.log('Re-adding updated message:', updatedMessage);
+      // console.log('Re-adding updated message:', updatedMessage);
 
       editMessage(updatedMessage); // Update or replace the message
     };
     const handleDeleteMessage = async (payload: any) => {
-      console.log('triggered delete:', payload);
+      // console.log('triggered delete:', payload);
       const deletedMessageId = payload.old.id;
-      console.log('Removing message with ID:', deletedMessageId);
+      // console.log('Removing message with ID:', deletedMessageId);
       removeMessage(deletedMessageId); // Remove the deleted message by ID
     };
 
@@ -94,7 +94,7 @@ export function useChatMessages({ chat_id }: ChatParams) {
 
     // Cleanup subscription on unmount
     return () => {
-      console.log(`Unsubscribing from real-time updates for chat_id: ${chat_id}`);
+      // console.log(`Unsubscribing from real-time updates for chat_id: ${chat_id}`);
       channel.unsubscribe();
     };
   }, [chat_id]);

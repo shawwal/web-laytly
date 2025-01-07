@@ -6,14 +6,13 @@ interface SessionWithUser extends Session {
   user: User; // Make sure user is always included
 }
 
-const useSession = (): { session: Session | null; loading: boolean } => {
+const useSession = (): { session: Session | null; loading: boolean; setSession: React.Dispatch<React.SetStateAction<Session | null>> } => {
   const [session, setSession] = useState<SessionWithUser | null>(null);
   const [loading, setLoading] = useState<boolean>(true); // Loading state to track session loading
 
   useEffect(() => {
     const getSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      // console.log('Session fetched on mount:', session); // Debugging
       setSession(session);
       setLoading(false); // Set loading to false once session is fetched
     };
@@ -21,7 +20,6 @@ const useSession = (): { session: Session | null; loading: boolean } => {
     getSession(); // Get the session on mount
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      // console.log('Session changed:', session); // Debugging
       setSession(session);
     });
 
@@ -31,7 +29,7 @@ const useSession = (): { session: Session | null; loading: boolean } => {
     };
   }, []);
 
-  return { session, loading };
+  return { session, loading, setSession };
 };
 
 export default useSession;
