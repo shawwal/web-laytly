@@ -17,26 +17,26 @@ export const useChats = () => {
   // const { fetchSenderDetails } = useSenderDetails();
   // Initialize local chats from Dexie DB and also listen for changes
   useEffect(() => {
-    console.log('useEffect: liveChats changed or mounted');
+    // console.log('useEffect: liveChats changed or mounted');
     if (liveChats && liveChats.length > 0) {
-      console.log('useEffect: Dexie data available', liveChats);
+      // console.log('useEffect: Dexie data available', liveChats);
       setDexieLoading(false); // Dexie data is ready, stop loading
       setChats(liveChats); // Set chats state with Dexie data
     } else {
-      console.log('useEffect: Dexie data not available, loading...');
+      // console.log('useEffect: Dexie data not available, loading...');
       setDexieLoading(true); // If no chats are available in Dexie DB, set loading state
     }
   }, [liveChats]); // Re-run whenever liveChats changes (from Dexie DB)
 
   // Fetch chat list from Supabase only if Dexie DB is empty and hasn't been fetched from Supabase yet
   useEffect(() => {
-    console.log('useEffect: Checking if we need to fetch chats from Supabase');
+    // console.log('useEffect: Checking if we need to fetch chats from Supabase');
     const fetchChats = async () => {
-      console.log('fetchChats: Starting to fetch from Supabase...');
+      // console.log('fetchChats: Starting to fetch from Supabase...');
       setLoading(true); // Set loading to true during the fetch
       try {
         const chatsFromSupabase = await fetchChatsFromSupabase(); // Fetch chats from Supabase
-        console.log('fetchChats: Successfully fetched chats from Supabase', chatsFromSupabase);
+        // console.log('fetchChats: Successfully fetched chats from Supabase', chatsFromSupabase);
         // Store the fetched chats in Dexie DB and state
         await db.chats.bulkPut(chatsFromSupabase);
         setChats(chatsFromSupabase);
@@ -172,7 +172,7 @@ export const useChats = () => {
 
   // Subscribe to message updates using Supabase real-time for each chat
   useEffect(() => {
-    console.log('useEffect: Subscribing to message updates');
+    // console.log('useEffect: Subscribing to message updates');
     if (chats.length === 0) return; // No chats to subscribe to
 
     const messageChannels = chats.map((chat) => {
@@ -188,7 +188,7 @@ export const useChats = () => {
 
     // Cleanup message channels when component unmounts
     return () => {
-      console.log('useEffect: Unsubscribing from message updates');
+      // console.log('useEffect: Unsubscribing from message updates');
       messageChannels.forEach((channel) => channel.unsubscribe());
     };
   }, [chats]);

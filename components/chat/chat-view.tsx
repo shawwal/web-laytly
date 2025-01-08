@@ -1,51 +1,61 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { useChat } from '@/contexts/chat-context'
-import { Button } from '@/components/ui/button'
-import { ChevronLeft } from 'lucide-react'
-import { cn } from '@/lib/utils'
-import { ChatTabs } from '@/components/chat/chat-tabs'
-import { ActiveContact } from '@/components/chat/active-contact'
-import { resetUnreadCount } from '@/utils/resetUnreadCount'
+import { useState, useEffect } from 'react';
+import { useChat } from '@/contexts/chat-context';
+import { Button } from '@/components/ui/button';
+import { ChevronLeft } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { ChatTabs } from '@/components/chat/chat-tabs';
+import { ActiveContact } from '@/components/chat/active-contact';
+import { resetUnreadCount } from '@/utils/resetUnreadCount';
+import useRoomPresence from '@/hooks/useRoomPresence'; // Import the correct hook
 
-export function ChatView({currentUser} : any) {
-  const [activeContact, setActiveContact] = useState<any>(null)
-  const { activeContactId, activeName, activeAvatar, isMobileMessageView, friendId, setIsMobileMessageView } = useChat()
-  // Fetch contact details when activeContactId changes
+
+interface chatViewProps {
+  currentUser: string
+}
+
+export function ChatView({currentUser}:  chatViewProps) {
+  const userId = currentUser;
+
+  console.log('userId', userId)
+  const [activeContact, setActiveContact] = useState<any>(null);
+  const { activeContactId, activeName, activeAvatar, isMobileMessageView, friendId, setIsMobileMessageView } = useChat();
+
   useEffect(() => {
     if (activeContactId) {
-      // Fetch the contact details for the active chat.
       fetchContacts();
     }
   }, [activeContactId]);
 
   const fetchContacts = async () => {
-    // Replace this with actual logic to fetch the contact details, like from Supabase or Dexie
     setActiveContact({
       id: activeContactId,
       friend_id: friendId,
       name: activeName,
-      avatar: activeAvatar
+      avatar: activeAvatar,
     });
   };
 
   const handleBack = () => {
-    setIsMobileMessageView(false)
-  }
+    setIsMobileMessageView(false);
+  };
 
   useEffect(() => {
     const resetUnread = async () => {
-      if(activeContactId && currentUser) {
-        await resetUnreadCount({ chatId: activeContactId, userId: currentUser});
+      if (activeContactId) { // Use user from useUser
+        await resetUnreadCount({ chatId: activeContactId, userId: userId });
       }
     };
 
     resetUnread();
-  }, [activeContactId, currentUser]);
+  }, [activeContactId, userId]); // Add user to dependency array
 
+  const { presences, error } = useRoomPresence(
+   `public:messages${activeContactId}`,
+    userId || ''
+  );
 
-  // Render loading or empty state if no active contact is selected or on small screens
   if (!activeContactId || (!isMobileMessageView && window.innerWidth < 768)) {
     return (
       <div className="hidden md:flex flex-col flex-1 items-center justify-center text-center p-4">
@@ -53,29 +63,40 @@ export function ChatView({currentUser} : any) {
           Select a conversation to start messaging
         </p>
       </div>
-    )
+    );
   }
 
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+  console.log('presences', presences)
+  console.log('error', error)
   return (
-    <div className={cn(
-      "flex flex-col flex-1 relative z-10",
-      !isMobileMessageView && 'hidden md:flex',
-      "w-full"
-    )}>
+    <div
+      className={cn(
+        'flex flex-col flex-1 relative z-10',
+        !isMobileMessageView && 'hidden md:flex',
+        'w-full'
+      )}
+    >
       <div className="border-b dark:border-gray-800 p-4 flex items-center backdrop-blur-xl bg-white/50 dark:bg-gray-900/50">
-        <Button
-          variant="ghost"
-          size="icon"
-          className="md:hidden mr-2"
-          onClick={handleBack}
-        >
+        <Button variant="ghost" size="icon" className="md:hidden mr-2" onClick={handleBack}>
           <ChevronLeft className="h-5 w-5" />
         </Button>
         {activeContact && <ActiveContact contact={activeContact} />}
+        {/* Display presence information */}
+        <div className="ml-4">
+          {presences.map((presence) => (
+            <span key={presence.user} className="inline-flex items-center mr-2">
+              <span className={`w-2 h-2 rounded-full mr-1 ${presence.online ? 'bg-green-500' : 'bg-gray-400'}`} />
+              {presence.user === userId ? "You" : presence.user}
+            </span>
+          ))}
+        </div>
       </div>
       <div className="flex-1 overflow-hidden flex flex-col">
         <ChatTabs chatId={activeContactId} />
       </div>
     </div>
-  )
+  );
 }

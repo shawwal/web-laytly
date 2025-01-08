@@ -8,7 +8,7 @@ export function useMessageState() {
     setMessages(prevMessages => {
       // Check if the message already exists in the state
       if (prevMessages.some(existingMsg => existingMsg.id === message.id)) {
-        console.log('Message with this ID already exists:', message.id);
+        // console.log('Message with this ID already exists:', message.id);
         return prevMessages; // Do not add the message again if it exists
       }
       // Add the message at the beginning of the list (or at any position you prefer)

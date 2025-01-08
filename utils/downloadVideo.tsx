@@ -20,7 +20,7 @@ export const downloadVideo = async (path: string): Promise<string | null> => {
       throw new Error('Signed URL not available');
     }
 
-    console.log('Signed URL:', data.signedUrl); // Log the signed URL for debugging
+    // console.log('Signed URL:', data.signedUrl); // Log the signed URL for debugging
 
     return data.signedUrl; // Return the signed URL to be used in the video tag
   } catch {
