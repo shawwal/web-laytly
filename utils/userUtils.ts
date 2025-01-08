@@ -12,6 +12,12 @@ interface UserProfile {
   role: string;
 }
 
+// Utility function to check if a UUID is valid
+export const isValidUUID = (uuid: string) => {
+  const regex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+  return regex.test(uuid);
+};
+
 export const updateDisplayName = async (newDisplayName: string) => {
   try {
     const { error } = await supabase.auth.updateUser({

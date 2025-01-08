@@ -31,6 +31,10 @@ export function useSendMessage(chatId: string, addMessage: (message: any) => voi
           avatar_url: currentProfile?.avatar_url || "default-avatar.jpg",
         },
       };
+
+      // Optimistically add the message to the UI
+      addMessage(optimisticMessage);
+
       try {
         // Insert message into Supabase
         const { data, error } = await supabase

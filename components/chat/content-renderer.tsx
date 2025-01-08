@@ -1,17 +1,19 @@
 // components/chat/content-renderer.tsx
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { MessageList } from "@/components/chat/message-list";
 import { MessageInput } from "@/components/chat/message-input";
 import { LibraryView } from "@/components/chat/library-view";
 import { AlbumsView } from "@/components/chat/albums-view";
-import { useChatMessages } from "@/hooks/useChatMessages";
-import { useSendMessage } from "@/hooks/useSendMessage";
+import useChatMessages from "@/hooks/chat/useChatMessages";
 import LoadingOverlay from "@/components/loading-overlay";
+import useChatInitialization from "@/hooks/useChatInitialization";
+import useSenderDetails from "@/hooks/useSenderDetails";
+// import { processMessagesWithDates } from '@/utils/messageProcessing';
 
 interface ContentRendererProps {
   activeTab: string;
   userId: string;
-  chatId: string;
+  chatId: string | any;
 }
 
 export function ContentRenderer({
@@ -19,22 +21,39 @@ export function ContentRenderer({
   userId,
   chatId,
 }: ContentRendererProps) {
-  const { messages, loading, addMessage } = useChatMessages({ chat_id: chatId });
-  const { sendMessage } = useSendMessage(chatId, addMessage);
-  console.log('message', messages);
-  const [isInputFocused, setInputFocused] = useState(false);
-  const [isLoadingMessages, setIsLoadingMessages] = useState(true);
+  const [loading, setLoading] = useState(false);
+  // const { fetchChatMessages } = useChatMessages(chatId);
+  const { fetchSenderDetails } = useSenderDetails(); 
+  const [chatMessages, setChatMessages] = useState([]);
+  // console.log('userId', userId)
+  // console.log('chatId', chatId)
+  const { fetchChatMessages, handleSendMessage } = useChatMessages(chatId, userId);
+  
+  useChatInitialization(chatId, setLoading, fetchChatMessages, fetchSenderDetails, setChatMessages);
 
-  useEffect(() => {
-    if (!loading && messages.length > 0) {
-      setIsLoadingMessages(false);
-    }
-  }, [messages, loading]);
+  // const { messages, loading, addMessage } = useChatMessages({ chat_id: chatId });
+
+  // const processedMessages = useMemo(() => {
+  //   const messages = chatMessages[chatId] || [];
+  //   return processMessagesWithDates([...messages].reverse());
+  // }, [chatMessages, chatId]);
+  // console.log('processedMessages', processedMessages)
+
+  const messages = chatMessages[chatId] || [];
+  
+  const [isInputFocused, setInputFocused] = useState(false);
+  // const [isLoadingMessages, setIsLoadingMessages] = useState(true);
+
+  // useEffect(() => {
+  //   if (!loading && messages.length > 0) {
+  //     setIsLoadingMessages(false);
+  //   }
+  // }, [messages, loading]);
 
   const handleInputFocus = () => setInputFocused(true);
   const handleInputBlur = () => setInputFocused(false);
 
-  if (isLoadingMessages) {
+  if (loading) {
     return <LoadingOverlay />;
   }
 
@@ -45,7 +64,7 @@ export function ContentRenderer({
           <MessageList messages={messages} currentUserId={userId} onInputFocus={isInputFocused} />
           <div className="p-4 pb-16 md:pb-4 space-y-4">
             <MessageInput
-              onSend={sendMessage}
+              onSend={handleSendMessage}
               onFocus={handleInputFocus}
               onBlur={handleInputBlur}
             />

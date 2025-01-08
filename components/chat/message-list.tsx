@@ -30,7 +30,7 @@ export function MessageList({ messages, currentUserId, onInputFocus }: MessageLi
   const [isListRendered, setIsListRendered] = useState(false);
 
   // Reverse the messages so the newest one is at the bottom
-  const reversedMessages = [...messages].reverse();
+  const reversedMessages = [...messages];
 
   useEffect(() => {
     // Set a small timeout to simulate the message loading time, then set the list as rendered

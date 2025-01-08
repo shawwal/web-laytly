@@ -1,143 +1,116 @@
-// import { useEffect, useState } from 'react';
-// import { supabase } from '@/lib/supabase';
-// import db from '@/db/dexie-db'; // Import Dexie DB
-// import { createChatFolder } from '@/utils/folderActions';
-// import { insertMessageToDexie } from '@/utils/supabase/chat';
-// import { syncMessagesWithSupabase } from '@/utils/syncUtils';
+import { useEffect } from 'react';
+import { supabase } from "@/lib/supabase";
+import { createChatFolder } from '@/utils/folderActions';
 
-// const useChatInitialization = (params: any, setLoading: any, fetchChatMessages: any, fetchSenderDetails: any, setChatMessages: any, scrollToBottom: any) => {
-//   const [isOffline, setIsOffline] = useState(false); // Track offline status
+const useChatInitialization = (chatId: any, setLoading: any, fetchChatMessages: any, fetchSenderDetails: any, setChatMessages: any) => {
+  useEffect(() => {
+    const loadMessages = async () => {
+      console.log('Loading messages for chatId:', chatId);
+      setLoading(true);
 
-//   // Check if the user is online or offline
-//   useEffect(() => {
-//     const handleOnline = () => {
-//       setIsOffline(false);
-//       syncMessagesWithSupabase(); // Sync data to Supabase when the device goes online
-//     };
-    
-//     const handleOffline = () => {
-//       setIsOffline(true);
-//     };
+      const messages = await fetchChatMessages();
+      console.log('Fetched messages:', messages);
 
-//     window.addEventListener('online', handleOnline);
-//     window.addEventListener('offline', handleOffline);
+      // Check if messages are not empty before proceeding
+      if (messages.length > 0) {
+        console.log('Messages are not empty, proceeding to fetch sender data.');
 
-//     return () => {
-//       window.removeEventListener('online', handleOnline);
-//       window.removeEventListener('offline', handleOffline);
-//     };
-//   }, []);
+        const messagesWithSenderInfo = await Promise.all(
+          messages.map(async (msg: any) => {
+            console.log(`Fetching sender details for sender_id: ${msg.sender_id}`);
+            const senderData = await fetchSenderDetails(msg.sender_id);
+            return { ...msg, sender: senderData };
+          })
+        );
 
-//   // Load messages from either Supabase or DexieDB based on online/offline status
-//   useEffect(() => {
-//     const loadMessages = async () => {
-//       setLoading(true);
-//       let messages = [];
+        console.log('Messages with sender info:', messagesWithSenderInfo);
 
-//       if (isOffline) {
-//         // Load from DexieDB when offline
-//         messages = await db.messages.toArray();
-//       } else {
-//         // Load from Supabase when online
-//         messages = await fetchChatMessages();
-//       }
+        setChatMessages((prevState: any) => ({
+          ...prevState,
+          [chatId]: messagesWithSenderInfo,
+        }));
+        console.log('Chat messages updated in state.');
+      } else {
+        console.log('No messages to load.');
+      }
 
-//       // Fetch sender info
-//       const messagesWithSenderInfo = await Promise.all(
-//         messages.map(async (msg: any) => {
-//           const senderData = await fetchSenderDetails(msg.sender_id);
-//           return { ...msg, sender: senderData };
-//         })
-//       );
+      setLoading(false);
+      console.log('Loading complete.');
+    };
 
-//       setChatMessages((prevState: any) => ({
-//         ...prevState,
-//         [params.chat_id]: messagesWithSenderInfo,
-//       }));
+    loadMessages();
 
-//       setLoading(false);
-//     };
+    const handleNewMessage = async (payload: any) => {
+      console.log('Handling new message payload:', payload);
+      const senderData = await fetchSenderDetails(payload.new.sender_id);
+      console.log(`Fetched sender details for new message:`, senderData);
 
-//     loadMessages();
-//   }, [params.chat_id, setChatMessages, fetchChatMessages, fetchSenderDetails, isOffline, setLoading]);
+      const newMessage = { ...payload.new, sender: senderData };
+      console.log('New message after adding sender details:', newMessage);
 
-//   // Sync messages with Supabase when new messages are added locally (e.g., during offline mode)
-//   useEffect(() => {
-//     const channel = supabase
-//       .channel(`public:messages:chat_id=eq.${params.chat_id}`)
-//       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `chat_id=eq.${params.chat_id}` }, handleNewMessage)
-//       .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'messages', filter: `chat_id=eq.${params.chat_id}` }, handleDeleteMessage)
-//       .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'messages', filter: `chat_id=eq.${params.chat_id}` }, handleUpdateMessage)
-//       .subscribe();
+      setChatMessages((prevState: any) => {
+        const updatedMessages = [...(prevState[chatId] || []), newMessage];
+        const uniqueMessages = updatedMessages.filter((msg, index, self) =>
+          index === self.findIndex((m) => m.id === msg.id)
+        );
+        console.log('Unique messages after adding new message:', uniqueMessages);
+        return { ...prevState, [chatId]: uniqueMessages };
+      });
+      // scrollToBottom();
+    };
 
-//     return () => {
-//       supabase.removeChannel(channel);
-//     };
-//   }, [params.chat_id]);
+    const handleDeleteMessage = async (payload: any) => {
+      console.log('Handling delete message payload:', payload);
+      setChatMessages((prevState: any) => {
+        const updatedMessages = (prevState[chatId] || []).filter(msg => msg.id !== payload.old.id);
+        console.log('Updated messages after deletion:', updatedMessages);
+        return { ...prevState, [chatId]: updatedMessages };
+      });
+    };
 
-//   // Handle new message
-//   const handleNewMessage = async (payload: any) => {
-//     const senderData = await fetchSenderDetails(payload.new.sender_id);
-//     const newMessage = { ...payload.new, sender: senderData };
+    const handleUpdateMessage = async (payload: any) => {
+      console.log('Handling update message payload:', payload);
+      const updatedMessage = payload.new;
+      const senderData = await fetchSenderDetails(updatedMessage.sender_id);
+      console.log(`Fetched sender details for updated message:`, senderData);
 
-//     if (isOffline) {
-//       // Insert message into DexieDB if offline
-//       await insertMessageToDexie(newMessage);
-//     } else {
-//       setChatMessages((prevState: any) => {
-//         const updatedMessages = [...(prevState[params.chat_id] || []), newMessage];
-//         const uniqueMessages = updatedMessages.filter((msg, index, self) =>
-//           index === self.findIndex((m) => m.id === msg.id)
-//         );
-//         return { ...prevState, [params.chat_id]: uniqueMessages };
-//       });
-//     }
+      setChatMessages((prevState: any) => {
+        const updatedMessages = (prevState[chatId] || []).map(msg =>
+          msg.id === updatedMessage.id ? { ...updatedMessage, sender: senderData } : msg
+        );
+        console.log('Updated messages after update:', updatedMessages);
+        return { ...prevState, [chatId]: updatedMessages };
+      });
+    };
 
-//     scrollToBottom();
-//   };
+    const channel = supabase
+      .channel(`public:messages:chat_id=eq.${chatId}`)
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `chat_id=eq.${chatId}` }, handleNewMessage)
+      .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'messages', filter: `chat_id=eq.${chatId}` }, handleDeleteMessage)
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'messages', filter: `chat_id=eq.${chatId}` }, handleUpdateMessage)
+      .subscribe();
 
-//   const handleDeleteMessage = async (payload: any) => {
-//     setChatMessages((prevState: any) => {
-//       const updatedMessages = (prevState[params.chat_id] || []).filter(msg => msg.id !== payload.old.id);
-//       return { ...prevState, [params.chat_id]: updatedMessages };
-//     });
+    console.log('Supabase channel subscribed for chatId:', chatId);
 
-//     if (isOffline) {
-//       // Handle message deletion in DexieDB if offline
-//       await db.messages.delete(payload.old.id);
-//     }
-//   };
+    return () => {
+      console.log('Removing Supabase channel for chatId:', chatId);
+      supabase.removeChannel(channel);
+    };
+  }, [chatId]);
 
-//   const handleUpdateMessage = async (payload: any) => {
-//     const updatedMessage = payload.new;
-//     const senderData = await fetchSenderDetails(updatedMessage.sender_id);
+  useEffect(() => {
+    const ensureFolderExists = async () => {
+      console.log('Ensuring folder exists for chatId:', chatId);
+      const folderCreated = await createChatFolder(chatId);
+      if (!folderCreated) {
+        console.error('Failed to create folder for chatId:', chatId);
+      } else {
+        console.log('Folder successfully created for chatId:', chatId);
+      }
+    };
 
-//     setChatMessages((prevState: any) => {
-//       const updatedMessages = (prevState[params.chat_id] || []).map(msg =>
-//         msg.id === updatedMessage.id ? { ...updatedMessage, sender: senderData } : msg
-//       );
-//       return { ...prevState, [params.chat_id]: updatedMessages };
-//     });
+    ensureFolderExists();
+  }, [chatId]);
+};
 
-//     if (isOffline) {
-//       // Update the message in DexieDB if offline
-//       await db.messages.put(updatedMessage);
-//     }
-//   };
-
-//   // Ensure folder exists in DexieDB
-//   useEffect(() => {
-//     const ensureFolderExists = async () => {
-//       const folderCreated = await createChatFolder(params.chat_id);
-//       if (!folderCreated) {
-//         console.error('Failed to create folder for chat');
-//       }
-//     };
-
-//     ensureFolderExists();
-//   }, [params.chat_id]);
-
-//   return { isOffline };
-// };
-
-// export default useChatInitialization;
+export default useChatInitialization;

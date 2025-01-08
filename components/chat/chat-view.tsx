@@ -64,7 +64,11 @@ export function ChatView({ currentUser }: chatViewProps) {
   }
 
   if (error) {
-    return <div>Error: {error}</div>;
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="text-center text-gray-500 dark:text-gray-400">Error: {error}</div>
+      </div>
+    );
   }
 
   return (

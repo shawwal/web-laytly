@@ -1,18 +1,16 @@
-// hooks/useMessageState.ts
 import { useState } from 'react';
 import { Message } from '@/models/message';
 
 export function useMessageState() {
   const [messages, setMessages] = useState<Message[]>([]);
+
   // Add a new message, ensuring it doesn't already exist
   const addMessage = (message: Message) => {
     setMessages(prevMessages => {
       // Check if the message already exists in the state
       if (prevMessages.some(existingMsg => existingMsg.id === message.id)) {
-        // console.log('Message with this ID already exists:', message.id);
         return prevMessages; // Do not add the message again if it exists
       }
-      console.log('prevMessages', prevMessages);
       // Add the message at the beginning of the list (or at any position you prefer)
       return [message, ...prevMessages]; // Create a new array with the new message
     });

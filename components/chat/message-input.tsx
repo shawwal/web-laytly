@@ -11,7 +11,8 @@ import { ImageSelector } from '@/components/image-selector'; // Import ImageSele
 import { useImageSender } from '@/hooks/useImageSender'; // Import useImageSender hook
 
 interface MessageInputProps {
-  onSend: (content: string, audioBlob?: Blob, images?: File[]) => void;
+  // onSend: (content: string, audioBlob?: Blob, images?: File[]) => void;
+  onSend: any;
   onFocus: () => void;
   onBlur: () => void;
 }

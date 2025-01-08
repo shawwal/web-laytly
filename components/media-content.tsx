@@ -7,9 +7,10 @@ interface MessageContentProps {
 }
 
 const MessageContent: React.FC<MessageContentProps> = ({ content }) => {
+
   // Extract media identifiers from the message content
-  const imageIdentifierMatch = content.match(/\[Image: ([^\]]+)\]/);
-  const videoIdentifierMatch = content.match(/\[Video: ([^\]]+)\]/);
+  const imageIdentifierMatch = content?.match(/\[Image: ([^\]]+)\]/);
+  const videoIdentifierMatch = content?.match(/\[Video: ([^\]]+)\]/);
 
   const imageIdentifier = imageIdentifierMatch ? imageIdentifierMatch[1] : null;
   const videoIdentifier = videoIdentifierMatch ? videoIdentifierMatch[1] : null;

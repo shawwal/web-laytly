@@ -3,6 +3,7 @@ import { supabase } from "@/lib/supabase";
 import { FetchMessagesParams } from "@/models/message";
 
 export async function fetchMessages({ chatId, limit = 30, currentOffset }: FetchMessagesParams) {
+  
   try {
     const { data, error } = await supabase
       .from('messages')
@@ -35,7 +36,7 @@ export async function fetchMessages({ chatId, limit = 30, currentOffset }: Fetch
       ...message,
       sender: message.sender || { username: 'Unknown User', email: 'unknown@example.com' },
     }));
-
+    
     return newMessages;
   } catch (error) {
     console.error('Error fetching chat messages:', error);

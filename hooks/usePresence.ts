@@ -65,7 +65,7 @@ const usePresence = ({ userId, channelName }: UsePresenceProps) => {
         await channel.subscribe();
       } catch (err) {
         setError(`Error subscribing to channel: ${err}`);
-        console.error('Error subscribing to channel:', err);
+        // console.error('Error subscribing to channel:', err);
       }
     };
 

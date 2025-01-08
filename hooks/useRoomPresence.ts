@@ -78,7 +78,7 @@ const useRoomPresence = (roomId: string, myUserId: string) => {
           }
         });
       } catch (subscribeError) {
-        console.error('Error subscribing to channel:', subscribeError);
+        // console.error('Error subscribing to channel:', subscribeError);
         setError('Error subscribing to channel.');
       }
     };
