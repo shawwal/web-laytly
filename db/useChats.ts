@@ -64,7 +64,7 @@ export const useChats = () => {
   // Subscribe to chat updates using Supabase real-time
   useEffect(() => {
     // console.log('useEffect: Subscribing to chat updates');
-    const channel = supabase
+    const chatChannel = supabase
       .channel('public:chats')
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'chats' }, handleChatInsert)
       .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'chats' }, handleChatUpdate)
@@ -74,7 +74,7 @@ export const useChats = () => {
     // Cleanup subscription when component unmounts
     return () => {
       // console.log('useEffect: Unsubscribing from chat updates');
-      channel.unsubscribe();
+      chatChannel.unsubscribe();
     };
   }, []);
 
@@ -100,22 +100,29 @@ export const useChats = () => {
     }
   };
 
+  let timeout: NodeJS.Timeout;
+
   const handleChatUpdate = async (payload: any) => {
     const updatedChat = payload.new;
-    // console.log('updatedChat table', updatedChat)
-    try {
-      // Update Dexie DB by only updating the last_message field
-      await db.chats.update(updatedChat.id, { last_message: updatedChat.last_message, timestamp: updatedChat.timestamp });
   
-      // Update state to reflect the last_message change
-      setChats((prevChats) => 
-        prevChats.map((chat) => 
-          chat.id === updatedChat.id ? { ...chat, last_message: updatedChat.last_message, timestamp: updatedChat.timestamp } : chat
-        )
-      );
-    } catch (error) {
-      console.error('Error updating chat:', error);
-    }
+    // Clear any previous timeout if a new event comes in
+    clearTimeout(timeout);
+  
+    timeout = setTimeout(async () => {
+      try {
+        // Update Dexie DB by only updating the last_message field
+        await db.chats.update(updatedChat.id, { last_message: updatedChat.last_message, timestamp: updatedChat.timestamp });
+  
+        // Update state to reflect the last_message change
+        setChats((prevChats) => 
+          prevChats.map((chat) => 
+            chat.id === updatedChat.id ? { ...chat, last_message: updatedChat.last_message, timestamp: updatedChat.timestamp } : chat
+          )
+        );
+      } catch (error) {
+        console.error('Error updating chat:', error);
+      }
+    }, 0); // Adjust the debounce interval (e.g., 300ms)
   };
 
   // Handle chat delete event (chat deleted)
@@ -134,13 +141,13 @@ export const useChats = () => {
     // console.log('useEffect: Subscribing to message updates');
     if (chats.length === 0) return; // No chats to subscribe to
 
-    const messageChannels = chats.map((chat) => {
+    const chatChannels = chats.map((chat) => {
       const channel = supabase
         .channel(`public:messages:chat_id=eq.${chat.id}`)
         .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `chat_id=eq.${chat.id}` }, handleNewMessage)
         .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'messages', filter: `chat_id=eq.${chat.id}` }, handleUpdateMessage)
         .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'messages', filter: `chat_id=eq.${chat.id}` }, handleDeleteMessage)
-        .subscribe();
+        // .subscribe();
 
       return channel;
     });
@@ -148,10 +155,9 @@ export const useChats = () => {
     // Cleanup message channels when component unmounts
     return () => {
       // console.log('useEffect: Unsubscribing from message updates');
-      messageChannels.forEach((channel) => channel.unsubscribe());
+      chatChannels.forEach((channel) => channel.unsubscribe());
     };
   }, [chats]);
-
   // Handler for new message event
   const handleNewMessage = async (payload: any) => {
     // console.log('handleNewMessage: New message received', payload);
