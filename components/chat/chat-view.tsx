@@ -10,17 +10,14 @@ import { ActiveContact } from '@/components/chat/active-contact';
 import { resetUnreadCount } from '@/utils/resetUnreadCount';
 import useRoomPresence from '@/hooks/useRoomPresence'; // Import the correct hook
 
-
 interface chatViewProps {
   currentUser: string
 }
 
-export function ChatView({currentUser}:  chatViewProps) {
+export function ChatView({ currentUser }: chatViewProps) {
   const userId = currentUser;
-
-  console.log('userId', userId)
   const [activeContact, setActiveContact] = useState<any>(null);
-  const { activeContactId, activeName, activeAvatar, isMobileMessageView, friendId, setIsMobileMessageView } = useChat();
+  const { activeContactId, isGroup, activeName, activeAvatar, isMobileMessageView, friendId, setIsMobileMessageView } = useChat();
 
   useEffect(() => {
     if (activeContactId) {
@@ -52,7 +49,7 @@ export function ChatView({currentUser}:  chatViewProps) {
   }, [activeContactId, userId]); // Add user to dependency array
 
   const { presences, error } = useRoomPresence(
-   `public:messages${activeContactId}`,
+    `public:messages${activeContactId}`,
     userId || ''
   );
 
@@ -69,8 +66,7 @@ export function ChatView({currentUser}:  chatViewProps) {
   if (error) {
     return <div>Error: {error}</div>;
   }
-  console.log('presences', presences)
-  console.log('error', error)
+
   return (
     <div
       className={cn(
@@ -86,10 +82,18 @@ export function ChatView({currentUser}:  chatViewProps) {
         {activeContact && <ActiveContact contact={activeContact} />}
         {/* Display presence information */}
         <div className="ml-4">
-          {presences.map((presence) => (
+          {!isGroup && presences.map((presence) => (
             <span key={presence.userId} className="inline-flex items-center mr-2">
-              <span className={`w-2 h-2 rounded-full mr-1 ${presence.online ? 'bg-green-500' : 'bg-gray-400'}`} />
-              {presence.userId === userId ? "You" : presence.userId}
+              {presence.userId === userId ?
+                null :
+                <>
+                  <span className={`w-2 h-2 rounded-full mr-1 ${presence.online ? 'bg-green-500' : 'bg-gray-400'}`} />
+                  <span> online</span>
+                </>
+              }
+
+              {/* <span className={`w-2 h-2 rounded-full mr-1 ${presence.online ? 'bg-green-500' : 'bg-gray-400'}`} /> */}
+              {/* {presence.userId === userId ? "You" : presence.userId} */}
             </span>
           ))}
         </div>
