@@ -87,9 +87,9 @@ export function ChatView({currentUser}:  chatViewProps) {
         {/* Display presence information */}
         <div className="ml-4">
           {presences.map((presence) => (
-            <span key={presence.user} className="inline-flex items-center mr-2">
+            <span key={presence.userId} className="inline-flex items-center mr-2">
               <span className={`w-2 h-2 rounded-full mr-1 ${presence.online ? 'bg-green-500' : 'bg-gray-400'}`} />
-              {presence.user === userId ? "You" : presence.user}
+              {presence.userId === userId ? "You" : presence.userId}
             </span>
           ))}
         </div>
