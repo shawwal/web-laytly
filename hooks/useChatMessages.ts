@@ -1,10 +1,12 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
+// hooks/useChatMessages.ts
 import { useState, useEffect } from "react";
 import { useMessageState } from "@/hooks/useMessageState";
 import { usePagination } from "@/hooks/usePagination";
 import { fetchMessages } from "@/hooks/useFetchMessages";
 import useSenderDetails from '@/hooks/useSenderDetails';
 import { supabase } from "@/lib/supabase";
+import db from "@/db/dexie-db"; // Import Dexie DB
+import { useLiveQuery } from 'dexie-react-hooks'; // Import useLiveQuery hook from dexie-react-hooks
 
 interface ChatParams {
   chat_id: string;
@@ -16,7 +18,11 @@ export function useChatMessages({ chat_id }: ChatParams) {
   const [loading, setLoading] = useState(true);
   const [isFetchingOlder, setIsFetchingOlder] = useState(false);
   const { fetchSenderDetails } = useSenderDetails();
-  // Fetch chat messages from Supabase
+
+  // Use `useLiveQuery` to listen for updates from Dexie DB
+  const liveMessages = useLiveQuery(() => db.messages.where("chat_id").equals(chat_id).toArray(), [chat_id]);
+
+  // Fetch chat messages from Supabase (initial load)
   const fetchChatMessages = async (isOlderFetch = false) => {
     if (!chat_id || chat_id.trim() === '') {
       console.log('No chat_id provided');
@@ -29,19 +35,13 @@ export function useChatMessages({ chat_id }: ChatParams) {
       setIsFetchingOlder(true);
     }
 
-    // console.log(`Fetching messages for chat_id: ${chat_id} (offset: ${currentOffset}, limit: ${limit})`);
-
     try {
       const newMessages = await fetchMessages({ chatId: chat_id, limit, currentOffset });
-      // console.log(`Fetched ${newMessages.length} new messages for chat_id: ${chat_id}`);
-
-      // @ts-ignore
       setMessageList((prevMessages) => {
         const uniqueMessages = [
           ...newMessages.filter(msg => !prevMessages.some((existingMsg: any) => existingMsg.id === msg.id)),
           ...prevMessages,
         ];
-        // console.log(`Updated message list with ${uniqueMessages.length} messages.`);
         return uniqueMessages;
       });
 
@@ -60,29 +60,25 @@ export function useChatMessages({ chat_id }: ChatParams) {
   useEffect(() => {
     if (!chat_id.trim()) return;
 
-    // console.log(`Subscribing to real-time updates for chat_id: ${chat_id}`);
-
     const handleNewMessage = async (payload: any) => {
       const senderData = await fetchSenderDetails(payload.new.sender_id);
       const newMessage = { ...payload.new, sender: senderData };
 
-      // console.log('New message received:', newMessage);
-      addMessage(newMessage); // Add the new message to state
+      // Only add the new message if it doesn't already exist in local state
+      if (!messages.some((msg: any) => msg.id === newMessage.id)) {
+        addMessage(newMessage);
+      }
     };
-    const handleUpdateMessage = async (payload: any) => {
-      // console.log('triggered edit:', payload);
-      const updatedMessage = payload.new;
-      // console.log('Re-adding updated message:', updatedMessage);
 
+    const handleUpdateMessage = async (payload: any) => {
+      const updatedMessage = payload.new;
       editMessage(updatedMessage); // Update or replace the message
     };
+
     const handleDeleteMessage = async (payload: any) => {
-      // console.log('triggered delete:', payload);
       const deletedMessageId = payload.old.id;
-      // console.log('Removing message with ID:', deletedMessageId);
       removeMessage(deletedMessageId); // Remove the deleted message by ID
     };
-
 
     // Create a Supabase real-time channel for the chat's messages
     const channel = supabase
@@ -94,10 +90,9 @@ export function useChatMessages({ chat_id }: ChatParams) {
 
     // Cleanup subscription on unmount
     return () => {
-      // console.log(`Unsubscribing from real-time updates for chat_id: ${chat_id}`);
       channel.unsubscribe();
     };
-  }, [chat_id]);
+  }, [chat_id, messages, addMessage, editMessage, removeMessage, fetchSenderDetails]);
 
   // Fetch messages on initial load or when `chat_id` changes
   useEffect(() => {
@@ -107,6 +102,13 @@ export function useChatMessages({ chat_id }: ChatParams) {
       fetchChatMessages();
     }
   }, [chat_id]);
+
+  // Use live messages from Dexie DB to update the local state automatically
+  useEffect(() => {
+    if (liveMessages && liveMessages.length > 0) {
+      setMessageList(liveMessages); // Update state with live data from Dexie DB
+    }
+  }, [liveMessages]);
 
   return { messages, loading, addMessage, removeMessage, fetchChatMessages, isFetchingOlder };
 }

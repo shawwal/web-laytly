@@ -1,3 +1,4 @@
+// hooks/useMessageState.ts
 import { useState } from 'react';
 import { Message } from '@/models/message';
 
@@ -11,6 +12,7 @@ export function useMessageState() {
         // console.log('Message with this ID already exists:', message.id);
         return prevMessages; // Do not add the message again if it exists
       }
+      console.log('prevMessages', prevMessages);
       // Add the message at the beginning of the list (or at any position you prefer)
       return [message, ...prevMessages]; // Create a new array with the new message
     });

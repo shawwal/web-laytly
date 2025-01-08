@@ -21,7 +21,7 @@ export function ContentRenderer({
 }: ContentRendererProps) {
   const { messages, loading, addMessage } = useChatMessages({ chat_id: chatId });
   const { sendMessage } = useSendMessage(chatId, addMessage);
-
+  console.log('message', messages);
   const [isInputFocused, setInputFocused] = useState(false);
   const [isLoadingMessages, setIsLoadingMessages] = useState(true);
 
