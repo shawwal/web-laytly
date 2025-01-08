@@ -62,7 +62,7 @@ const useChatInitialization = (chatId: any, setLoading: any, fetchChatMessages: 
     const handleDeleteMessage = async (payload: any) => {
       console.log('Handling delete message payload:', payload);
       setChatMessages((prevState: any) => {
-        const updatedMessages = (prevState[chatId] || []).filter(msg => msg.id !== payload.old.id);
+        const updatedMessages = (prevState[chatId] || []).filter((msg: any) => msg.id !== payload.old.id);
         console.log('Updated messages after deletion:', updatedMessages);
         return { ...prevState, [chatId]: updatedMessages };
       });
@@ -75,7 +75,7 @@ const useChatInitialization = (chatId: any, setLoading: any, fetchChatMessages: 
       // console.log(`Fetched sender details for updated message:`, senderData);
 
       setChatMessages((prevState: any) => {
-        const updatedMessages = (prevState[chatId] || []).map(msg =>
+        const updatedMessages = (prevState[chatId] || []).map((msg: any) =>
           msg.id === updatedMessage.id ? { ...updatedMessage, sender: senderData } : msg
         );
         // console.log('Updated messages after update:', updatedMessages);

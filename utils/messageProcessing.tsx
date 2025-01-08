@@ -3,9 +3,9 @@ import moment from 'moment';
 
 export const processMessagesWithDates = (messages: any[]) => {
   const messagesWithDates: any[] = [];
-  let lastDate: moment.Moment | null = null;
+  let lastDate: moment.Moment | null = null as any;
   let dateHeaderIndex = 0; // Add a counter for date headers
-  let todayInserted = false;
+  const todayInserted = false as boolean;
 
   messages.forEach((message: any, index: number) => {
     const messageDate = moment(message.timestamp).startOf('day');

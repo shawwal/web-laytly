@@ -42,6 +42,8 @@ export function useChatMessages({ chat_id }: ChatParams) {
       });
 
       if (!isOlderFetch) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         setMessageList((prevMessages) => [...prevMessages, ...sortedNewMessages]);
       }
 
