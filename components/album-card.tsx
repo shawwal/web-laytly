@@ -102,6 +102,7 @@ export function AlbumCard({ album, onDelete, onRename }: AlbumCardProps) {
 
       {/* Gallery Modal */}
       <GalleryModal
+        albumName={album.name}
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         albumId={album.id}
