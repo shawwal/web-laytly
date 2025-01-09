@@ -1,11 +1,10 @@
-// src/components/album-card.tsx
 'use client';
 import React, { useState, useEffect, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { Album } from '@/types'; // Adjust the import path
-import { Skeleton } from '@/components/ui/skeleton'; // Import your Skeleton component
+import { Album } from '@/types';
+import { Skeleton } from '@/components/ui/skeleton';
 import { supabase } from '@/lib/supabase';
+import { GalleryModal } from '@/components/chat/gallery-modal'; // Import the GalleryModal
 
 interface AlbumCardProps {
   album: Album;
@@ -16,17 +15,15 @@ interface AlbumCardProps {
 export function AlbumCard({ album, onDelete, onRename }: AlbumCardProps) {
   const [loading, setLoading] = useState(true);
   const [coverImageUrl, setCoverImageUrl] = useState<string | null>(null);
-  const [isClient, setIsClient] = useState(false); // State to track if we're on the client
+  const [isClient, setIsClient] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Initialize router only on the client side
-  const router = useRouter();
-
-  // Fetch the cover image URL from Supabase (or any other storage)
+  // Fetch the cover image URL from Supabase
   const getCoverImageUrl = useCallback(async () => {
     if (album.cover_image) {
       const { data, error } = await supabase.storage
-        .from('shared_files') // Replace with your bucket name
-        .createSignedUrl(album.cover_image, 60 * 60); // URL valid for 1 hour
+        .from('shared_files')
+        .createSignedUrl(album.cover_image, 60 * 60);
 
       if (error) {
         console.error('Error fetching cover image URL:', error.message);
@@ -35,13 +32,12 @@ export function AlbumCard({ album, onDelete, onRename }: AlbumCardProps) {
         setCoverImageUrl(data.signedUrl);
       }
     } else {
-      setCoverImageUrl(null); // No cover image available
+      setCoverImageUrl(null);
     }
     setLoading(false);
   }, [album.cover_image]);
 
   useEffect(() => {
-    // Set the client-side flag to true after the component mounts
     setIsClient(true);
   }, []);
 
@@ -51,11 +47,9 @@ export function AlbumCard({ album, onDelete, onRename }: AlbumCardProps) {
     }
   }, [isClient, getCoverImageUrl]);
 
-  // Handle album click (navigate to album details)
+  // Handle album click to open the modal
   const handleAlbumClick = () => {
-    // if (router) {
-    //   router.push(`/albums/${album.id}`);
-    // }
+    setIsModalOpen(true);
   };
 
   // Handle long press (show options - rename or delete)
@@ -78,8 +72,7 @@ export function AlbumCard({ album, onDelete, onRename }: AlbumCardProps) {
       <div
         className="relative aspect-square cursor-pointer"
         onClick={handleAlbumClick}
-        onContextMenu={handleAlbumLongPress} // Right-click for long press
-        style={{ position: 'relative', width: '100%', height: 'auto' }}
+        onContextMenu={handleAlbumLongPress}
       >
         {loading ? (
           <Skeleton className="w-full h-full aspect-square" />
@@ -87,10 +80,9 @@ export function AlbumCard({ album, onDelete, onRename }: AlbumCardProps) {
           <Image
             src={coverImageUrl}
             alt={album.name}
-            fill  // Use `layout="fill"` for the image to fill the container
+            fill
             className="object-cover"
             unoptimized={true}
-            sizes="(max-width: 768px) 100vw, 33vw"  // Adjust sizes for responsiveness
           />
         ) : (
           <div className="w-full h-full bg-gray-200 rounded-md flex justify-center items-center">
@@ -107,6 +99,13 @@ export function AlbumCard({ album, onDelete, onRename }: AlbumCardProps) {
           {loading ? <Skeleton className="w-1/4 h-3" /> : `${album.item_count} items`}
         </div>
       </div>
+
+      {/* Gallery Modal */}
+      <GalleryModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        albumId={album.id}
+      />
     </div>
   );
 }

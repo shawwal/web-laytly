@@ -20,7 +20,7 @@ import { supabase } from '@/lib/supabase';
 //   }
 // };
 
-// albumUtils.ts
+// utils/albumUtils.ts
 export const fetchAlbumImages = async (albumId: string) => {
   try {
     const { data, error } = await supabase

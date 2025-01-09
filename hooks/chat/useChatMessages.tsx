@@ -167,7 +167,6 @@ export default function useChatMessages(chatId: any, userId: any, listUserOnline
           console.error('Error sending push notification');
         }
       }
-
       // Update Chat List
 
       await updateChatList(
