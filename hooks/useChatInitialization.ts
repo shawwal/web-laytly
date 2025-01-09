@@ -69,7 +69,7 @@ const useChatInitialization = (chatId: any, setLoading: any, fetchChatMessages: 
     };
 
     const handleUpdateMessage = async (payload: any) => {
-      // console.log('Handling update message payload:', payload);
+      console.log('Handling update message payload in message:', payload);
       const updatedMessage = payload.new;
       const senderData = await fetchSenderDetails(updatedMessage.sender_id);
       // console.log(`Fetched sender details for updated message:`, senderData);

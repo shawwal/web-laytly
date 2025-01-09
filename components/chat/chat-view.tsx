@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -63,12 +64,15 @@ export function ChatView({ currentUser }: chatViewProps) {
   if (!isGroup) {
     // console.log('onlineFriends', onlineFriends);
     // If the friend is not online, it should be added to the friend list
+
     // If the friend is online, it should be excluded and the list will be empty
+    // @ts-ignore
     if (onlineFriends.includes(friendId)) {
       // console.log(`Friend with ID ${friendId} is online, excluding from the list.`);
       friendList = excludeOnlineFriends(onlineFriends, friendId); // Removes the friendId if they're online
     } else {
       // console.log(`Friend with ID ${friendId} is offline, adding to the list.`);
+      // @ts-ignore
       friendList = [friendId]; // If the friend is offline, add them to the friend list
     }
   }

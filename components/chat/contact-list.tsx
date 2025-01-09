@@ -37,7 +37,6 @@ export function ContactList() {
       .slice() // Create a shallow copy to avoid mutating the original array
       .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
   }, [chats]);
-
   // Skeleton UI for loading state using ShadCN's Skeleton component
   if (loading) {
     return (

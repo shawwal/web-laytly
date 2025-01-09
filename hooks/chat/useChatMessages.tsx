@@ -4,6 +4,7 @@ import { isValidUUID } from '@/utils/userUtils';
 import { addComment } from '@/utils/commentsUtils';
 import { getFileNameFromString } from '@/utils/getFileNameFromString';
 import { getPushTokensForOnlineUsers } from '@/utils/getPushTokensForOnlineUsers';
+import { updateChatList } from '@/hooks/chat/updateChatList';
 
 export default function useChatMessages(chatId: any, userId: any, listUserOnline: string[]) {
   const [sending, setSending] = useState(false);
@@ -166,6 +167,15 @@ export default function useChatMessages(chatId: any, userId: any, listUserOnline
           console.error('Error sending push notification');
         }
       }
+
+      // Update Chat List
+
+      await updateChatList(
+        chatId,
+        newMessage.trim(),
+        userId,
+        false
+      );
   
       setSending(false);
       return data;

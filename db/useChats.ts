@@ -70,7 +70,7 @@ export const useChats = () => {
       .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'chats' }, handleChatUpdate)
       .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'chats' }, handleChatDelete)
       .subscribe();
-
+    // console.log('chatChannel', chatChannel)
     // Cleanup subscription when component unmounts
     return () => {
       // console.log('useEffect: Unsubscribing from chat updates');
@@ -92,7 +92,7 @@ export const useChats = () => {
   
       // Update Dexie DB with the new chat
       await db.chats.put(updatedNewChat);
-  
+      console.log('triggered', updatedNewChat)
       // Update state with the new chat (prepend it to the list to keep it at the top)
       setChats((prevChats) => [updatedNewChat, ...prevChats]);
     } catch (error) {
@@ -104,8 +104,8 @@ export const useChats = () => {
 
   const handleChatUpdate = async (payload: any) => {
     const updatedChat = payload.new;
-  
     // Clear any previous timeout if a new event comes in
+    // console.log('updatedChat triggered', updatedChat)
     clearTimeout(timeout);
   
     timeout = setTimeout(async () => {
@@ -122,7 +122,7 @@ export const useChats = () => {
       } catch (error) {
         console.error('Error updating chat:', error);
       }
-    }, 0); // Adjust the debounce interval (e.g., 300ms)
+    }, 300); // Adjust the debounce interval (e.g., 300ms)
   };
 
   // Handle chat delete event (chat deleted)
@@ -134,59 +134,6 @@ export const useChats = () => {
     db.chats.delete(deletedChatId).catch((error) => console.error('Error deleting chat:', error));
 
     setChats((prevChats) => prevChats.filter((chat) => chat.id !== deletedChatId));
-  };
-
-  // Subscribe to message updates using Supabase real-time for each chat
-  useEffect(() => {
-    // console.log('useEffect: Subscribing to message updates');
-    if (chats.length === 0) return; // No chats to subscribe to
-
-    const chatChannels = chats.map((chat) => {
-      const channel = supabase
-        .channel(`public:messages:chat_id=eq.${chat.id}`)
-        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `chat_id=eq.${chat.id}` }, handleNewMessage)
-        .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'messages', filter: `chat_id=eq.${chat.id}` }, handleUpdateMessage)
-        .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'messages', filter: `chat_id=eq.${chat.id}` }, handleDeleteMessage)
-        // .subscribe();
-
-      return channel;
-    });
-
-    // Cleanup message channels when component unmounts
-    return () => {
-      // console.log('useEffect: Unsubscribing from message updates');
-      chatChannels.forEach((channel) => channel.unsubscribe());
-    };
-  }, [chats]);
-  // Handler for new message event
-  const handleNewMessage = async (payload: any) => {
-    // console.log('handleNewMessage: New message received', payload);
-    const newMessage = payload.new;
-
-    try {
-      // Insert the new message into Dexie DB
-      await db.messages.put(newMessage);
-    } catch (error) {
-      console.error('Error inserting new message:', error);
-    }
-  };
-
-  // Handler for updated message event
-  const handleUpdateMessage = (payload: any) => {
-    console.log('handleUpdateMessage: Message updated', payload);
-    const updatedMessage = payload.new;
-
-    // Update the message in Dexie DB
-    db.messages.update(updatedMessage.id, updatedMessage).catch((error) => console.error('Error updating message:', error));
-  };
-
-  // Handler for deleted message event
-  const handleDeleteMessage = (payload: any) => {
-    console.log('handleDeleteMessage: Message deleted', payload);
-    const deletedMessageId = payload.old.id;
-
-    // Delete the message from Dexie DB
-    db.messages.delete(deletedMessageId).catch((error) => console.error('Error deleting message:', error));
   };
 
   return {
