@@ -131,6 +131,7 @@ export function LibraryView() {
                       alt=""
                       fill
                       className="object-cover"
+                      unoptimized={true}
                     />
                   </div>
                   <div className="p-3">

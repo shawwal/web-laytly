@@ -25,6 +25,7 @@ export function MediaItemCard({
       <div
         className="relative aspect-square cursor-pointer"
         onClick={() => onMediaSelect(groupIndex, itemIndex)}
+        key={itemIndex}
       >
         <Image
           src={item.imageUrl}
@@ -32,6 +33,7 @@ export function MediaItemCard({
           fill
           sizes="(max-width: 768px) 100vw, 33vw"
           className="object-cover"
+          unoptimized={true}
         />
       </div>
       <div className="p-3">

@@ -89,6 +89,7 @@ export function AlbumCard({ album, onDelete, onRename }: AlbumCardProps) {
             alt={album.name}
             fill  // Use `layout="fill"` for the image to fill the container
             className="object-cover"
+            unoptimized={true}
             sizes="(max-width: 768px) 100vw, 33vw"  // Adjust sizes for responsiveness
           />
         ) : (
