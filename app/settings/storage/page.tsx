@@ -69,6 +69,7 @@ export default function StoragePage() {
               alt="Storage illustration"
               fill
               className="object-contain"
+              unoptimized={true}
             />
           </div>
         </div>

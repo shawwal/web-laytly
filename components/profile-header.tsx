@@ -95,6 +95,7 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
           alt="Banner"
           fill
           className="object-cover"
+          unoptimized={true}
         />
         <label className="absolute right-4 top-4 cursor-pointer">
           {/* <div className="rounded-full bg-white/50 backdrop-blur-sm p-2 dark:bg-gray-900/50">

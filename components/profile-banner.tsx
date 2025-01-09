@@ -11,6 +11,7 @@ export function ProfileBanner() {
         alt="Profile banner"
         fill
         className="object-cover"
+        unoptimized={true}
       />
       <div className="absolute inset-0 bg-gradient-to-b from-black/30 to-transparent" />
       

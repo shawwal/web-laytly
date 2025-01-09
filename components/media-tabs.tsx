@@ -31,6 +31,7 @@ export function MediaTabs() {
                 alt=""
                 fill
                 className="object-cover hover:opacity-90 transition-opacity"
+                unoptimized={true}
               />
             </div>
           ))}

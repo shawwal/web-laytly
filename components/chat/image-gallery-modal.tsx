@@ -54,6 +54,7 @@ export function ImageGalleryModal({ isOpen, onClose, images, initialIndex = 0 }:
               width={800}
               height={600}
               className="max-w-full max-h-full object-contain"
+              unoptimized={true}
             />
             <Button
               variant="ghost"

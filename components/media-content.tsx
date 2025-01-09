@@ -65,6 +65,7 @@ const MessageContent: React.FC<MessageContentProps> = ({ content }) => {
                 objectFit: 'cover',
               }}
               className="rounded-lg cursor-pointer"
+              unoptimized={true}
             />
           </div>
 
@@ -86,6 +87,7 @@ const MessageContent: React.FC<MessageContentProps> = ({ content }) => {
                     height={200} // Set a base height for large images
                     style={{ objectFit: 'contain', width: 'auto', height: 'auto' }} // Add these styles for aspect ratio
                     className="rounded-lg"
+                    unoptimized={true}
                   />
                 </div>
               </div>
