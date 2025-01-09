@@ -10,6 +10,7 @@ import { ActiveContact } from '@/components/chat/active-contact';
 import { resetUnreadCount } from '@/utils/resetUnreadCount';
 import useRoomPresence from '@/hooks/useRoomPresence'; // Import the correct hook
 import getOnlineUsersExcludingCurrent from '@/utils/getOnlineUsersExcludingCurrent';
+import { excludeOnlineFriends } from '@/utils/supabase/excludeOnlineFriends';
 
 interface chatViewProps {
   currentUser: string
@@ -49,12 +50,29 @@ export function ChatView({ currentUser }: chatViewProps) {
     resetUnread();
   }, [activeContactId, userId]); // Add user to dependency array
 
+
+
   const { presences, error } = useRoomPresence(
     `public:messages${activeContactId}`,
     userId || ''
   );
+
+  let friendList = [] as string[];
   const onlineFriends = getOnlineUsersExcludingCurrent(presences, currentUser);
   
+  if (!isGroup) {
+    // console.log('onlineFriends', onlineFriends);
+    // If the friend is not online, it should be added to the friend list
+    // If the friend is online, it should be excluded and the list will be empty
+    if (onlineFriends.includes(friendId)) {
+      // console.log(`Friend with ID ${friendId} is online, excluding from the list.`);
+      friendList = excludeOnlineFriends(onlineFriends, friendId); // Removes the friendId if they're online
+    } else {
+      // console.log(`Friend with ID ${friendId} is offline, adding to the list.`);
+      friendList = [friendId]; // If the friend is offline, add them to the friend list
+    }
+  }
+
   if (!activeContactId || (!isMobileMessageView && window.innerWidth < 768)) {
     return (
       <div className="hidden md:flex flex-col flex-1 items-center justify-center text-center p-4">
@@ -68,8 +86,10 @@ export function ChatView({ currentUser }: chatViewProps) {
   if (error) {
     return (
       <div className="flex items-center justify-center h-screen w-full">
-        <div className="text-center text-gray-500 dark:text-gray-400">Error: {error}</div>
-        <div className="text-center text-gray-500 dark:text-gray-400">{' '}Refresh the page or contact admin.</div>
+        <div>
+          <p className="text-center text-gray-500 dark:text-gray-400">Error: {error}</p>
+          <p className="text-center text-gray-500 dark:text-gray-400">Refresh the page or contact admin.</p>
+        </div>
       </div>
     );
   }
@@ -98,7 +118,6 @@ export function ChatView({ currentUser }: chatViewProps) {
                   <span> online</span>
                 </>
               }
-
               {/* <span className={`w-2 h-2 rounded-full mr-1 ${presence.online ? 'bg-green-500' : 'bg-gray-400'}`} /> */}
               {/* {presence.userId === userId ? "You" : presence.userId} */}
             </span>
@@ -106,7 +125,7 @@ export function ChatView({ currentUser }: chatViewProps) {
         </div>
       </div>
       <div className="flex-1 overflow-hidden flex flex-col">
-        <ChatTabs chatId={activeContactId} listUserOnline={onlineFriends} />
+        <ChatTabs chatId={activeContactId} listUserOnline={friendList} />
       </div>
     </div>
   );
