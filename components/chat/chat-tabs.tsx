@@ -14,9 +14,10 @@ const tabs = [
 
 interface ChatTabsProps {
   chatId: string;
+  listUserOnline: string[];
 }
 
-export function ChatTabs({ chatId }: ChatTabsProps) {
+export function ChatTabs({ chatId, listUserOnline }: ChatTabsProps) {
   const [activeTab, setActiveTab] = useState('chat');
   const { session } = useSession();
   const userId = session?.user?.id as string;
@@ -33,6 +34,7 @@ export function ChatTabs({ chatId }: ChatTabsProps) {
           activeTab={activeTab}
           userId={userId}
           chatId={chatId}
+          listUserOnline={listUserOnline}
         />
       </div>
     </div>

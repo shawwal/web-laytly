@@ -3,8 +3,9 @@ import { supabase } from '@/lib/supabase';
 import { isValidUUID } from '@/utils/userUtils';
 import { addComment } from '@/utils/commentsUtils';
 import { getFileNameFromString } from '@/utils/getFileNameFromString';
+import { getPushTokensForOnlineUsers } from '@/utils/getPushTokensForOnlineUsers';
 
-export default function useChatMessages(chatId: any, userId: any) {
+export default function useChatMessages(chatId: any, userId: any, listUserOnline: string[]) {
   const [sending, setSending] = useState(false);
   const [offset, setOffset] = useState(0);
   const limit = 30; // Number of messages to fetch at a time
@@ -64,7 +65,6 @@ export default function useChatMessages(chatId: any, userId: any) {
       return [];
     }
   };
-
 
   // Function to fetch older messages (triggered by "Load Older Messages" button)
   const fetchOlderMessages = async () => {
@@ -127,7 +127,6 @@ export default function useChatMessages(chatId: any, userId: any) {
       }
       // Check if it's a media message (e.g., contains video_ or image_)
       if (validReplyToId) {
-        console.log('test')
         const itemId = getFileNameFromString(mediaPath);
         // Add a comment related to the media
         await addComment(
@@ -136,6 +135,36 @@ export default function useChatMessages(chatId: any, userId: any) {
           userId,   // userId
           `${newMessage}` // Comment text
         );
+      }
+
+      // After sending the message, send push notifications to online users (excluding the current user)
+      const pushTokens = await getPushTokensForOnlineUsers(listUserOnline, userId);
+      // console.log('pushTokens', pushTokens)
+      for (const expoPushToken of pushTokens) {
+  
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        const notificationTitle = `New message from ${data.sender.username}`;
+        const notificationBody = newMessage.trim();
+
+        const response = await fetch('/api/sendPushNotification', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            expoPushToken,
+            title: notificationTitle,
+            body: notificationBody,
+            data: {},  // Optional additional data
+          }),
+        });
+        // console.log('notificationTitle', notificationTitle)
+        // console.log('response', response)
+
+        if (!response.ok) {
+          console.error('Error sending push notification');
+        }
       }
   
       setSending(false);
@@ -146,7 +175,6 @@ export default function useChatMessages(chatId: any, userId: any) {
       return null;
     }
   };
-  
 
   return { fetchChatMessages, fetchOlderMessages, handleSendMessage };
 }

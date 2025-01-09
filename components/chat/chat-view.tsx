@@ -9,6 +9,7 @@ import { ChatTabs } from '@/components/chat/chat-tabs';
 import { ActiveContact } from '@/components/chat/active-contact';
 import { resetUnreadCount } from '@/utils/resetUnreadCount';
 import useRoomPresence from '@/hooks/useRoomPresence'; // Import the correct hook
+import getOnlineUsersExcludingCurrent from '@/utils/getOnlineUsersExcludingCurrent';
 
 interface chatViewProps {
   currentUser: string
@@ -52,7 +53,8 @@ export function ChatView({ currentUser }: chatViewProps) {
     `public:messages${activeContactId}`,
     userId || ''
   );
-
+  const onlineFriends = getOnlineUsersExcludingCurrent(presences, currentUser);
+  
   if (!activeContactId || (!isMobileMessageView && window.innerWidth < 768)) {
     return (
       <div className="hidden md:flex flex-col flex-1 items-center justify-center text-center p-4">
@@ -67,7 +69,7 @@ export function ChatView({ currentUser }: chatViewProps) {
     return (
       <div className="flex items-center justify-center h-screen w-full">
         <div className="text-center text-gray-500 dark:text-gray-400">Error: {error}</div>
-        <div className="text-center text-gray-500 dark:text-gray-400"> Refresh the page or contact admin.</div>
+        <div className="text-center text-gray-500 dark:text-gray-400">{' '}Refresh the page or contact admin.</div>
       </div>
     );
   }
@@ -104,7 +106,7 @@ export function ChatView({ currentUser }: chatViewProps) {
         </div>
       </div>
       <div className="flex-1 overflow-hidden flex flex-col">
-        <ChatTabs chatId={activeContactId} />
+        <ChatTabs chatId={activeContactId} listUserOnline={onlineFriends} />
       </div>
     </div>
   );

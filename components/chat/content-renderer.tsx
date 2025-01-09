@@ -14,12 +14,14 @@ interface ContentRendererProps {
   activeTab: string;
   userId: string;
   chatId: string | any;
+  listUserOnline: string[];
 }
 
 export function ContentRenderer({
   activeTab,
   userId,
   chatId,
+  listUserOnline,
 }: ContentRendererProps) {
   const [loading, setLoading] = useState(false);
   // const { fetchChatMessages } = useChatMessages(chatId);
@@ -27,8 +29,8 @@ export function ContentRenderer({
   const [chatMessages, setChatMessages] = useState([]);
   // console.log('userId', userId)
   // console.log('chatId', chatId)
-  const { fetchChatMessages, handleSendMessage } = useChatMessages(chatId, userId);
-  
+  const { fetchChatMessages, handleSendMessage } = useChatMessages(chatId, userId, listUserOnline);
+
   useChatInitialization(chatId, setLoading, fetchChatMessages, fetchSenderDetails, setChatMessages);
 
   // const { messages, loading, addMessage } = useChatMessages({ chat_id: chatId });

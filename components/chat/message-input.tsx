@@ -44,7 +44,7 @@ export function MessageInput({ onSend, onFocus, onBlur }: MessageInputProps) {
     setIsSending(true);
 
     // Debug log for checking the message content
-    console.log('Submitting message:', message);
+    // console.log('Submitting message:', message);
 
     try {
       // Call onSend and await the result to ensure the message is sent before continuing
