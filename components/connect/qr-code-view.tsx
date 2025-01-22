@@ -4,11 +4,12 @@ import { useState, useEffect } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Search, Copy, Share2, Download, QrCode, ScanLine } from 'lucide-react';
+import { Copy, Share2, Download, QrCode, ScanLine } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { useToast } from '@/components/ui/use-toast';
 import useSession from '@/hooks/useSession'; // Assuming this is the correct import for your useSession hook
 import { Skeleton } from '@/components/ui/skeleton'; // Import Skeleton component
+import AddFriendButton from '../add-friend-button';
 
 export function QRCodeView() {
   const { toast } = useToast();
@@ -91,9 +92,7 @@ export function QRCodeView() {
       <div className="sticky top-0 z-10 bg-white dark:bg-gray-900 border-b dark:border-gray-800">
         <div className="flex items-center justify-between p-4 max-w-2xl mx-auto">
           <h1 className="text-xl font-semibold">My QR Code</h1>
-          <Button variant="ghost" size="icon">
-            <Search className="h-5 w-5" />
-          </Button>
+          <AddFriendButton session={session} />
         </div>
       </div>
 
