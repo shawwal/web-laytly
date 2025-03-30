@@ -2,7 +2,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { MessageCircle, LinkIcon, Settings, Menu, User } from 'lucide-react'
+import { MessageCircle, LinkIcon, Settings, Menu, User, Lightbulb } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -20,6 +20,11 @@ const navItems = [
     title: 'Connect',
     icon: LinkIcon,
     href: '/connect',
+  },
+  {
+    title: 'Feature Request',
+    icon: Lightbulb,
+    href: '/feature-request',
   },
   {
     title: 'Settings',

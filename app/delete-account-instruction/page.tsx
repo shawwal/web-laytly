@@ -19,7 +19,7 @@ const DataDeletionInstruction: React.FC = () => {
           Select the Account page.
         </li>
         <li>
-          Press "Delete Account".
+          Press &quot;Delete Account&quot;.
         </li>
       </ol>
       <p className="text-gray-600 text-sm mb-4">
